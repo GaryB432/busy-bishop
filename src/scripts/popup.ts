@@ -45,7 +45,7 @@ export class Popup {
   }
 
   public run(defValue: string, cb: (value: string) => void): void {
-    console.log(this.element);
+    // console.log(this.element);
     this.inputElement.value = defValue;
     this.onOk = cb;
     this.show();

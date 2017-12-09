@@ -2,7 +2,7 @@
 
 import '../styles/base.scss';
 
-import { MakeSuggestionMessage, Message } from './messages';
+import { MakeSuggestionMessage, Message, ParentAndIndex } from './messages';
 import { Popup } from './popup';
 
 const popup: Popup = new Popup();
@@ -73,6 +73,16 @@ popup.start(document.body, 'Suggested Edit');
 //   // }
 // }
 
+function prototypicalFunction(msg: MakeSuggestionMessage) {
+  const parts = [
+    msg.original.slice(0, msg.selectionStart),
+    msg.suggestedText,
+    msg.original.slice(msg.selectionStart + msg.selectionLength),
+  ];
+  console.log(msg);
+  console.log(parts.join('<->'));
+}
+
 document.addEventListener('pointermove', evt => {
   lastPointer.x = evt.x;
   lastPointer.y = evt.y;
@@ -85,95 +95,35 @@ function sendMessage(
   chrome.runtime.sendMessage(message, responseCallback);
 }
 
-interface NodeFilterResponse {
-  status: 'OK' | 'TOO_MANY';
-  selectedNode?: Node;
-}
-
-function filterNodes(prent: Node, predicate: (n: Node) => boolean): Node[] {
-  const containing: Node[] = [];
-
-  function doFind(node: Node) {
-    if (predicate(node)) {
-      containing.push(node);
-    }
-    if (node.hasChildNodes) {
-      for (let i = 0; i < node.childNodes.length; i++) {
-        doFind(node.childNodes.item(i));
-      }
-    }
-  }
-
-  doFind(prent);
-  return containing;
-}
-
-function findNodeWithText(
-  selectionText: string,
-  prent: Node
-): NodeFilterResponse {
-  const found = filterNodes(
-    prent,
-    node =>
-      node.nodeName === '#text' &&
-      !!node.nodeValue &&
-      node.nodeValue.indexOf(selectionText) > -1
-  );
-
-  return found.length === 1
-    ? { status: 'OK', selectedNode: found[0] }
-    : { status: 'TOO_MANY' };
-}
-
-function prototypicalFunction(msg: MakeSuggestionMessage) {
-  const parts = [
-    msg.original.slice(0, msg.selectionStart),
-    msg.suggestedText,
-    msg.original.slice(msg.selectionStart + msg.selectionLength),
-  ];
-  console.log(parts.join('<->'));
-}
-type ParentChildIndex = number;
-type ParentAndIndex = [string, ParentChildIndex];
 chrome.runtime.onMessage.addListener((msg: Message, _sender, sendResponse) => {
   if (msg.type === 'START_SUGGESTION') {
     const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
 
-    let w = elem;
-    while (w.parentElement) {
-      console.log(w.tagName);
-      const pe = w.parentElement;
-      for (let i = 0; i < pe.childElementCount; i++) {
-        const pc = pe.children.item(i);
-        if (pc === w) {
-          const t: ParentAndIndex = [w.tagName, i];
-          console.log(t);
-        }
-      }
-      w = w.parentElement;
-    }
-
-    const sel = findNodeWithText(msg.selectionText, document);
-    if (sel.status === 'OK') {
-      console.log(msg);
-      popup.run(msg.selectionText, suggestedText => {
-        const original =
-          (!!sel.selectedNode && sel.selectedNode.textContent) || '';
-        const selectionStart = original.indexOf(msg.selectionText);
-        const makeSuggestionMessage: MakeSuggestionMessage = {
-          href: window.location.href,
-          original,
-          selectionLength: msg.selectionText.length,
-          selectionStart,
-          suggestedText,
-          type: 'MAKE_SUGGESTION',
-        };
-        sendMessage(makeSuggestionMessage, sendResponse);
-        prototypicalFunction(makeSuggestionMessage);
-      });
-    } else {
-      console.log(msg, sel);
-      alert('Please select a medium-sized piece of text in a single element.');
-    }
+    popup.run(msg.selectionText, suggestedText => {
+      const original = (!!elem && elem.textContent) || '';
+      const selectionStart = original.indexOf(msg.selectionText);
+      const makeSuggestionMessage: MakeSuggestionMessage = {
+        elementPath: getElementPath(elem),
+        href: window.location.href + ' ' + elem.baseURI,
+        original,
+        selectionLength: msg.selectionText.length,
+        selectionStart,
+        suggestedText,
+        type: 'MAKE_SUGGESTION',
+      };
+      sendMessage(makeSuggestionMessage, sendResponse);
+      prototypicalFunction(makeSuggestionMessage);
+    });
   }
 });
+
+function getElementPath(elem: Element): ParentAndIndex[] {
+  const res: ParentAndIndex[] = [];
+  let w = elem;
+  while (w.parentElement) {
+    const kids = Array.from(w.parentElement.children);
+    res.push([w.tagName, kids.findIndex(pc => pc === w)]);
+    w = w.parentElement;
+  }
+  return res.reverse();
+}
