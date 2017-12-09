@@ -1,8 +1,8 @@
 export type ParentAndIndex = [string, number];
 
 export interface MakeSuggestionMessage {
-  type: 'MAKE_SUGGESTION';
   elementPath: ParentAndIndex[];
+  type: 'MAKE_SUGGESTION';
   original: string;
   selectionLength: number;
   selectionStart: number;
