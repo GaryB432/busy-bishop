@@ -1,5 +1,5 @@
 export interface MakeSuggestionMessage {
-  type: "MAKE_SUGGESTION";
+  type: 'MAKE_SUGGESTION';
   original: string;
   selectionLength: number;
   selectionStart: number;
@@ -8,7 +8,7 @@ export interface MakeSuggestionMessage {
 }
 
 export interface StartSuggestionMessage {
-  type: "START_SUGGESTION";
+  type: 'START_SUGGESTION';
   selectionText: string;
 }
 

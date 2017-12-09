@@ -10,14 +10,15 @@ var isProd = ENV === 'build';
 
 module.exports = {
   entry: {
-    app: ['scripts/app.ts'],
+    background: ['scripts/background.ts'],
+    content: ['scripts/content.ts'],
   },
 
   context: path.join(process.cwd(), 'src'),
 
   output: {
     path: path.join(process.cwd(), 'dist'),
-    filename: 'scripts/[name].[hash].js',
+    filename: 'scripts/[name].js',
   },
 
   module: {
@@ -48,7 +49,7 @@ module.exports = {
     }),
 
     new ExtractTextPlugin({
-      filename: 'css/[name].[hash].css',
+      filename: 'css/[name].css',
       disable: !isProd,
     }),
 

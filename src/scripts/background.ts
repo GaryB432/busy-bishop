@@ -1,5 +1,5 @@
 // tslint:disable:no-console
-import { Message } from "./messages";
+import { Message } from './messages';
 
 // let counter = 1;
 
@@ -16,11 +16,11 @@ import { Message } from "./messages";
 // }
 
 // sendMessage();
-chrome.browserAction.setBadgeText({ text: "ON" });
-console.log("Loaded.");
+chrome.browserAction.setBadgeText({ text: 'ON' });
+console.log('Loaded.');
 
 chrome.runtime.onInstalled.addListener(() => {
-  console.log("Installed.");
+  console.log('Installed.');
   localStorage.counter = 1;
 });
 
@@ -39,13 +39,12 @@ chrome.browserAction.onClicked.addListener(() => {
   // sendMessage();
 });
 
-chrome.commands.onCommand.addListener((_command) => {
-  chrome.tabs.create({ url: "http://www.google.com/" });
+chrome.commands.onCommand.addListener(_command => {
+  chrome.tabs.create({ url: 'http://www.google.com/' });
 });
 
 chrome.runtime.onMessage.addListener((msg: Message, _sender, _sendResponse) => {
-
-  if (msg.type === "MAKE_SUGGESTION") {
+  if (msg.type === 'MAKE_SUGGESTION') {
     console.log(msg);
   }
 
@@ -64,25 +63,29 @@ chrome.runtime.onMessage.addListener((msg: Message, _sender, _sendResponse) => {
   // }
 });
 
-function sendMessage(tabId: number, message: Message, responseCallback?: (response: any) => void): void {
+function sendMessage(
+  tabId: number,
+  message: Message,
+  responseCallback?: (response: any) => void
+): void {
   chrome.tabs.sendMessage(tabId, message, responseCallback);
 }
 
-chrome.contextMenus.onClicked.addListener((info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab) => {
-  if (tab.id) {
-    if (info.selectionText) {
+chrome.contextMenus.onClicked.addListener(
+  (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
+    if (tab && tab.id && info.selectionText) {
       sendMessage(tab.id, {
         selectionText: info.selectionText,
-        type: "START_SUGGESTION",
+        type: 'START_SUGGESTION',
       });
     }
   }
-});
+);
 
 chrome.contextMenus.create({
-  contexts: ["selection"],
-  id: "start",
-  title: "Suggest Edit",
+  contexts: ['selection'],
+  id: 'start',
+  title: 'Suggest Edit',
 });
 
 chrome.alarms.onAlarm.addListener(() => {
@@ -90,13 +93,13 @@ chrome.alarms.onAlarm.addListener(() => {
 });
 
 chrome.runtime.onSuspend.addListener(() => {
-  chrome.tabs.query({ active: true, currentWindow: true }, (_tabs) => {
+  chrome.tabs.query({ active: true, currentWindow: true }, _tabs => {
     // After the unload event listener runs, the page will unload, so any
     // asynchronous callbacks will not fire.
     // alert("Yet This does show up.");
   });
-  console.log("Unloading.");
-  chrome.browserAction.setBadgeText({ text: "" });
+  console.log('Unloading.');
+  chrome.browserAction.setBadgeText({ text: '' });
   // if (lastTabId) {
   //   chrome.tabs.sendMessage(lastTabId, "Background page unloaded.");
   // }

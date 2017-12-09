@@ -5,6 +5,8 @@
     "importHelpers": true,
     "strict": true,
     "noEmitHelpers": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "sourceMap": true,
     "lib": [
       "dom",

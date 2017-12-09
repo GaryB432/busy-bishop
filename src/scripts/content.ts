@@ -1,15 +1,15 @@
 // tslint:disable:no-console
 
-import "../styles/base.scss";
+import '../styles/base.scss';
 
-import { MakeSuggestionMessage, Message } from "./messages";
-import { Popup } from "./popup";
+import { MakeSuggestionMessage, Message } from './messages';
+import { Popup } from './popup';
 
 const popup: Popup = new Popup();
 
 const lastPointer: WebKitPoint = { x: 0, y: 0 };
 
-popup.start(document.body, "Suggested Edit");
+popup.start(document.body, 'Suggested Edit');
 
 // const p = new Popup();
 
@@ -73,17 +73,20 @@ popup.start(document.body, "Suggested Edit");
 //   // }
 // }
 
-document.addEventListener("pointermove", (evt) => {
+document.addEventListener('pointermove', evt => {
   lastPointer.x = evt.x;
   lastPointer.y = evt.y;
 });
 
-function sendMessage(message: Message, responseCallback?: (response: any) => void): void {
+function sendMessage(
+  message: Message,
+  responseCallback?: (response: any) => void
+): void {
   chrome.runtime.sendMessage(message, responseCallback);
 }
 
 interface NodeFilterResponse {
-  status: "OK" | "TOO_MANY";
+  status: 'OK' | 'TOO_MANY';
   selectedNode?: Node;
 }
 
@@ -105,14 +108,21 @@ function filterNodes(prent: Node, predicate: (n: Node) => boolean): Node[] {
   return containing;
 }
 
-function findNodeWithText(selectionText: string, prent: Node): NodeFilterResponse {
-  const found = filterNodes(prent,
-    (node) =>
-      node.nodeName === "#text"
-      && !!node.nodeValue
-      && node.nodeValue.indexOf(selectionText) > -1);
+function findNodeWithText(
+  selectionText: string,
+  prent: Node
+): NodeFilterResponse {
+  const found = filterNodes(
+    prent,
+    node =>
+      node.nodeName === '#text' &&
+      !!node.nodeValue &&
+      node.nodeValue.indexOf(selectionText) > -1
+  );
 
-  return found.length === 1 ? { status: "OK", selectedNode: found[0] } : { status: "TOO_MANY" };
+  return found.length === 1
+    ? { status: 'OK', selectedNode: found[0] }
+    : { status: 'TOO_MANY' };
 }
 
 function prototypicalFunction(msg: MakeSuggestionMessage) {
@@ -121,16 +131,34 @@ function prototypicalFunction(msg: MakeSuggestionMessage) {
     msg.suggestedText,
     msg.original.slice(msg.selectionStart + msg.selectionLength),
   ];
-  console.log(parts.join("<->"));
+  console.log(parts.join('<->'));
 }
-
+type ParentChildIndex = number;
+type ParentAndIndex = [string, ParentChildIndex];
 chrome.runtime.onMessage.addListener((msg: Message, _sender, sendResponse) => {
-  if (msg.type === "START_SUGGESTION") {
+  if (msg.type === 'START_SUGGESTION') {
+    const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
+
+    let w = elem;
+    while (w.parentElement) {
+      console.log(w.tagName);
+      const pe = w.parentElement;
+      for (let i = 0; i < pe.childElementCount; i++) {
+        const pc = pe.children.item(i);
+        if (pc === w) {
+          const t: ParentAndIndex = [w.tagName, i];
+          console.log(t);
+        }
+      }
+      w = w.parentElement;
+    }
 
     const sel = findNodeWithText(msg.selectionText, document);
-    if (sel.status === "OK") {
-      popup.run(msg.selectionText, (suggestedText) => {
-        const original = (!!sel.selectedNode && sel.selectedNode.textContent) || "";
+    if (sel.status === 'OK') {
+      console.log(msg);
+      popup.run(msg.selectionText, suggestedText => {
+        const original =
+          (!!sel.selectedNode && sel.selectedNode.textContent) || '';
         const selectionStart = original.indexOf(msg.selectionText);
         const makeSuggestionMessage: MakeSuggestionMessage = {
           href: window.location.href,
@@ -138,14 +166,14 @@ chrome.runtime.onMessage.addListener((msg: Message, _sender, sendResponse) => {
           selectionLength: msg.selectionText.length,
           selectionStart,
           suggestedText,
-          type: "MAKE_SUGGESTION",
+          type: 'MAKE_SUGGESTION',
         };
         sendMessage(makeSuggestionMessage, sendResponse);
         prototypicalFunction(makeSuggestionMessage);
       });
     } else {
-      alert("Please select a medium-sized piece of text in a single element.");
+      console.log(msg, sel);
+      alert('Please select a medium-sized piece of text in a single element.');
     }
-
   }
 });
