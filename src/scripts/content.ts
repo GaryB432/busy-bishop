@@ -104,7 +104,7 @@ chrome.runtime.onMessage.addListener((msg: Message, _sender, sendResponse) => {
       const selectionStart = original.indexOf(msg.selectionText);
       const makeSuggestionMessage: MakeSuggestionMessage = {
         elementPath: getElementPath(elem),
-        href: window.location.href + ' ' + elem.baseURI,
+        href: window.location.href,
         original,
         selectionLength: msg.selectionText.length,
         selectionStart,
@@ -117,12 +117,21 @@ chrome.runtime.onMessage.addListener((msg: Message, _sender, sendResponse) => {
   }
 });
 
+function getChildIndex(subject: Element): number {
+  if (subject.parentElement) {
+    return Array.from(subject.parentElement.children).findIndex(
+      child => child === subject
+    );
+  } else {
+    return -1;
+  }
+}
+
 function getElementPath(elem: Element): ParentAndIndex[] {
   const res: ParentAndIndex[] = [];
   let w = elem;
   while (w.parentElement) {
-    const kids = Array.from(w.parentElement.children);
-    res.push([w.tagName, kids.findIndex(pc => pc === w)]);
+    res.push([w.tagName, getChildIndex(w)]);
     w = w.parentElement;
   }
   return res.reverse();
