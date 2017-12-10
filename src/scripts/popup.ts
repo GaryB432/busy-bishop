@@ -52,6 +52,12 @@ export class Popup {
     this.inputElement.focus();
   }
 
+  public async doRun(defValue: string): Promise<string> {
+    return new Promise<string>(a => {
+      this.run(defValue, s => a(s));
+    });
+  }
+
   protected initUserControl(user: HTMLDivElement): void {
     user.appendChild(document.createTextNode('override me soon'));
   }

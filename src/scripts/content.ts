@@ -7,20 +7,18 @@ import { Popup } from './popup';
 
 const popup: Popup = new Popup();
 
-popup.start(document.body, 'Suggested Edit 1527');
+popup.start(document.body, 'Suggested Edit');
 
 import '../styles/base.scss';
 
 function startSuggestion(
   request: messages.StartSuggestionMessage
 ): Promise<messages.MakeSuggestionMessage> {
-  console.log(request);
-
-  return new Promise<messages.MakeSuggestionMessage>((resolve, _b) => {
+  return new Promise<messages.MakeSuggestionMessage>((resolve, _reject) => {
     const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
     const original = elem.textContent;
     if (original) {
-      popup.run(request.selectionText, suggestedText => {
+      popup.doRun(request.selectionText).then(suggestedText => {
         const selectionStart = original.indexOf(request.selectionText);
         const elementPath: messages.ParentAndIndex[] = domutils.getElementPath(
           elem
@@ -48,7 +46,7 @@ chrome.runtime.onMessage.addListener(
         : 'from the extension'
     );
     if (request.type === 'START_SUGGESTION') {
-      startSuggestion(request).then(sendResponse);
+      startSuggestion(request).then(response => sendResponse(response));
     }
     return true;
   }
