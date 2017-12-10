@@ -2,7 +2,7 @@
 
 import '../styles/base.scss';
 
-import { getElementPath } from './domutils';
+import { getElementPath, getSubjectElement } from './domutils';
 import { MakeSuggestionMessage, Message, ParentAndIndex } from './messages';
 import { Popup } from './popup';
 
@@ -63,3 +63,56 @@ document.addEventListener('pointermove', evt => {
 });
 
 chrome.runtime.onMessage.addListener(messageHandler);
+
+const tester: MakeSuggestionMessage = {
+  elementPath: [
+    ['BODY', 1],
+    ['BFAM-ROOT', 0],
+    ['MAIN', 1],
+    ['BFAM-HOME', 1],
+    ['P', 1],
+  ],
+  href: 'https://bortosky.com/',
+  original: 'Use the links at the top to explore.',
+  selectionLength: 3,
+  selectionStart: 21,
+  suggestedText: 'top',
+  type: 'MAKE_SUGGESTION',
+};
+
+// const tester: MakeSuggestionMessage = {
+//   elementPath: [
+//     ['BODY', 1],
+//     ['DIV', 0],
+//     ['DIV', 1],
+//     ['DIV', 0],
+//     ['DIV', 0],
+//     ['ARTICLE', 0],
+//     ['DIV', 1],
+//     ['P', 3],
+//   ],
+//   href:
+//     'https://blog.jcoglan.com/2017/03/22/myers-diff-in-linear-space-theory/',
+//   original:
+//     'As luck would have it, as soon as I had finished up my previous articles on\nMyers diffs and gone back to make progress on another project, I stumbled\ninto a case where Git produced a confusing diff for a file I’d just changed, and\nI had to know why. Here’s the portion of code I had been working on. It’s a\ncouple of C functions that copy bytes from one buffer to another, checking the\nsizes of the requested regions to make sure they’re within the buffer. (This is\nnot literally the code I was working on; I’ve removed a few things to make the\nexample smaller.)',
+//   selectionLength: 6,
+//   selectionStart: 354,
+//   suggestedText: 'memory area',
+//   type: 'MAKE_SUGGESTION',
+// };
+
+function findSubjectElement(msg: MakeSuggestionMessage): Element | null {
+  let elem: Element | null = null;
+  if (msg.href === window.location.href) {
+    elem = getSubjectElement(msg.elementPath);
+    console.log(elem.tagName, elem.textContent);
+  }
+  return elem;
+}
+
+const r = findSubjectElement(tester);
+if (r) {
+  console.log(r.tagName);
+  console.log(r.textContent);
+}
+console.log(tester.original);
