@@ -1,19 +1,34 @@
 // tslint:disable:no-console
 
-import { Message } from './messages';
+// import { Message } from './messages';
 
 import '../styles/base.scss';
 
+interface Request {
+  type: string;
+}
+
+interface Response {
+  farewell: string;
+}
+
+function processRequest(request: Request): Promise<Response> {
+  console.log(request);
+  return Promise.resolve({ farewell: 'goodbye' });
+}
+
 chrome.runtime.onMessage.addListener(
-  (request: Message, sender, sendResponse) => {
+  (request: Request, sender, sendResponse) => {
     console.log(
       sender.tab
         ? 'from a content script:' + sender.tab.url
         : 'from the extension'
     );
     if (request.type === 'START_SUGGESTION') {
-      sendResponse({ farewell: 'goodbye' });
+      processRequest(request).then(sendResponse);
+      // sendResponse(response);
     }
+    return true;
   }
 );
 
