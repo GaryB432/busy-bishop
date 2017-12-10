@@ -19,6 +19,27 @@ function sendMessage(
   chrome.runtime.sendMessage(message, responseCallback);
 }
 
+function findSubjectElement(msg: MakeSuggestionMessage): Element | null {
+  let elem: Element | null = null;
+  if (msg.href === window.location.href) {
+    elem = getSubjectElement(msg.elementPath);
+    console.assert(elem.textContent === msg.original);
+  }
+  return elem;
+}
+
+function printSuggestionMessage(msg: MakeSuggestionMessage) {
+  const element = findSubjectElement(msg);
+  console.log(element);
+  const parts = [
+    msg.original.slice(0, msg.selectionStart),
+    msg.suggestedText,
+    msg.original.slice(msg.selectionStart + msg.selectionLength),
+  ];
+  console.log(msg);
+  console.log(parts.join('<<->>'));
+}
+
 function messageHandler(
   msg: Message,
   _sender: chrome.runtime.MessageSender,
@@ -45,16 +66,6 @@ function messageHandler(
       });
     }
   }
-}
-
-function printSuggestionMessage(msg: MakeSuggestionMessage) {
-  const parts = [
-    msg.original.slice(0, msg.selectionStart),
-    msg.suggestedText,
-    msg.original.slice(msg.selectionStart + msg.selectionLength),
-  ];
-  console.log(msg);
-  console.log(parts.join('<<->>'));
 }
 
 document.addEventListener('pointermove', evt => {
@@ -100,15 +111,6 @@ const tester: MakeSuggestionMessage = {
 //   suggestedText: 'memory area',
 //   type: 'MAKE_SUGGESTION',
 // };
-
-function findSubjectElement(msg: MakeSuggestionMessage): Element | null {
-  let elem: Element | null = null;
-  if (msg.href === window.location.href) {
-    elem = getSubjectElement(msg.elementPath);
-    console.log(elem.tagName, elem.textContent);
-  }
-  return elem;
-}
 
 const r = findSubjectElement(tester);
 if (r) {

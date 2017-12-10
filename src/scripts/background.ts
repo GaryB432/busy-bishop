@@ -1,6 +1,11 @@
 // tslint:disable:no-console
 
-import { Message } from './messages';
+import { MakeSuggestionMessage, Message } from './messages';
+import { getJSON, send } from './xhr';
+
+interface Theater {
+  producers: any[];
+}
 
 function sendMessage(
   tabId: number,
@@ -16,8 +21,25 @@ function messageHandler(
   _sendResponse: (response: any) => void
 ) {
   if (msg.type === 'MAKE_SUGGESTION') {
-    console.log(msg);
     console.log(JSON.stringify(msg, null, 2));
+
+    getJSON<Theater>('http://bortosky.com/theater.json').then(
+      t => {
+        console.log(t.producers[0]);
+      },
+      _status => {
+        console.error('Something went wrong.');
+      }
+    );
+
+    send<MakeSuggestionMessage, number>('http://example.com', msg).then(
+      data => {
+        console.log('Yep: ' + data);
+      },
+      _status => {
+        console.error('Something went wrong.');
+      }
+    );
   }
 }
 
