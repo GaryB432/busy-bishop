@@ -54,10 +54,14 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.contextMenus.onClicked.addListener(
   (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
     if (tab && tab.id && info.selectionText) {
-      sendMessage(tab.id, {
-        selectionText: info.selectionText,
-        type: 'START_SUGGESTION',
-      });
+      sendMessage(
+        tab.id,
+        {
+          selectionText: info.selectionText,
+          type: 'START_SUGGESTION',
+        },
+        x => console.log('xxx', x)
+      );
     }
   }
 );
