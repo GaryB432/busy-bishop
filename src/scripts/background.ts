@@ -70,7 +70,7 @@ chrome.contextMenus.onClicked.addListener(
           type: 'START_SUGGESTION',
         },
         response => {
-          console.log(response.farewell);
+          console.log('handling...', response);
         }
       );
     }

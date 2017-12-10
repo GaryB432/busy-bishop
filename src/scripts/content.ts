@@ -1,53 +1,58 @@
 // tslint:disable:no-console
 
-// import { Message } from './messages';
+import * as domutils from './domutils';
+import * as messages from './messages';
+import { lastPointer } from './pointer';
+import { Popup } from './popup';
+
+const popup: Popup = new Popup();
+
+popup.start(document.body, 'Suggested Edit 1527');
 
 import '../styles/base.scss';
 
-interface Request {
-  type: string;
-}
-
-interface Response {
-  farewell: string;
-}
-
-function processRequest(request: Request): Promise<Response> {
+function startSuggestion(
+  request: messages.StartSuggestionMessage
+): Promise<messages.MakeSuggestionMessage> {
   console.log(request);
-  return Promise.resolve({ farewell: 'goodbye' });
+
+  return new Promise<messages.MakeSuggestionMessage>((resolve, _b) => {
+    const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
+    const original = elem.textContent;
+    if (original) {
+      popup.run(request.selectionText, suggestedText => {
+        const selectionStart = original.indexOf(request.selectionText);
+        const elementPath: messages.ParentAndIndex[] = domutils.getElementPath(
+          elem
+        );
+        const makeSuggestionMessage: messages.MakeSuggestionMessage = {
+          elementPath,
+          href: window.location.href,
+          original,
+          selectionLength: request.selectionText.length,
+          selectionStart,
+          suggestedText,
+          type: 'MAKE_SUGGESTION',
+        };
+        resolve(makeSuggestionMessage);
+      });
+    }
+  });
 }
 
 chrome.runtime.onMessage.addListener(
-  (request: Request, sender, sendResponse) => {
+  (request: messages.Message, sender, sendResponse) => {
     console.log(
       sender.tab
         ? 'from a content script:' + sender.tab.url
         : 'from the extension'
     );
     if (request.type === 'START_SUGGESTION') {
-      processRequest(request).then(sendResponse);
-      // sendResponse(response);
+      startSuggestion(request).then(sendResponse);
     }
     return true;
   }
 );
-
-// import { getElementPath, getSubjectElement } from './domutils';
-// import { MakeSuggestionMessage, Message, ParentAndIndex } from './messages';
-// import { Popup } from './popup';
-
-// const popup: Popup = new Popup();
-
-// const lastPointer: WebKitPoint = { x: 0, y: 0 };
-
-// popup.start(document.body, 'Suggested Edit');
-
-// function sendMessage(
-//   message: Message,
-//   responseCallback?: (response: any) => void
-// ): void {
-//   chrome.runtime.sendMessage(message, responseCallback);
-// }
 
 // function findSubjectElement(msg: MakeSuggestionMessage): Element | null {
 //   let elem: Element | null = null;
@@ -69,41 +74,6 @@ chrome.runtime.onMessage.addListener(
 //   console.log(msg);
 //   console.log(parts.join('<<->>'));
 // }
-
-// function messageHandler(
-//   msg: Message,
-//   _sender: chrome.runtime.MessageSender,
-//   sendResponse: (response: any) => void
-// ) {
-//   if (msg.type === 'START_SUGGESTION') {
-//     const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
-//     const original = elem.textContent;
-//     if (original) {
-//       popup.run(msg.selectionText, suggestedText => {
-//         const selectionStart = original.indexOf(msg.selectionText);
-//         const elementPath: ParentAndIndex[] = getElementPath(elem);
-//         const makeSuggestionMessage: MakeSuggestionMessage = {
-//           elementPath,
-//           href: window.location.href,
-//           original,
-//           selectionLength: msg.selectionText.length,
-//           selectionStart,
-//           suggestedText,
-//           type: 'MAKE_SUGGESTION',
-//         };
-//         sendMessage(makeSuggestionMessage, sendResponse);
-//         printSuggestionMessage(makeSuggestionMessage);
-//       });
-//     }
-//   }
-// }
-
-// document.addEventListener('pointermove', evt => {
-//   lastPointer.x = evt.x;
-//   lastPointer.y = evt.y;
-// });
-
-// chrome.runtime.onMessage.addListener(messageHandler);
 
 // const tester: MakeSuggestionMessage = {
 //   elementPath: [
