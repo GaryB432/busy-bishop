@@ -1,66 +1,77 @@
-// tslint:disable:no-console
+// // tslint:disable:no-console
 
-import { MakeSuggestionMessage, Message } from './messages';
-import { getJSON, send } from './xhr';
+// chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+//   console.log(
+//     sender.tab
+//       ? 'from a content script:' + sender.tab.url
+//       : 'from the extension'
+//   );
+//   if (request.greeting == 'hello') sendResponse({ farewell: 'goodbye' });
+// });
 
-interface Theater {
-  producers: any[];
-}
+// import { MakeSuggestionMessage, Message } from './messages';
+// import { getJSON, send } from './xhr';
 
-function sendMessage(
-  tabId: number,
-  message: Message,
-  responseCallback?: (response: any) => void
-): void {
-  chrome.tabs.sendMessage(tabId, message, responseCallback);
-}
+// interface Theater {
+//   producers: any[];
+// }
 
-function messageHandler(
-  msg: Message,
-  _sender: chrome.runtime.MessageSender,
-  _sendResponse: (response: any) => void
-) {
-  if (msg.type === 'MAKE_SUGGESTION') {
-    console.log(JSON.stringify(msg, null, 2));
+// function sendMessage(
+//   tabId: number,
+//   message: Message,
+//   responseCallback?: (response: any) => void
+// ): void {
+//   chrome.tabs.sendMessage(tabId, message, responseCallback);
+// }
 
-    getJSON<Theater>('http://bortosky.com/theater.json').then(
-      t => {
-        console.log(t.producers[0]);
-      },
-      _status => {
-        console.error('Something went wrong.');
-      }
-    );
+// function messageHandler(
+//   msg: Message,
+//   _sender: chrome.runtime.MessageSender,
+//   _sendResponse: (response: any) => void
+// ) {
+//   if (msg.type === 'MAKE_SUGGESTION') {
+//     console.log(JSON.stringify(msg, null, 2));
 
-    send<MakeSuggestionMessage, number>('http://example.com', msg).then(
-      data => {
-        console.log('Yep: ' + data);
-      },
-      _status => {
-        console.error('Something went wrong.');
-      }
-    );
-  }
-}
+//     getJSON<Theater>('http://bortosky.com/theater.json').then(
+//       t => {
+//         console.log(t.producers[0]);
+//       },
+//       _status => {
+//         console.error('Something went wrong.');
+//       }
+//     );
 
-chrome.browserAction.setBadgeText({ text: 'ON' });
+//     send<MakeSuggestionMessage, number>('http://example.com', msg).then(
+//       data => {
+//         console.log('Yep: ' + data);
+//       },
+//       _status => {
+//         console.error('Something went wrong.');
+//       }
+//     );
+//   }
+// }
 
-chrome.runtime.onInstalled.addListener(() => {
-  console.log('Installed.');
-});
+// chrome.browserAction.setBadgeText({ text: 'ON' });
 
-// chrome.browserAction.onClicked.addListener(() => { });
+// chrome.runtime.onInstalled.addListener(() => {
+//   console.log('Installed.');
+// });
+
+// // chrome.browserAction.onClicked.addListener(() => { });
 
 chrome.contextMenus.onClicked.addListener(
   (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
     if (tab && tab.id && info.selectionText) {
-      sendMessage(
+      chrome.tabs.sendMessage(
         tab.id,
         {
           selectionText: info.selectionText,
           type: 'START_SUGGESTION',
         },
-        x => console.log('xxx', x)
+        response => {
+          console.log(response.farewell);
+        }
       );
     }
   }
@@ -72,23 +83,23 @@ chrome.contextMenus.create({
   title: 'Suggest Edit',
 });
 
-chrome.alarms.onAlarm.addListener(() => {
-  alert("Time's up!");
-});
+// chrome.alarms.onAlarm.addListener(() => {
+//   alert("Time's up!");
+// });
 
-chrome.runtime.onSuspend.addListener(() => {
-  chrome.tabs.query({ active: true, currentWindow: true }, _tabs => {
-    // After the unload event listener runs, the page will unload, so any
-    // asynchronous callbacks will not fire.
-    // alert("Yet This does show up.");
-  });
-  console.log('Unloading.');
-  chrome.browserAction.setBadgeText({ text: '' });
-  // if (lastTabId) {
-  //   chrome.tabs.sendMessage(lastTabId, "Background page unloaded.");
-  // }
-});
+// chrome.runtime.onSuspend.addListener(() => {
+//   chrome.tabs.query({ active: true, currentWindow: true }, _tabs => {
+//     // After the unload event listener runs, the page will unload, so any
+//     // asynchronous callbacks will not fire.
+//     // alert("Yet This does show up.");
+//   });
+//   console.log('Unloading.');
+//   chrome.browserAction.setBadgeText({ text: '' });
+//   // if (lastTabId) {
+//   //   chrome.tabs.sendMessage(lastTabId, "Background page unloaded.");
+//   // }
+// });
 
-chrome.runtime.onMessage.addListener(messageHandler);
+// chrome.runtime.onMessage.addListener(messageHandler);
 
-console.log('Loaded.');
+// console.log('Loaded.');
