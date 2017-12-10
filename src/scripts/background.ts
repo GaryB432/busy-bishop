@@ -1,64 +1,7 @@
 // // tslint:disable:no-console
 
-// chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-//   console.log(
-//     sender.tab
-//       ? 'from a content script:' + sender.tab.url
-//       : 'from the extension'
-//   );
-//   if (request.greeting == 'hello') sendResponse({ farewell: 'goodbye' });
-// });
-
-// import { MakeSuggestionMessage, Message } from './messages';
-// import { getJSON, send } from './xhr';
-
-// interface Theater {
-//   producers: any[];
-// }
-
-// function sendMessage(
-//   tabId: number,
-//   message: Message,
-//   responseCallback?: (response: any) => void
-// ): void {
-//   chrome.tabs.sendMessage(tabId, message, responseCallback);
-// }
-
-// function messageHandler(
-//   msg: Message,
-//   _sender: chrome.runtime.MessageSender,
-//   _sendResponse: (response: any) => void
-// ) {
-//   if (msg.type === 'MAKE_SUGGESTION') {
-//     console.log(JSON.stringify(msg, null, 2));
-
-//     getJSON<Theater>('http://bortosky.com/theater.json').then(
-//       t => {
-//         console.log(t.producers[0]);
-//       },
-//       _status => {
-//         console.error('Something went wrong.');
-//       }
-//     );
-
-//     send<MakeSuggestionMessage, number>('http://example.com', msg).then(
-//       data => {
-//         console.log('Yep: ' + data);
-//       },
-//       _status => {
-//         console.error('Something went wrong.');
-//       }
-//     );
-//   }
-// }
-
-// chrome.browserAction.setBadgeText({ text: 'ON' });
-
-// chrome.runtime.onInstalled.addListener(() => {
-//   console.log('Installed.');
-// });
-
-// // chrome.browserAction.onClicked.addListener(() => { });
+import * as xhr from './xhr';
+import * as messages from './messages';
 
 chrome.contextMenus.onClicked.addListener(
   (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
@@ -71,6 +14,22 @@ chrome.contextMenus.onClicked.addListener(
         },
         response => {
           console.log('handling...', response);
+          xhr.getJSON<any>('https://bortosky.com/theater.json').then(a => {
+            console.log(a);
+          });
+          xhr
+            .send<messages.MakeSuggestionMessage, void>(
+              'http://example.com',
+              response
+            )
+            .then(
+              data => {
+                console.log('Yep: ' + data);
+              },
+              _status => {
+                console.error('Something went wrong.');
+              }
+            );
         }
       );
     }
@@ -83,23 +42,4 @@ chrome.contextMenus.create({
   title: 'Suggest Edit',
 });
 
-// chrome.alarms.onAlarm.addListener(() => {
-//   alert("Time's up!");
-// });
-
-// chrome.runtime.onSuspend.addListener(() => {
-//   chrome.tabs.query({ active: true, currentWindow: true }, _tabs => {
-//     // After the unload event listener runs, the page will unload, so any
-//     // asynchronous callbacks will not fire.
-//     // alert("Yet This does show up.");
-//   });
-//   console.log('Unloading.');
-//   chrome.browserAction.setBadgeText({ text: '' });
-//   // if (lastTabId) {
-//   //   chrome.tabs.sendMessage(lastTabId, "Background page unloaded.");
-//   // }
-// });
-
-// chrome.runtime.onMessage.addListener(messageHandler);
-
-// console.log('Loaded.');
+console.log('Loaded.');

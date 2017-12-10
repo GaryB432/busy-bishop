@@ -21,8 +21,8 @@ export function getElementPath(elem: Element): ParentAndIndex[] {
   return res.reverse();
 }
 
-export function getSubjectElement(path: ParentAndIndex[]): Element {
-  let workingElement = document.body as Element;
+export function getSubjectElement(path: ParentAndIndex[]): HTMLElement {
+  let workingElement = document.body;
 
   path.forEach((p, i, wp) => {
     const [parentTag, childIndex] = p;
@@ -32,7 +32,7 @@ export function getSubjectElement(path: ParentAndIndex[]): Element {
       // console.assert(childIndex < workingElement.childElementCount);
 
       if (childIndex < workingElement.childElementCount) {
-        const ce = workingElement.children.item(childIndex);
+        const ce = workingElement.children[childIndex] as HTMLElement;
         if (!workingElement || workingElement.tagName === la) {
           console.log('---', parentTag, la, lb, ce.tagName);
         }

@@ -11,6 +11,26 @@ popup.start(document.body, 'Suggested Edit');
 
 import '../styles/base.scss';
 
+function findSubjectElement(
+  msg: messages.MakeSuggestionMessage
+): HTMLElement | null {
+  let elem: HTMLElement | null = null;
+  if (msg.href === window.location.href) {
+    elem = domutils.getSubjectElement(msg.elementPath);
+    console.assert(elem.textContent === msg.original);
+  }
+  return elem;
+}
+
+function processSuggestion(msg: messages.MakeSuggestionMessage): void {
+  const subject = findSubjectElement(msg);
+
+  if (subject) {
+    subject.style.border = 'thin solid silver';
+  }
+  console.log(subject);
+}
+
 function startSuggestion(
   request: messages.StartSuggestionMessage
 ): Promise<messages.MakeSuggestionMessage> {
@@ -39,32 +59,20 @@ function startSuggestion(
 }
 
 chrome.runtime.onMessage.addListener(
-  (request: messages.Message, sender, sendResponse) => {
-    console.log(
-      sender.tab
-        ? 'from a content script:' + sender.tab.url
-        : 'from the extension'
-    );
-
+  (request: messages.Message, _sender, sendResponse) => {
     switch (request.type) {
       case 'START_SUGGESTION':
         startSuggestion(request)
-          .then(response => sendResponse(response))
+          .then(response => {
+            processSuggestion(response);
+            sendResponse(response);
+          })
           .catch(e => console.log(e));
         break;
     }
     return true;
   }
 );
-
-// function findSubjectElement(msg: MakeSuggestionMessage): Element | null {
-//   let elem: Element | null = null;
-//   if (msg.href === window.location.href) {
-//     elem = getSubjectElement(msg.elementPath);
-//     console.assert(elem.textContent === msg.original);
-//   }
-//   return elem;
-// }
 
 // function printSuggestionMessage(msg: MakeSuggestionMessage) {
 //   const element = findSubjectElement(msg);
