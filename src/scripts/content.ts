@@ -14,7 +14,7 @@ import '../styles/base.scss';
 function startSuggestion(
   request: messages.StartSuggestionMessage
 ): Promise<messages.MakeSuggestionMessage> {
-  return new Promise<messages.MakeSuggestionMessage>((resolve, _reject) => {
+  return new Promise<messages.MakeSuggestionMessage>(resolve => {
     const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
     const original = elem.textContent;
     if (original) {
@@ -45,8 +45,13 @@ chrome.runtime.onMessage.addListener(
         ? 'from a content script:' + sender.tab.url
         : 'from the extension'
     );
-    if (request.type === 'START_SUGGESTION') {
-      startSuggestion(request).then(response => sendResponse(response));
+
+    switch (request.type) {
+      case 'START_SUGGESTION':
+        startSuggestion(request)
+          .then(response => sendResponse(response))
+          .catch(e => console.log(e));
+        break;
     }
     return true;
   }
