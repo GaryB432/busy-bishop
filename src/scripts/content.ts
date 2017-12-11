@@ -15,17 +15,14 @@ async function processSuggestion(
   msg: messages.MakeSuggestionMessage
 ): Promise<boolean> {
   const subject = await domutils.getSubjectInfo(msg.elementPath, msg.original);
-  const element = subject.element;
+  const { element, textNode } = subject;
   console.log(subject);
   if (element) {
     element.style.border = 'thin solid silver';
-    if (msg.textNodeIndex > -1) {
-      const textNode = element.childNodes.item(msg.textNodeIndex);
-      textNode.textContent = 'oh this is fun';
-      // console.log(ff.textContent);
+    if (textNode) {
+      textNode.textContent = 'ok now';
     }
   }
-
   return Promise.resolve(true);
 }
 

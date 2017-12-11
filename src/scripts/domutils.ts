@@ -13,7 +13,6 @@ function getChildIndex(subject: Element): number {
 
 function getElementFromPath(path: messages.ParentAndIndex[]): HTMLElement {
   let loopElement = document.body;
-
   path.forEach((p, i) => {
     const [parentTag, childIndex] = p;
     if (i > 0) {
@@ -24,7 +23,6 @@ function getElementFromPath(path: messages.ParentAndIndex[]): HTMLElement {
       }
     }
   });
-
   return loopElement;
 }
 
