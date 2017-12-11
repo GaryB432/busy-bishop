@@ -1,4 +1,4 @@
-import { ParentAndIndex } from './messages';
+import * as messages from './messages';
 
 function getChildIndex(subject: Element): number {
   if (subject.parentElement) {
@@ -11,8 +11,51 @@ function getChildIndex(subject: Element): number {
   }
 }
 
-export function getElementPath(elem: Element): ParentAndIndex[] {
-  const res: ParentAndIndex[] = [];
+function getElementFromPath(path: messages.ParentAndIndex[]): HTMLElement {
+  let loopElement = document.body;
+
+  path.forEach((p, i) => {
+    const [parentTag, childIndex] = p;
+    if (i > 0) {
+      if (childIndex < loopElement.childElementCount) {
+        const ce = loopElement.children[childIndex] as HTMLElement;
+        console.assert(parentTag === ce.tagName);
+        loopElement = ce;
+      }
+    }
+  });
+
+  return loopElement;
+}
+
+function findTextContainers(elem: Node, txt: string): number[] {
+  return Array.from(elem.childNodes)
+    .map<{
+      node: Node;
+      index: number;
+    }>((node, index) => {
+      return { node, index };
+    })
+    .filter(nn => {
+      const node = nn.node;
+      return (
+        node.nodeName === '#text' &&
+        node.textContent &&
+        node.textContent.indexOf(txt) > -1
+      );
+    })
+    .map(nn => nn.index);
+}
+
+export interface SuggestionSubjectInfo {
+  elementPath: messages.ParentAndIndex[];
+  element: HTMLElement | null;
+  textNodeIndex: number;
+  textNode: Node | null;
+}
+
+export function getElementPath(elem: Element): messages.ParentAndIndex[] {
+  const res: messages.ParentAndIndex[] = [];
   let w = elem;
   while (w.parentElement) {
     res.push([w.tagName, getChildIndex(w)]);
@@ -21,25 +64,27 @@ export function getElementPath(elem: Element): ParentAndIndex[] {
   return res.reverse();
 }
 
-export function getSubjectElement(path: ParentAndIndex[]): HTMLElement {
-  let workingElement = document.body;
-
-  path.forEach((p, i, wp) => {
-    const [parentTag, childIndex] = p;
-
-    if (i > 0) {
-      const [la, lb] = wp[i - 1];
-      // console.assert(childIndex < workingElement.childElementCount);
-
-      if (childIndex < workingElement.childElementCount) {
-        const ce = workingElement.children[childIndex] as HTMLElement;
-        if (!workingElement || workingElement.tagName === la) {
-          console.log('---', parentTag, la, lb, ce.tagName);
-        }
-        workingElement = ce;
-      }
+export async function getSubjectInfo(
+  path: messages.ParentAndIndex[],
+  text: string
+): Promise<SuggestionSubjectInfo> {
+  return new Promise<SuggestionSubjectInfo>((resolve, reject) => {
+    const element = getElementFromPath(path);
+    let textNode: Node | null = null;
+    let textNodeIndex = -1;
+    const tnc = findTextContainers(element, text);
+    if (tnc.length === 1) {
+      textNodeIndex = tnc[0];
+      textNode = element.childNodes[textNodeIndex];
+    } else {
+      console.log(tnc);
+      reject('not today');
     }
+    resolve({
+      element,
+      elementPath: path,
+      textNode,
+      textNodeIndex,
+    });
   });
-
-  return workingElement;
 }

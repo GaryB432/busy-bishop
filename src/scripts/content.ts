@@ -11,99 +11,55 @@ popup.start(document.body, 'Suggested Edit');
 
 import '../styles/base.scss';
 
-function findSubjectElement(
+async function processSuggestion(
   msg: messages.MakeSuggestionMessage
-): HTMLElement | null {
-  let elem: HTMLElement | null = null;
-  if (msg.href === window.location.href) {
-    elem = domutils.getSubjectElement(msg.elementPath);
-    console.assert(msg.textNodeIndex > -1 || elem.textContent === msg.original);
-  }
-  return elem;
-}
-
-function processSuggestion(msg: messages.MakeSuggestionMessage): void {
-  const subject = findSubjectElement(msg);
-
-  if (subject) {
-    subject.style.border = 'thin solid silver';
+): Promise<boolean> {
+  const subject = await domutils.getSubjectInfo(msg.elementPath, msg.original);
+  const element = subject.element;
+  console.log(subject);
+  if (element) {
+    element.style.border = 'thin solid silver';
     if (msg.textNodeIndex > -1) {
-      const textNode = subject.childNodes.item(msg.textNodeIndex);
+      const textNode = element.childNodes.item(msg.textNodeIndex);
       textNode.textContent = 'oh this is fun';
       // console.log(ff.textContent);
     }
   }
 
-  console.log(subject);
+  return Promise.resolve(true);
 }
-function findTextContainers(elem: Node, txt: string): number[] {
-  return Array.from(elem.childNodes)
-    .map<{
-      node: Node;
-      index: number;
-    }>((node, index) => {
-      return { node, index };
-    })
-    .filter(nn => {
-      const node = nn.node;
-      return (
-        node.nodeName === '#text' &&
-        node.textContent &&
-        node.textContent.indexOf(txt) > -1
-      );
-    })
-    .map(nn => nn.index);
-}
-// function getTextNodeIndex(elem: Node, txt: string): number {
-//   if (elem.hasChildNodes) {
-//     const textIndices = findTextContainers(elem, txt);
-//     console.log(textIndices);
-//     // return nodes.length === 1 ? nodes[0].index : -1;
-//   }
-//   return -1;
-// }
 
-function startSuggestion(
+async function startSuggestion(
   request: messages.StartSuggestionMessage
 ): Promise<messages.MakeSuggestionMessage> {
-  return new Promise<messages.MakeSuggestionMessage>((resolve, reject) => {
-    const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
-    let original: string = '';
-    let textNodeIndex = -1;
-    if (elem.hasChildNodes) {
-      const matchingNodes = findTextContainers(elem, request.selectionText);
-      if (matchingNodes.length === 1) {
-        textNodeIndex = matchingNodes[0];
-        original = elem.childNodes.item(textNodeIndex).textContent!;
-      } else {
-        if (elem.textContent) {
-          original = elem.textContent;
-        } else {
-          reject('nope');
-        }
-      }
-    } else {
-      reject('not');
-    }
-    // const textNodeIndex = getTextNodeIndex(elem, request.selectionText);
-    popup.doRun(request.selectionText).then(suggestedText => {
-      const selectionStart = original.indexOf(request.selectionText);
-      const elementPath: messages.ParentAndIndex[] = domutils.getElementPath(
-        elem
+  return new Promise<messages.MakeSuggestionMessage>(
+    async (resolve, _reject) => {
+      const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
+
+      const subject = await domutils.getSubjectInfo(
+        domutils.getElementPath(elem),
+        request.selectionText
       );
-      const makeSuggestionMessage: messages.MakeSuggestionMessage = {
-        elementPath,
-        href: window.location.href,
-        original,
-        selectionLength: request.selectionText.length,
-        selectionStart,
-        suggestedText,
-        textNodeIndex,
-        type: 'MAKE_SUGGESTION',
-      };
-      resolve(makeSuggestionMessage);
-    });
-  });
+
+      const original = !!subject.textNode
+        ? subject.textNode.textContent!
+        : subject.element!.textContent!;
+
+      popup.doRun(request.selectionText).then(suggestedText => {
+        const makeSuggestionMessage: messages.MakeSuggestionMessage = {
+          elementPath: subject.elementPath,
+          href: window.location.href,
+          original,
+          selectionLength: request.selectionText.length,
+          selectionStart: original.indexOf(request.selectionText),
+          suggestedText,
+          textNodeIndex: subject.textNodeIndex,
+          type: 'MAKE_SUGGESTION',
+        };
+        resolve(makeSuggestionMessage);
+      });
+    }
+  );
 }
 
 chrome.runtime.onMessage.addListener(
@@ -122,19 +78,7 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
-// function printSuggestionMessage(msg: MakeSuggestionMessage) {
-//   const element = findSubjectElement(msg);
-//   console.log(element);
-//   const parts = [
-//     msg.original.slice(0, msg.selectionStart),
-//     msg.suggestedText,
-//     msg.original.slice(msg.selectionStart + msg.selectionLength),
-//   ];
-//   console.log(msg);
-//   console.log(parts.join('<<->>'));
-// }
-
-// const tester: MakeSuggestionMessage = {
+// const tester: messages.MakeSuggestionMessage = {
 //   elementPath: [
 //     ['BODY', 1],
 //     ['BFAM-ROOT', 0],
@@ -146,34 +90,31 @@ chrome.runtime.onMessage.addListener(
 //   original: 'Use the links at the top to explore.',
 //   selectionLength: 3,
 //   selectionStart: 21,
-//   suggestedText: 'top',
+//   suggestedText: 'bottom',
+//   textNodeIndex: 0,
 //   type: 'MAKE_SUGGESTION',
 // };
 
-// // const tester: MakeSuggestionMessage = {
-// //   elementPath: [
-// //     ['BODY', 1],
-// //     ['DIV', 0],
-// //     ['DIV', 1],
-// //     ['DIV', 0],
-// //     ['DIV', 0],
-// //     ['ARTICLE', 0],
-// //     ['DIV', 1],
-// //     ['P', 3],
-// //   ],
-// //   href:
-// //     'https://blog.jcoglan.com/2017/03/22/myers-diff-in-linear-space-theory/',
-// //   original:
-// //     'As luck would have it, as soon as I had finished up my previous articles on\nMyers diffs and gone back to make progress on another project, I stumbled\ninto a case where Git produced a confusing diff for a file I’d just changed, and\nI had to know why. Here’s the portion of code I had been working on. It’s a\ncouple of C functions that copy bytes from one buffer to another, checking the\nsizes of the requested regions to make sure they’re within the buffer. (This is\nnot literally the code I was working on; I’ve removed a few things to make the\nexample smaller.)',
-// //   selectionLength: 6,
-// //   selectionStart: 354,
-// //   suggestedText: 'memory area',
-// //   type: 'MAKE_SUGGESTION',
-// // };
+const tester: messages.MakeSuggestionMessage = {
+  elementPath: [
+    ['BODY', 1],
+    ['DIV', 0],
+    ['DIV', 1],
+    ['DIV', 0],
+    ['DIV', 0],
+    ['ARTICLE', 0],
+    ['DIV', 1],
+    ['P', 3],
+  ],
+  href:
+    'https://blog.jcoglan.com/2017/03/22/myers-diff-in-linear-space-theory/',
+  original:
+    ' and gone back to make progress on another project, I stumbled\ninto a case where Git produced a confusing diff for a file I’d just changed, and\nI had to know why. Here’s the portion of code I had been working on. It’s a\ncouple of C functions that copy bytes from one buffer to another, checking the\nsizes of the requested regions to make sure they’re within the buffer. (This is\nnot literally the code I was working on; I’ve removed a few things to make the\nexample smaller.)',
+  selectionLength: 7,
+  selectionStart: 174,
+  suggestedText: 'part',
+  textNodeIndex: 2,
+  type: 'MAKE_SUGGESTION',
+};
 
-// const r = findSubjectElement(tester);
-// if (r) {
-//   console.log(r.tagName);
-//   console.log(r.textContent);
-// }
-// console.log(tester.original);
+processSuggestion(tester);

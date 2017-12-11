@@ -13,7 +13,8 @@ chrome.contextMenus.onClicked.addListener(
           type: 'START_SUGGESTION',
         },
         response => {
-          console.log('handling...', response);
+          // console.log('handling...', response);
+          console.log(JSON.stringify(response, null, 2));
           xhr.getJSON<any>('https://bortosky.com/theater.json').then(a => {
             console.log(a);
           });
