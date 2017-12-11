@@ -39,7 +39,6 @@ export function getSubjectElement(path: ParentAndIndex[]): HTMLElement {
         workingElement = ce;
       }
     }
-    // console.log(a, b, i);
   });
 
   return workingElement;

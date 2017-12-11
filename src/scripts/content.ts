@@ -17,7 +17,7 @@ function findSubjectElement(
   let elem: HTMLElement | null = null;
   if (msg.href === window.location.href) {
     elem = domutils.getSubjectElement(msg.elementPath);
-    console.assert(elem.textContent === msg.original);
+    console.assert(msg.textNodeIndex > -1 || elem.textContent === msg.original);
   }
   return elem;
 }
@@ -27,34 +27,82 @@ function processSuggestion(msg: messages.MakeSuggestionMessage): void {
 
   if (subject) {
     subject.style.border = 'thin solid silver';
+    if (msg.textNodeIndex > -1) {
+      const textNode = subject.childNodes.item(msg.textNodeIndex);
+      textNode.textContent = 'oh this is fun';
+      // console.log(ff.textContent);
+    }
   }
+
   console.log(subject);
 }
+function findTextContainers(elem: Node, txt: string): number[] {
+  return Array.from(elem.childNodes)
+    .map<{
+      node: Node;
+      index: number;
+    }>((node, index) => {
+      return { node, index };
+    })
+    .filter(nn => {
+      const node = nn.node;
+      return (
+        node.nodeName === '#text' &&
+        node.textContent &&
+        node.textContent.indexOf(txt) > -1
+      );
+    })
+    .map(nn => nn.index);
+}
+// function getTextNodeIndex(elem: Node, txt: string): number {
+//   if (elem.hasChildNodes) {
+//     const textIndices = findTextContainers(elem, txt);
+//     console.log(textIndices);
+//     // return nodes.length === 1 ? nodes[0].index : -1;
+//   }
+//   return -1;
+// }
 
 function startSuggestion(
   request: messages.StartSuggestionMessage
 ): Promise<messages.MakeSuggestionMessage> {
-  return new Promise<messages.MakeSuggestionMessage>(resolve => {
+  return new Promise<messages.MakeSuggestionMessage>((resolve, reject) => {
     const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
-    const original = elem.textContent;
-    if (original) {
-      popup.doRun(request.selectionText).then(suggestedText => {
-        const selectionStart = original.indexOf(request.selectionText);
-        const elementPath: messages.ParentAndIndex[] = domutils.getElementPath(
-          elem
-        );
-        const makeSuggestionMessage: messages.MakeSuggestionMessage = {
-          elementPath,
-          href: window.location.href,
-          original,
-          selectionLength: request.selectionText.length,
-          selectionStart,
-          suggestedText,
-          type: 'MAKE_SUGGESTION',
-        };
-        resolve(makeSuggestionMessage);
-      });
+    let original: string = '';
+    let textNodeIndex = -1;
+    if (elem.hasChildNodes) {
+      const matchingNodes = findTextContainers(elem, request.selectionText);
+      if (matchingNodes.length === 1) {
+        textNodeIndex = matchingNodes[0];
+        original = elem.childNodes.item(textNodeIndex).textContent!;
+      } else {
+        if (elem.textContent) {
+          original = elem.textContent;
+        } else {
+          reject('nope');
+        }
+      }
+    } else {
+      reject('not');
     }
+    // const textNodeIndex = getTextNodeIndex(elem, request.selectionText);
+    popup.doRun(request.selectionText).then(suggestedText => {
+      const selectionStart = original.indexOf(request.selectionText);
+      const elementPath: messages.ParentAndIndex[] = domutils.getElementPath(
+        elem
+      );
+      const makeSuggestionMessage: messages.MakeSuggestionMessage = {
+        elementPath,
+        href: window.location.href,
+        original,
+        selectionLength: request.selectionText.length,
+        selectionStart,
+        suggestedText,
+        textNodeIndex,
+        type: 'MAKE_SUGGESTION',
+      };
+      resolve(makeSuggestionMessage);
+    });
   });
 }
 

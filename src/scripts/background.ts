@@ -1,7 +1,7 @@
 // // tslint:disable:no-console
 
-import * as xhr from './xhr';
 import * as messages from './messages';
+import * as xhr from './xhr';
 
 chrome.contextMenus.onClicked.addListener(
   (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
