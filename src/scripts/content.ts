@@ -19,8 +19,15 @@ async function processSuggestion(
   console.log(subject);
   if (element) {
     element.style.border = 'thin solid silver';
-    if (textNode) {
-      textNode.textContent = 'ok now';
+    if (textNode && textNode.textContent) {
+      const text = textNode.textContent;
+      const gh = [
+        text.slice(0, msg.selectionStart),
+        msg.suggestedText,
+        text.slice(msg.selectionStart + msg.selectionLength),
+      ];
+      textNode.textContent = gh.join('<=>');
+      // console.log(gh.join('<=>'));
     }
   }
   return Promise.resolve(true);
@@ -33,8 +40,10 @@ async function startSuggestion(
     async (resolve, _reject) => {
       const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
 
+      const path = domutils.getElementPath(elem);
+
       const subject = await domutils.getSubjectInfo(
-        domutils.getElementPath(elem),
+        path,
         request.selectionText
       );
 
@@ -44,7 +53,7 @@ async function startSuggestion(
 
       popup.doRun(request.selectionText).then(suggestedText => {
         const makeSuggestionMessage: messages.MakeSuggestionMessage = {
-          elementPath: subject.elementPath,
+          elementPath: path,
           href: window.location.href,
           original,
           selectionLength: request.selectionText.length,

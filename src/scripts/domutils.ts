@@ -46,7 +46,7 @@ function findTextContainers(elem: Node, txt: string): number[] {
 }
 
 export interface SuggestionSubjectInfo {
-  elementPath: messages.ParentAndIndex[];
+  // elementPath: messages.ParentAndIndex[];
   element: HTMLElement | null;
   textNodeIndex: number;
   textNode: Node | null;
@@ -80,7 +80,6 @@ export async function getSubjectInfo(
     }
     resolve({
       element,
-      elementPath: path,
       textNode,
       textNodeIndex,
     });
