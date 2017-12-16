@@ -27,13 +27,13 @@ function getElementFromPath(path: messages.ParentAndIndex[]): HTMLElement {
 }
 
 function findTextContainers(elem: Node, txt: string): number[] {
-  return Array.from(elem.childNodes)
-    .map<{
-      node: Node;
-      index: number;
-    }>((node, index) => {
-      return { node, index };
-    })
+  const numberedNodes = Array.from(elem.childNodes).map<{
+    node: Node;
+    index: number;
+  }>((node, index) => {
+    return { node, index };
+  });
+  return numberedNodes
     .filter(nn => {
       const node = nn.node;
       return (
@@ -75,7 +75,7 @@ export async function getSubjectInfo(
       textNodeIndex = tnc[0];
       textNode = element.childNodes[textNodeIndex];
     } else {
-      console.log(tnc);
+      console.log(tnc, text);
       reject('not today');
     }
     resolve({

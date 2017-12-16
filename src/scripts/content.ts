@@ -18,37 +18,16 @@ async function processSuggestion(
   const { element, textNode } = subject;
   console.log(subject);
   if (element) {
-    // element.style.border = 'thin solid silver';
+    element.style.border = 'thin solid silver';
     if (textNode && textNode.textContent) {
       const text = textNode.textContent;
-      const start = text.slice(0, msg.selectionStart);
-      const end = text.slice(msg.selectionStart + msg.selectionLength);
-
-      const fragment = document.createDocumentFragment();
-
-      const nodes = Array.from(element.childNodes);
-
-      nodes.forEach(wn => {
-        if (wn === textNode) {
-          const tn = document.createTextNode(start);
-          fragment.appendChild(tn);
-
-          const tn2 = document.createTextNode('> - - - - - >');
-          fragment.appendChild(tn2);
-
-          const tn4 = document.createTextNode(msg.suggestedText);
-          fragment.appendChild(tn4);
-
-          const tn5 = document.createTextNode('< - - - - - <');
-          fragment.appendChild(tn5);
-
-          const tn3 = document.createTextNode(end);
-          fragment.appendChild(tn3);
-        } else {
-          fragment.appendChild(wn.cloneNode());
-        }
-      });
-      element.parentNode!.replaceChild(fragment, element);
+      const gh = [
+        text.slice(0, msg.selectionStart),
+        msg.suggestedText,
+        text.slice(msg.selectionStart + msg.selectionLength),
+      ];
+      textNode.textContent = gh.join('<=>');
+      // console.log(gh.join('<=>'));
     }
   }
   return Promise.resolve(true);
@@ -122,26 +101,76 @@ chrome.runtime.onMessage.addListener(
 //   type: 'MAKE_SUGGESTION',
 // };
 
-const tester: messages.MakeSuggestionMessage = {
-  elementPath: [
-    ['BODY', 1],
-    ['DIV', 0],
-    ['DIV', 1],
-    ['DIV', 0],
-    ['DIV', 0],
-    ['ARTICLE', 0],
-    ['DIV', 1],
-    ['P', 3],
-  ],
-  href:
-    'https://blog.jcoglan.com/2017/03/22/myers-diff-in-linear-space-theory/',
-  original:
-    ' and gone back to make progress on another project, I stumbled\ninto a case where Git produced a confusing diff for a file I’d just changed, and\nI had to know why. Here’s the portion of code I had been working on. It’s a\ncouple of C functions that copy bytes from one buffer to another, checking the\nsizes of the requested regions to make sure they’re within the buffer. (This is\nnot literally the code I was working on; I’ve removed a few things to make the\nexample smaller.)',
-  selectionLength: 7,
-  selectionStart: 174,
-  suggestedText: 'part',
-  textNodeIndex: 2,
-  type: 'MAKE_SUGGESTION',
-};
+// const tester: messages.MakeSuggestionMessage = {
+//   elementPath: [
+//     ['BODY', 1],
+//     ['DIV', 0],
+//     ['DIV', 1],
+//     ['DIV', 0],
+//     ['DIV', 0],
+//     ['ARTICLE', 0],
+//     ['DIV', 1],
+//     ['P', 3],
+//   ],
+//   href:
+//     'https://blog.jcoglan.com/2017/03/22/myers-diff-in-linear-space-theory/',
+//   original:
+//     ' and gone back to make progress on another project, I stumbled\ninto a case where Git produced a confusing diff for a file I’d just changed, and\nI had to know why. Here’s the portion of code I had been working on. It’s a\ncouple of C functions that copy bytes from one buffer to another, checking the\nsizes of the requested regions to make sure they’re within the buffer. (This is\nnot literally the code I was working on; I’ve removed a few things to make the\nexample smaller.)',
+//   selectionLength: 7,
+//   selectionStart: 174,
+//   suggestedText: 'part',
+//   textNodeIndex: 2,
+//   type: 'MAKE_SUGGESTION',
+// };
 
-processSuggestion(tester);
+const testers: messages.MakeSuggestionMessage[] = [
+  {
+    elementPath: [
+      ['BODY', 1],
+      ['BFAM-ROOT', 0],
+      ['MAIN', 1],
+      ['BFAM-GARY', 1],
+      ['BFAM-OVERVIEW', 1],
+      ['DIV', 0],
+      ['SECTION', 0],
+      ['ARTICLE', 1],
+      ['P', 2],
+    ],
+    href: 'https://bortosky.com/gary/overview',
+    original: 'If you see me on the street ask me about ',
+    selectionLength: 6,
+    selectionStart: 21,
+    suggestedText: 'boulevard',
+    textNodeIndex: 0,
+    type: 'MAKE_SUGGESTION',
+  },
+  {
+    elementPath: [
+      ['BODY', 1],
+      ['BFAM-ROOT', 0],
+      ['MAIN', 1],
+      ['BFAM-GARY', 1],
+      ['BFAM-OVERVIEW', 1],
+      ['DIV', 0],
+      ['SECTION', 0],
+      ['ARTICLE', 1],
+      ['P', 1],
+    ],
+    href: 'https://bortosky.com/gary/overview',
+    original:
+      'TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. I have used it\n\t\t\t\t',
+    selectionLength: 5,
+    selectionStart: 62,
+    suggestedText: 'vanilla',
+    textNodeIndex: 0,
+    type: 'MAKE_SUGGESTION',
+  },
+];
+
+window.setTimeout(() => {
+  for (const tester of testers) {
+    if (tester.href === window.location.href) {
+      processSuggestion(tester);
+    }
+  }
+}, 500);
