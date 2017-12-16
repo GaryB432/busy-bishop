@@ -1,6 +1,7 @@
 // tslint:disable:no-console
 
 import * as domutils from './domutils';
+import { createDiffElement } from './elements';
 import * as messages from './messages';
 import { lastPointer } from './pointer';
 import { Popup } from './popup';
@@ -11,25 +12,8 @@ popup.start(document.body, 'Suggested Edit');
 
 import '../styles/base.scss';
 
-function makeDiffDiv(
-  start: string,
-  strike: string,
-  ins: string,
-  end: string
-): HTMLDivElement {
-  const div = document.createElement('div');
-  div.style.margin = '10px';
-  div.appendChild(
-    makeSpan({ backgroundColor: 'white' }, `...${start.trimLeft()}`)
-  );
-  div.appendChild(
-    makeSpan({ backgroundColor: 'red', textDecoration: 'line-through' }, strike)
-  );
-  div.appendChild(makeSpan({ backgroundColor: 'green' }, ins));
-  div.appendChild(
-    makeSpan({ backgroundColor: 'white' }, `${end.trimRight()}...`)
-  );
-  return div;
+function separateLines(lines: string): string[] {
+  return lines.split('\n');
 }
 
 async function processSuggestion(
@@ -57,29 +41,16 @@ async function processSuggestion(
         cntnr.style.padding = '10px';
         cntnr.style.backgroundColor = '#cccccc';
 
-        const ls = start.split('\n');
-
-        cntnr.appendChild(makeDiffDiv(ls[ls.length - 1], strike, ins, end));
+        const ls = separateLines(start);
+        const es = separateLines(end);
+        cntnr.appendChild(
+          createDiffElement(ls[ls.length - 1], strike, ins, es[0])
+        );
         bishop.appendChild(cntnr);
       }
     }
   }
   return Promise.resolve(true);
-}
-
-function makeSpan(
-  style: Partial<CSSStyleDeclaration>,
-  innerText: string
-): HTMLSpanElement {
-  const el = document.createElement('span');
-  el.innerText = innerText;
-
-  Object.assign(el.style, style);
-
-  // el.style=style;
-  // el.style.backgroundColor = backgroundColor;
-  // el.style.textDecoration = 'line-through';
-  return el;
 }
 
 async function startSuggestion(

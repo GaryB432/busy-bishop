@@ -45,6 +45,16 @@ function findTextContainers(elem: Node, txt: string): number[] {
     .map(nn => nn.index);
 }
 
+export function makeSpan(
+  style: Partial<CSSStyleDeclaration>,
+  innerText: string
+): HTMLSpanElement {
+  const span = document.createElement('span');
+  span.innerText = innerText;
+  Object.assign(span.style, style);
+  return span;
+}
+
 export interface SuggestionSubjectInfo {
   // elementPath: messages.ParentAndIndex[];
   element: HTMLElement | null;
