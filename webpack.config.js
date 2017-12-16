@@ -1,5 +1,6 @@
 'use strict';
 var path = require('path');
+var webpack = require('webpack');
 
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -51,6 +52,11 @@ module.exports = {
     new ExtractTextPlugin({
       filename: 'css/[name].css',
       disable: !isProd,
+    }),
+
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'commons',
+      filename: 'scripts/[name].js'
     }),
 
     new CopyWebpackPlugin([{ from: 'public' }]),
