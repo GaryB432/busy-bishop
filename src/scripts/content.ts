@@ -18,16 +18,37 @@ async function processSuggestion(
   const { element, textNode } = subject;
   console.log(subject);
   if (element) {
-    element.style.border = 'thin solid silver';
+    // element.style.border = 'thin solid silver';
     if (textNode && textNode.textContent) {
       const text = textNode.textContent;
-      const gh = [
-        text.slice(0, msg.selectionStart),
-        msg.suggestedText,
-        text.slice(msg.selectionStart + msg.selectionLength),
-      ];
-      textNode.textContent = gh.join('<=>');
-      // console.log(gh.join('<=>'));
+      const start = text.slice(0, msg.selectionStart);
+      const end = text.slice(msg.selectionStart + msg.selectionLength);
+
+      const fragment = document.createDocumentFragment();
+
+      const nodes = Array.from(element.childNodes);
+
+      nodes.forEach(wn => {
+        if (wn === textNode) {
+          const tn = document.createTextNode(start);
+          fragment.appendChild(tn);
+
+          const tn2 = document.createTextNode('> - - - - - >');
+          fragment.appendChild(tn2);
+
+          const tn4 = document.createTextNode(msg.suggestedText);
+          fragment.appendChild(tn4);
+
+          const tn5 = document.createTextNode('< - - - - - <');
+          fragment.appendChild(tn5);
+
+          const tn3 = document.createTextNode(end);
+          fragment.appendChild(tn3);
+        } else {
+          fragment.appendChild(wn.cloneNode());
+        }
+      });
+      element.parentNode!.replaceChild(fragment, element);
     }
   }
   return Promise.resolve(true);

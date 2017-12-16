@@ -1,4 +1,4 @@
-// // tslint:disable:no-console
+// tslint:disable:no-console
 
 import * as messages from './messages';
 import * as xhr from './xhr';
