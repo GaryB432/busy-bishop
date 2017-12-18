@@ -3,9 +3,9 @@ export type ParentAndIndex = [string, number];
 export interface MakeSuggestionMessage {
   type: 'MAKE_SUGGESTION';
   elementPath: ParentAndIndex[];
+  context: string;
   textNodeIndex: number;
-  original: string;
-  selectionLength: number;
+  selectedText: string;
   selectionStart: number;
   suggestedText: string;
   href: string;

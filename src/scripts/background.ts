@@ -1,7 +1,7 @@
 // tslint:disable:no-console
 
-import * as messages from './messages';
-import * as xhr from './xhr';
+import * as messages from './lib/messages';
+import * as xhr from './lib/xhr';
 
 chrome.contextMenus.onClicked.addListener(
   (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
@@ -36,6 +36,14 @@ chrome.contextMenus.onClicked.addListener(
     }
   }
 );
+
+chrome.browserAction.onClicked.addListener(tab => {
+  // No tabs or host permissions needed!
+  console.log('Turning ' + tab.url + ' red!');
+  chrome.tabs.executeScript({
+    code: 'document.body.style.backgroundColor="red"',
+  });
+});
 
 chrome.contextMenus.create({
   contexts: ['selection'],

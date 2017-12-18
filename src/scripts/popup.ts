@@ -1,107 +1,163 @@
-export class Popup {
-  private userControl: HTMLDivElement;
+import '../styles/popup.scss';
+import * as messages from './lib/messages';
+import * as utilities from './lib/utilities';
 
-  private element: HTMLDivElement;
+const elem = document.querySelector('#suggestions');
 
-  private inputElement: HTMLInputElement;
+elem!.innerHTML = '<h1>Hello Extension</h1>';
 
-  private okButton: HTMLButtonElement;
+const ltrim = (str: string) => str.replace(/^\s+/, '');
+const rtrim = (str: string) => str.replace(/\s+$/, '');
 
-  private onOk: (value: string) => void;
-
-  public start(parent: Element, placeHolder: string = ''): void {
-    this.element = this.createDiv('modal', 'hidden');
-
-    const container = this.createDiv('content');
-
-    this.initDialogElement(container);
-
-    this.element.appendChild(container);
-
-    this.inputElement.placeholder = placeHolder;
-
-    parent.appendChild(this.element);
-
-    this.okButton.onclick = () => {
-      this.onOk(this.inputElement.value);
-      this.hide();
-    };
-
-    window.addEventListener('click', event => {
-      if (event.target === this.element) {
-        this.hide();
-      }
-    });
+export function createDiffElement(
+  start: string,
+  strike: string,
+  ins: string,
+  end: string
+): DocumentFragment {
+  const template = document.querySelector(
+    '#diffTemplate'
+  ) as HTMLTemplateElement;
+  if (!template) {
+    throw new Error('sorry');
   }
-
-  public show() {
-    this.okButton.disabled = !this.okEnabled();
-    this.element.classList.remove('hidden');
-  }
-
-  public hide() {
-    this.element.classList.add('hidden');
-    this.okButton.disabled = !this.okEnabled();
-  }
-
-  public run(defValue: string, cb: (value: string) => void): void {
-    // console.log(this.element);
-    this.inputElement.value = defValue;
-    this.onOk = cb;
-    this.show();
-    this.inputElement.focus();
-  }
-
-  public async doRun(defValue: string): Promise<string> {
-    return new Promise<string>(a => {
-      this.run(defValue, s => a(s));
-    });
-  }
-
-  protected initUserControl(user: HTMLDivElement): void {
-    user.appendChild(document.createTextNode('override me soon'));
-  }
-
-  private initDialogElement(dialog: HTMLElement): void {
-    dialog
-      .appendChild(this.addCloseElement())
-      .addEventListener('click', this.hide.bind(this));
-    dialog.appendChild((this.userControl = this.createDiv('user')));
-    dialog.appendChild((this.inputElement = document.createElement('input')));
-    dialog.appendChild((this.okButton = this.addButton('OK')));
-    dialog
-      .appendChild(this.addButton('Cancel'))
-      .addEventListener('click', this.hide.bind(this));
-    dialog.addEventListener('keyup', () => {
-      this.okButton.disabled = !this.okEnabled();
-    });
-    this.initUserControl(this.userControl);
-  }
-
-  private addCloseElement(): HTMLSpanElement {
-    const element = document.createElement('span');
-    element.classList.add('close');
-    element.innerHTML = '&times;';
-    return element;
-  }
-
-  private createDiv(...token: string[]): HTMLDivElement {
-    const div = document.createElement('div');
-    div.classList.add(...token);
-    return div;
-  }
-
-  private addButton(
-    textContent: string,
-    ...token: string[]
-  ): HTMLButtonElement {
-    const btn = document.createElement('button');
-    btn.textContent = textContent;
-    btn.classList.add(...token);
-    return btn;
-  }
-
-  private okEnabled(): boolean {
-    return this.inputElement.value.length > 0;
-  }
+  const div = document.importNode(template.content, true);
+  const spans = div.querySelectorAll('span');
+  spans[0].innerText = `...${ltrim(start)}`;
+  spans[1].innerText = strike;
+  spans[2].innerText = ins;
+  spans[3].innerText = `${rtrim(end)}...`;
+  return div;
 }
+
+function processUrl(url?: string): boolean {
+  const sugs = document.createElement('div');
+  if (!!url) {
+    for (const tester of testers) {
+      if (tester.href === url) {
+        const flx = utilities.narrowSelectionContext(
+          tester.context,
+          tester.selectedText
+        );
+        console.log(flx, tester.context, tester.selectedText);
+
+        if (!!flx) {
+          const { line, index } = flx;
+          const selectionLength = tester.selectedText.length;
+          const start = line.slice(0, index);
+          const strike = line.slice(index, index + selectionLength);
+          const ins = tester.suggestedText;
+          const end = line.slice(index + selectionLength);
+          sugs.appendChild(createDiffElement(start, strike, ins, end));
+        }
+      }
+    }
+  }
+  elem!.appendChild(sugs);
+  return true;
+}
+
+chrome.tabs.query(
+  { active: true, currentWindow: true },
+  (tabs: chrome.tabs.Tab[]) => processUrl(tabs[0].url)
+);
+
+// const tester: messages.MakeSuggestionMessage = {
+//   elementPath: [
+//     ['BODY', 1],
+//     ['BFAM-ROOT', 0],
+//     ['MAIN', 1],
+//     ['BFAM-HOME', 1],
+//     ['P', 1],
+//   ],
+//   href: 'https://bortosky.com/',
+//   original: 'Use the links at the top to explore.',
+//   selectionLength: 3,
+//   selectionStart: 21,
+//   suggestedText: 'bottom',
+//   textNodeIndex: 0,
+//   type: 'MAKE_SUGGESTION',
+// };
+
+const testers: messages.MakeSuggestionMessage[] = [
+  {
+    context:
+      'The interesting thing about diff algorithms is that they’re a mix of computer\nscience and human factors. There are many equally good diffs between two files,\njudging them by the length of the edit sequence, and choosing between them\nrequires an algorithm that can best match people’s intuition about how their\ncode has changed.',
+    elementPath: [
+      ['BODY', 1],
+      ['DIV', 0],
+      ['DIV', 1],
+      ['DIV', 0],
+      ['DIV', 0],
+      ['ARTICLE', 0],
+      ['DIV', 1],
+      ['P', 2],
+    ],
+    href:
+      'https://blog.jcoglan.com/2017/03/22/myers-diff-in-linear-space-theory/',
+    selectedText: 'intuition',
+    selectionStart: 284,
+    suggestedText: 'gut feel',
+    textNodeIndex: 0,
+    type: 'MAKE_SUGGESTION',
+  },
+  {
+    context:
+      'And indeed, if you try running these two code snippets through our previous\nMyers implementation, this is exactly what you get. However, when you ask Git to\ncompare these versions, here’s what happens:',
+    elementPath: [
+      ['BODY', 1],
+      ['DIV', 0],
+      ['DIV', 1],
+      ['DIV', 0],
+      ['DIV', 0],
+      ['ARTICLE', 0],
+      ['DIV', 1],
+      ['P', 9],
+    ],
+    href:
+      'https://blog.jcoglan.com/2017/03/22/myers-diff-in-linear-space-theory/',
+    selectedText: 'exactly',
+    selectionStart: 106,
+    suggestedText: 'precisely',
+    textNodeIndex: 0,
+    type: 'MAKE_SUGGESTION',
+  },
+  {
+    context: 'poor quality',
+    elementPath: [
+      ['BODY', 1],
+      ['DIV', 0],
+      ['DIV', 1],
+      ['DIV', 0],
+      ['DIV', 0],
+      ['ARTICLE', 0],
+      ['DIV', 1],
+      ['P', 11],
+      ['EM', 1],
+    ],
+    href:
+      'https://blog.jcoglan.com/2017/03/22/myers-diff-in-linear-space-theory/',
+    selectedText: 'poor quality',
+    selectionStart: 0,
+    suggestedText: 'shitty',
+    textNodeIndex: 0,
+    type: 'MAKE_SUGGESTION',
+  },
+  {
+    context: 'by James Coglan',
+    elementPath: [
+      ['BODY', 1],
+      ['DIV', 0],
+      ['HEADER', 0],
+      ['HGROUP', 1],
+      ['H2', 1],
+    ],
+    href:
+      'https://blog.jcoglan.com/2017/03/22/myers-diff-in-linear-space-theory/',
+    selectedText: 'Coglan',
+    selectionStart: 9,
+    suggestedText: 'Cooglan',
+    textNodeIndex: 0,
+    type: 'MAKE_SUGGESTION',
+  },
+];

@@ -13,6 +13,7 @@ module.exports = {
   entry: {
     background: ['scripts/background.ts'],
     content: ['scripts/content.ts'],
+    popup: ['scripts/popup.ts'],
   },
 
   context: path.join(process.cwd(), 'src'),
@@ -45,8 +46,10 @@ module.exports = {
 
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'public/index.html',
+      template: 'assets/popup.html',
+      chunks: ['popup', 'commons'],
       chunksSortMode: 'dependency',
+      filename: 'popup.html'
     }),
 
     new ExtractTextPlugin({
@@ -59,7 +62,7 @@ module.exports = {
       filename: 'scripts/[name].js'
     }),
 
-    new CopyWebpackPlugin([{ from: 'public' }]),
+    new CopyWebpackPlugin([{ from: 'assets' }]),
   ],
 
   resolve: {
