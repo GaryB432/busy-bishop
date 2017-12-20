@@ -62,6 +62,11 @@ export interface SuggestionSubjectInfo {
   textNode: Node | null;
 }
 
+export interface SuggestionSubjectError {
+  tnc: number[];
+  text: string;
+}
+
 export function getElementPath(elem: Element): messages.ParentAndIndex[] {
   const res: messages.ParentAndIndex[] = [];
   let w = elem;
@@ -85,8 +90,8 @@ export async function getSubjectInfo(
       textNodeIndex = tnc[0];
       textNode = element.childNodes[textNodeIndex];
     } else {
-      console.log(tnc, text);
-      reject('not today');
+      const e: SuggestionSubjectError = { tnc, text };
+      reject(e);
     }
     resolve({
       element,

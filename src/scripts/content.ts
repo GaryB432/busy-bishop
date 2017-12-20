@@ -11,7 +11,11 @@ const dialog: Dialog = new Dialog();
 
 dialog.start(document.body, 'Suggested Edit');
 
-async function startSuggestion(
+function handleError(e: domutils.SuggestionSubjectError) {
+  console.log(e, 'sorry');
+}
+
+function startSuggestion(
   request: messages.StartSuggestionMessage
 ): Promise<messages.MakeSuggestionMessage> {
   function makeMessage(
@@ -36,13 +40,11 @@ async function startSuggestion(
     async (resolve, reject) => {
       const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
       const path = domutils.getElementPath(elem);
-      let subject: domutils.SuggestionSubjectInfo | undefined;
       try {
-        subject = await domutils.getSubjectInfo(path, request.selectionText);
-      } catch (e) {
-        reject(e);
-      }
-      if (subject) {
+        const subject = await domutils.getSubjectInfo(
+          path,
+          request.selectionText
+        );
         const message: messages.MakeSuggestionMessage = makeMessage(
           path,
           subject
@@ -53,9 +55,8 @@ async function startSuggestion(
           resolve(message);
           console.log(`resolved ${request.selectionText}`);
         });
-      } else {
-        console.log(`not ok ${request.selectionText}`);
-        reject('not ok');
+      } catch (e) {
+        reject(e);
       }
     }
   );
@@ -66,10 +67,8 @@ chrome.runtime.onMessage.addListener(
     switch (request.type) {
       case 'START_SUGGESTION':
         startSuggestion(request)
-          .then(response => {
-            sendResponse(response);
-          })
-          .catch(e => console.log(e));
+          .then(sendResponse)
+          .catch(handleError);
         break;
     }
     return true;
