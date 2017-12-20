@@ -18,10 +18,10 @@ function handleError(e: domutils.SuggestionSubjectError) {
 function startSuggestion(
   request: messages.StartSuggestionMessage
 ): Promise<messages.MakeSuggestionMessage> {
-  function makeMessage(
+  function getInitializedMessage(
     path: messages.ParentAndIndex[],
     subject: domutils.SuggestionSubjectInfo
-  ) {
+  ): messages.MakeSuggestionMessage {
     const context = subject.textNode!.textContent!;
     const message: messages.MakeSuggestionMessage = {
       context,
@@ -29,7 +29,6 @@ function startSuggestion(
       href: window.location.href,
       selectedText: request.selectionText,
       selectionStart: context.indexOf(request.selectionText),
-      suggestedText: 'TBD...',
       textNodeIndex: subject.textNodeIndex,
       type: 'MAKE_SUGGESTION',
     };
@@ -45,16 +44,16 @@ function startSuggestion(
           path,
           request.selectionText
         );
-        const message: messages.MakeSuggestionMessage = makeMessage(
+        const message: messages.MakeSuggestionMessage = getInitializedMessage(
           path,
           subject
         );
         console.log(`about to run ${request.selectionText}`);
-        dialog.doRun(request.selectionText).then(suggestedText => {
-          message.suggestedText = suggestedText;
+        message.suggestedText = await dialog.doRun(request.selectionText);
+        if (message.suggestedText) {
           resolve(message);
           console.log(`resolved ${request.selectionText}`);
-        });
+        }
       } catch (e) {
         reject(e);
       }

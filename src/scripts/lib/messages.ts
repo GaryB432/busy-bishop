@@ -7,7 +7,7 @@ export interface MakeSuggestionMessage {
   textNodeIndex: number;
   selectedText: string;
   selectionStart: number;
-  suggestedText: string;
+  suggestedText?: string;
   href: string;
 }
 
