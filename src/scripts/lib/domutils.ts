@@ -45,16 +45,6 @@ function findTextContainers(elem: Node, txt: string): number[] {
     .map(nn => nn.index);
 }
 
-export function makeSpan(
-  style: Partial<CSSStyleDeclaration>,
-  innerText: string
-): HTMLSpanElement {
-  const span = document.createElement('span');
-  span.innerText = innerText;
-  Object.assign(span.style, style);
-  return span;
-}
-
 export interface SuggestionSubjectInfo {
   // elementPath: messages.ParentAndIndex[];
   element: HTMLElement | null;
@@ -63,6 +53,7 @@ export interface SuggestionSubjectInfo {
 }
 
 export interface SuggestionSubjectError {
+  element: HTMLElement | null;
   tnc: number[];
   text: string;
 }
@@ -90,7 +81,7 @@ export async function getSubjectInfo(
       textNodeIndex = tnc[0];
       textNode = element.childNodes[textNodeIndex];
     } else {
-      const e: SuggestionSubjectError = { tnc, text };
+      const e: SuggestionSubjectError = { element, tnc, text };
       reject(e);
     }
     resolve({

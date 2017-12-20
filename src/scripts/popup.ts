@@ -46,7 +46,7 @@ function processUrl(url?: string): boolean {
           const selectionLength = tester.selectedText.length;
           const start = line.slice(0, index);
           const strike = line.slice(index, index + selectionLength);
-          const ins = tester.suggestedText;
+          const ins = tester.suggestedText!;
           const end = line.slice(index + selectionLength);
           sugs.appendChild(createDiffElement(start, strike, ins, end));
         }

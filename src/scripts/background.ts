@@ -3,7 +3,7 @@
 import * as messages from './lib/messages';
 import * as xhr from './lib/xhr';
 
-function handleSuggestion(suggestion: messages.MakeSuggestionMessage) {
+function handleSuggestionResponse(suggestion: messages.MakeSuggestionMessage) {
   console.log(JSON.stringify(suggestion, null, 2));
   xhr.getJSON<any>('https://bortosky.com/theater.json').then(a => {
     console.log(a);
@@ -34,7 +34,7 @@ chrome.contextMenus.onClicked.addListener(
         },
         response => {
           if (response) {
-            handleSuggestion(response);
+            handleSuggestionResponse(response);
           } else {
             console.log(chrome.runtime.lastError, 'oops');
           }

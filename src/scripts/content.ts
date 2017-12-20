@@ -12,7 +12,11 @@ const dialog: Dialog = new Dialog();
 dialog.start(document.body, 'Suggested Edit');
 
 function handleError(e: domutils.SuggestionSubjectError) {
-  console.log(e, 'sorry');
+  if (!!e.element) {
+    const el = e.element;
+    const containingNodes = e.tnc.map(i => el.childNodes.item(i));
+    console.log(containingNodes.map(n => n.textContent), 'sorry');
+  }
 }
 
 function startSuggestion(
