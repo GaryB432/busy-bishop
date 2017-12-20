@@ -62,23 +62,6 @@ chrome.tabs.query(
   (tabs: chrome.tabs.Tab[]) => processUrl(tabs[0].url)
 );
 
-// const tester: messages.MakeSuggestionMessage = {
-//   elementPath: [
-//     ['BODY', 1],
-//     ['BFAM-ROOT', 0],
-//     ['MAIN', 1],
-//     ['BFAM-HOME', 1],
-//     ['P', 1],
-//   ],
-//   href: 'https://bortosky.com/',
-//   original: 'Use the links at the top to explore.',
-//   selectionLength: 3,
-//   selectionStart: 21,
-//   suggestedText: 'bottom',
-//   textNodeIndex: 0,
-//   type: 'MAKE_SUGGESTION',
-// };
-
 const testers: messages.MakeSuggestionMessage[] = [
   {
     context:
@@ -157,6 +140,109 @@ const testers: messages.MakeSuggestionMessage[] = [
     selectedText: 'Coglan',
     selectionStart: 9,
     suggestedText: 'Cooglan',
+    textNodeIndex: 0,
+    type: 'MAKE_SUGGESTION',
+  },
+  {
+    context:
+      'TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. I have used it\n\t\t\t\t',
+    elementPath: [
+      ['BODY', 1],
+      ['BFAM-ROOT', 0],
+      ['MAIN', 1],
+      ['BFAM-GARY', 1],
+      ['BFAM-OVERVIEW', 1],
+      ['DIV', 0],
+      ['SECTION', 0],
+      ['ARTICLE', 1],
+      ['P', 1],
+    ],
+    href: 'https://bortosky.com/gary/overview',
+    selectedText: 'compiles',
+    selectionStart: 50,
+    suggestedText: 'changed compiles',
+    textNodeIndex: 0,
+    type: 'MAKE_SUGGESTION',
+  },
+  {
+    context: 'Areas of Interest',
+    elementPath: [
+      ['BODY', 1],
+      ['BFAM-ROOT', 0],
+      ['MAIN', 1],
+      ['BFAM-GARY', 1],
+      ['BFAM-OVERVIEW', 1],
+      ['DIV', 0],
+      ['SECTION', 0],
+      ['H1', 0],
+    ],
+    href: 'https://bortosky.com/gary/overview',
+    selectedText: 'Interest',
+    selectionStart: 9,
+    suggestedText: 'changed Interest',
+    textNodeIndex: 0,
+    type: 'MAKE_SUGGESTION',
+  },
+  {
+    context:
+      'TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. I have used it\n\t\t\t\t',
+    elementPath: [
+      ['BODY', 1],
+      ['BFAM-ROOT', 0],
+      ['MAIN', 1],
+      ['BFAM-GARY', 1],
+      ['BFAM-OVERVIEW', 1],
+      ['DIV', 0],
+      ['SECTION', 0],
+      ['ARTICLE', 1],
+      ['P', 1],
+    ],
+    href: 'https://bortosky.com/gary/overview',
+    selectedText: 'used',
+    selectionStart: 87,
+    suggestedText: 'changed used',
+    textNodeIndex: 0,
+    type: 'MAKE_SUGGESTION',
+  },
+  {
+    context:
+      "The Web's scaffolding tool for modern webapps. I have dabbled with creating my own generators and have contributed to existing ones.",
+    elementPath: [
+      ['BODY', 1],
+      ['BFAM-ROOT', 0],
+      ['MAIN', 1],
+      ['BFAM-GARY', 1],
+      ['BFAM-OVERVIEW', 1],
+      ['DIV', 0],
+      ['SECTION', 0],
+      ['ARTICLE', 5],
+      ['P', 1],
+    ],
+    href: 'https://bortosky.com/gary/overview',
+    selectedText: 'webapps',
+    selectionStart: 38,
+    suggestedText: 'changed webapps',
+    textNodeIndex: 0,
+    type: 'MAKE_SUGGESTION',
+  },
+  {
+    context:
+      "The Web's scaffolding tool for modern webapps. I have dabbled with creating my own generators and have contributed to existing ones.",
+    elementPath: [
+      ['BODY', 1],
+      ['BFAM-ROOT', 0],
+      ['MAIN', 1],
+      ['BFAM-GARY', 1],
+      ['BFAM-OVERVIEW', 1],
+      ['DIV', 0],
+      ['SECTION', 0],
+      ['ARTICLE', 5],
+      ['P', 1],
+    ],
+    href: 'https://bortosky.com/gary/overview',
+    selectedText: 'scaffolding',
+    selectionStart: 10,
+    suggestedText: 'changed scaffolding',
     textNodeIndex: 0,
     type: 'MAKE_SUGGESTION',
   },

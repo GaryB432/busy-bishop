@@ -14,33 +14,49 @@ dialog.start(document.body, 'Suggested Edit');
 async function startSuggestion(
   request: messages.StartSuggestionMessage
 ): Promise<messages.MakeSuggestionMessage> {
+  function makeMessage(
+    path: messages.ParentAndIndex[],
+    subject: domutils.SuggestionSubjectInfo
+  ) {
+    const context = subject.textNode!.textContent!;
+    const message: messages.MakeSuggestionMessage = {
+      context,
+      elementPath: path,
+      href: window.location.href,
+      selectedText: request.selectionText,
+      selectionStart: context.indexOf(request.selectionText),
+      suggestedText: 'TBD...',
+      textNodeIndex: subject.textNodeIndex,
+      type: 'MAKE_SUGGESTION',
+    };
+    return message;
+  }
+
   return new Promise<messages.MakeSuggestionMessage>(
-    async (resolve, _reject) => {
+    async (resolve, reject) => {
       const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
-
       const path = domutils.getElementPath(elem);
-
-      const subject = await domutils.getSubjectInfo(
-        path,
-        request.selectionText
-      );
-      const context = subject.textNode!.textContent!;
-
-      const makeSuggestionMessage: messages.MakeSuggestionMessage = {
-        context,
-        elementPath: path,
-        href: window.location.href,
-        selectedText: request.selectionText,
-        selectionStart: context.indexOf(request.selectionText),
-        suggestedText: 'TBD...',
-        textNodeIndex: subject.textNodeIndex,
-        type: 'MAKE_SUGGESTION',
-      };
-
-      dialog.doRun(request.selectionText).then(suggestedText => {
-        makeSuggestionMessage.suggestedText = suggestedText;
-        resolve(makeSuggestionMessage);
-      });
+      let subject: domutils.SuggestionSubjectInfo | undefined;
+      try {
+        subject = await domutils.getSubjectInfo(path, request.selectionText);
+      } catch (e) {
+        reject(e);
+      }
+      if (subject) {
+        const message: messages.MakeSuggestionMessage = makeMessage(
+          path,
+          subject
+        );
+        console.log(`about to run ${request.selectionText}`);
+        dialog.doRun(request.selectionText).then(suggestedText => {
+          message.suggestedText = suggestedText;
+          resolve(message);
+          console.log(`resolved ${request.selectionText}`);
+        });
+      } else {
+        console.log(`not ok ${request.selectionText}`);
+        reject('not ok');
+      }
     }
   );
 }
