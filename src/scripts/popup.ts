@@ -4,8 +4,6 @@ import * as utilities from './lib/utilities';
 
 const elem = document.querySelector('#suggestions');
 
-elem!.innerHTML = '<h1>Hello Extension</h1>';
-
 const ltrim = (str: string) => str.replace(/^\s+/, '');
 const rtrim = (str: string) => str.replace(/\s+$/, '');
 
@@ -22,11 +20,13 @@ export function createDiffElement(
     throw new Error('sorry');
   }
   const div = document.importNode(template.content, true);
-  const spans = div.querySelectorAll('span');
-  spans[0].innerText = `...${ltrim(start)}`;
-  spans[1].innerText = strike;
-  spans[2].innerText = ins;
-  spans[3].innerText = `${rtrim(end)}...`;
+  const spans: NodeListOf<HTMLSpanElement> = div.querySelectorAll(
+    'div.diff > span'
+  );
+  spans[0].innerHTML = `&hellip;${ltrim(start)}`;
+  spans[1].innerHTML = strike;
+  spans[2].innerHTML = ins;
+  spans[3].innerHTML = `${rtrim(end)}&hellip;`;
   return div;
 }
 
