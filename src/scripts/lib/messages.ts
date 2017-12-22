@@ -1,5 +1,7 @@
 export type ParentAndIndex = [string, number];
 
+export type SuggestionStatus = 'WAITING' | 'ERROR' | 'OK' | 'TEST';
+
 export interface MakeSuggestionMessage {
   type: 'MAKE_SUGGESTION';
   elementPath: ParentAndIndex[];
@@ -9,6 +11,7 @@ export interface MakeSuggestionMessage {
   selectionStart: number;
   suggestedText?: string;
   href: string;
+  status: SuggestionStatus;
 }
 
 export interface StartSuggestionMessage {

@@ -52,12 +52,6 @@ export interface SuggestionSubjectInfo {
   textNode: Node | null;
 }
 
-export interface SuggestionSubjectError {
-  element: HTMLElement | null;
-  tnc: number[];
-  text: string;
-}
-
 export function getElementPath(elem: Element): messages.ParentAndIndex[] {
   const res: messages.ParentAndIndex[] = [];
   let w = elem;
@@ -72,7 +66,7 @@ export async function getSubjectInfo(
   path: messages.ParentAndIndex[],
   text: string
 ): Promise<SuggestionSubjectInfo> {
-  return new Promise<SuggestionSubjectInfo>((resolve, reject) => {
+  return new Promise<SuggestionSubjectInfo>((resolve, _reject) => {
     const element = getElementFromPath(path);
     let textNode: Node | null = null;
     let textNodeIndex = -1;
@@ -80,9 +74,6 @@ export async function getSubjectInfo(
     if (tnc.length === 1) {
       textNodeIndex = tnc[0];
       textNode = element.childNodes[textNodeIndex];
-    } else {
-      const e: SuggestionSubjectError = { element, tnc, text };
-      reject(e);
     }
     resolve({
       element,
