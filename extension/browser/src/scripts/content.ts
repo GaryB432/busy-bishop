@@ -1,11 +1,11 @@
 // tslint:disable:no-console
 
+import '../styles/content.scss';
+
+import * as messages from '../../../../common/messages';
 import { Dialog } from './lib/dialog';
 import * as domutils from './lib/domutils';
-import * as messages from './lib/messages';
 import { lastPointer } from './lib/pointer';
-
-import '../styles/content.scss';
 
 const dialog: Dialog = new Dialog();
 
@@ -18,8 +18,10 @@ function startSuggestion(
 
   return new Promise<messages.MakeSuggestionMessage>(async resolve => {
     const msm: Partial<messages.MakeSuggestionMessage> = {
+      createdAt: new Date().getTime(),
       elementPath: domutils.getElementPath(elem),
       href: window.location.href,
+      id: request.id,
       selectedText: request.selectionText,
       status: 'WAITING',
       textNodeIndex: -1,

@@ -1,6 +1,7 @@
-// tslint:disable:no-console
+// tslint:disable:no-console no-var-requires
+const uuidv4 = require('uuid');
 
-import * as messages from './lib/messages';
+import * as messages from '../../../../common/messages';
 import * as xhr from './lib/xhr';
 
 function handleSuggestionResponse(
@@ -40,6 +41,7 @@ chrome.contextMenus.onClicked.addListener(
       chrome.tabs.sendMessage(
         tab.id,
         {
+          id: uuidv4(),
           selectionText: info.selectionText,
           type: 'START_SUGGESTION',
         },

@@ -1,4 +1,4 @@
-import * as messages from './messages';
+import * as messages from '../../../../../common/messages';
 
 function getChildIndex(subject: Element): number {
   if (subject.parentElement) {

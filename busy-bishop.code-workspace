@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "extension\\browser"
+		},
+		{
+			"path": "app"
+		},
+		{
+			"path": "common"
+		}
+	],
+	"settings": {
+		"typescript.tsdk": "node_modules/typescript/lib/"
+	}
+}
