@@ -1,6 +1,5 @@
 import '../styles/popup.scss';
 import * as data from './lib/data';
-import * as messages from './lib/messages';
 import * as utilities from './lib/utilities';
 
 const elem = document.querySelector('#suggestions');
