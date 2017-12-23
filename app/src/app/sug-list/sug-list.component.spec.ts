@@ -1,4 +1,6 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { DataService } from '../data.service';
 
 import { SugListComponent } from './sug-list.component';
 
@@ -9,7 +11,9 @@ describe('SugListComponent', () => {
   beforeEach(
     async(() => {
       TestBed.configureTestingModule({
+        imports: [HttpClientTestingModule],
         declarations: [SugListComponent],
+        providers: [DataService],
       }).compileComponents();
     })
   );

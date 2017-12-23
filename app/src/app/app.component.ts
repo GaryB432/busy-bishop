@@ -9,7 +9,7 @@ import { DataService } from './data.service';
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  public title = 'bb';
+  public title = 'Busy Bishop';
   public suggestions: MakeSuggestionMessage[];
   constructor(private ds: DataService) {
     this.ds.suggestions.subscribe(sugs => {

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 // import { map } from 'rxjs/operators';
@@ -8,7 +8,7 @@ import { MakeSuggestionMessage } from '../../../common';
 import { TempDataSource } from '../../../common';
 
 @Injectable()
-export class DataService implements OnInit {
+export class DataService {
   public suggestions: Observable<MakeSuggestionMessage[]>;
   private _sugs: BehaviorSubject<MakeSuggestionMessage[]>;
   private baseUrl: string;
