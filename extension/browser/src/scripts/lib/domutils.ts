@@ -1,4 +1,4 @@
-import * as messages from '../../../../../common/messages';
+import { ParentAndIndex } from '../../../../../common';
 
 function getChildIndex(subject: Element): number {
   if (subject.parentElement) {
@@ -11,7 +11,7 @@ function getChildIndex(subject: Element): number {
   }
 }
 
-function getElementFromPath(path: messages.ParentAndIndex[]): HTMLElement {
+function getElementFromPath(path: ParentAndIndex[]): HTMLElement {
   let loopElement = document.body;
   path.forEach((p, i) => {
     const [parentTag, childIndex] = p;
@@ -52,8 +52,8 @@ export interface SuggestionSubjectInfo {
   textNode: Node | null;
 }
 
-export function getElementPath(elem: Element): messages.ParentAndIndex[] {
-  const res: messages.ParentAndIndex[] = [];
+export function getElementPath(elem: Element): ParentAndIndex[] {
+  const res: ParentAndIndex[] = [];
   let w = elem;
   while (w.parentElement) {
     res.push([w.tagName, getChildIndex(w)]);
@@ -63,7 +63,7 @@ export function getElementPath(elem: Element): messages.ParentAndIndex[] {
 }
 
 export async function getSubjectInfo(
-  path: messages.ParentAndIndex[],
+  path: ParentAndIndex[],
   text: string
 ): Promise<SuggestionSubjectInfo> {
   return new Promise<SuggestionSubjectInfo>((resolve, _reject) => {

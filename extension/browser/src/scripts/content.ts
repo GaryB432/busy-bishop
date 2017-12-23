@@ -1,8 +1,11 @@
 // tslint:disable:no-console
-
 import '../styles/content.scss';
 
-import * as messages from '../../../../common/messages';
+import {
+  MakeSuggestionMessage,
+  Message,
+  StartSuggestionMessage,
+} from '../../../../common';
 import { Dialog } from './lib/dialog';
 import * as domutils from './lib/domutils';
 import { lastPointer } from './lib/pointer';
@@ -12,12 +15,12 @@ const dialog: Dialog = new Dialog();
 dialog.start(document.body, 'Suggested Edit');
 
 function startSuggestion(
-  request: messages.StartSuggestionMessage
-): Promise<messages.MakeSuggestionMessage> {
+  request: StartSuggestionMessage
+): Promise<MakeSuggestionMessage> {
   const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
 
-  return new Promise<messages.MakeSuggestionMessage>(async resolve => {
-    const msm: Partial<messages.MakeSuggestionMessage> = {
+  return new Promise<MakeSuggestionMessage>(async resolve => {
+    const msm: Partial<MakeSuggestionMessage> = {
       createdAt: new Date().getTime(),
       elementPath: domutils.getElementPath(elem),
       href: window.location.href,
@@ -47,12 +50,12 @@ function startSuggestion(
       alert('Select just a small piece of text within a single element');
     }
 
-    resolve(msm as messages.MakeSuggestionMessage);
+    resolve(msm as MakeSuggestionMessage);
   });
 }
 
 chrome.runtime.onMessage.addListener(
-  (request: messages.Message, _sender, sendResponse) => {
+  (request: Message, _sender, sendResponse) => {
     switch (request.type) {
       case 'START_SUGGESTION':
         startSuggestion(request).then(sendResponse);

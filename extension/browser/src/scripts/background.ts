@@ -1,12 +1,10 @@
 // tslint:disable:no-console no-var-requires
 const uuidv4 = require('uuid');
 
-import * as messages from '../../../../common/messages';
+import { MakeSuggestionMessage } from '../../../../common';
 import * as xhr from './lib/xhr';
 
-function handleSuggestionResponse(
-  suggestion: messages.MakeSuggestionMessage
-): void {
+function handleSuggestionResponse(suggestion: MakeSuggestionMessage): void {
   console.log(JSON.stringify(suggestion, null, 2));
   switch (suggestion.status) {
     case 'OK':
@@ -14,10 +12,7 @@ function handleSuggestionResponse(
         console.log(a);
       });
       xhr
-        .send<messages.MakeSuggestionMessage, void>(
-          'http://example.com',
-          suggestion
-        )
+        .send<MakeSuggestionMessage, void>('http://example.com', suggestion)
         .then(
           data => {
             console.log('Yep: ' + data);

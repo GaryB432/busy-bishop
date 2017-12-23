@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { MakeSuggestionMessage } from '../../../common/messages';
+import { MakeSuggestionMessage } from '../../../common';
 import { DataService } from './data.service';
 
 @Component({

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 // import * as data from '../../../../common/data';
 
 import { DataService } from '../data.service';
-import { MakeSuggestionMessage } from '../../../../common/messages';
+import { MakeSuggestionMessage } from '../../../../common';
 
 @Component({
   selector: 'bb-sug-list',

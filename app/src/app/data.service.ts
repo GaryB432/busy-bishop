@@ -4,8 +4,8 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 // import { map } from 'rxjs/operators';
 
-import { MakeSuggestionMessage } from '../../../common/messages';
-import { getSuggestionsForHref } from '../../../common/data';
+import { MakeSuggestionMessage } from '../../../common';
+import { TempDataSource } from '../../../common';
 
 @Injectable()
 export class DataService implements OnInit {
@@ -28,7 +28,7 @@ export class DataService implements OnInit {
   }
 
   public loadForHref(href: string): void {
-    getSuggestionsForHref(href).then(sugs => {
+    new TempDataSource().getSuggestionsFor(href).then(sugs => {
       this.dataStore.suggestions = sugs;
       const store = { ...this.dataStore };
       this._sugs.next(store.suggestions);

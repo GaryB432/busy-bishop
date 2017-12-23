@@ -1,7 +1,6 @@
 import '../styles/popup.scss';
 
-import * as data from '../../../../common/data';
-import * as messages from '../../../../common/messages';
+import { MakeSuggestionMessage, TempDataSource } from '../../../../common';
 import * as utilities from './lib/utilities';
 
 const suggestions$ = document.querySelector('#suggestions')!;
@@ -36,7 +35,7 @@ function createDiffElement(
   spans[3].innerHTML = `${rtrim(end)}&hellip;`;
   return div$;
 }
-function addSuggestionElement(suggestion: messages.MakeSuggestionMessage) {
+function addSuggestionElement(suggestion: MakeSuggestionMessage) {
   const sug$ = importTemplate('#suggTemplate');
   const diffs$ = sug$.querySelector('.diffc')!;
   const position = utilities.narrowSelectionContext(
@@ -56,9 +55,10 @@ function addSuggestionElement(suggestion: messages.MakeSuggestionMessage) {
 }
 
 async function processUrl(url?: string): Promise<boolean> {
+  const ds = new TempDataSource();
   if (!!url) {
     url$.textContent = schemeTrim(url);
-    const suggestions = await data.getSuggestionsForHref(url);
+    const suggestions = await ds.getSuggestionsFor(url);
     for (const s of suggestions) {
       addSuggestionElement(s);
     }
