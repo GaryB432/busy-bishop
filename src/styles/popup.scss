@@ -1,5 +1,15 @@
+$textColor: #24292e;
+
 body {
   width: 400px;
+}
+
+#suggestions {
+  article {
+    border-bottom: 2px solid lighten($textColor, 70%);
+    margin: 2px;
+    padding: 2px;
+  }
 }
 
 div {
@@ -8,16 +18,30 @@ div {
 
 .diff {
   border: thin solid silver;
-  padding: 10px;
+  padding: 4px;
+  background-color: lighten($textColor, 70%);
+  color: $textColor;
   .start,
   .end {
     background-color: white;
   }
   .strike {
-    background-color: #920b0b;
+    background-color: #fdb8c0;
     text-decoration: line-through;
   }
   .ins {
-    background-color: chartreuse;
+    background-color: #acf2bd;
+  }
+}
+
+footer {
+  border-top: thin solid $textColor;
+  margin-top: 1rem;
+  font-size: smaller;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  a {
+    display: inline-block;
   }
 }
