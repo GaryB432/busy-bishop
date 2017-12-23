@@ -12,7 +12,8 @@
     "scripts": [
       "scripts/commons.js",
       "scripts/background.js"
-    ]
+    ],
+    "persistent": false
   },
   "permissions": [
     "tabs",

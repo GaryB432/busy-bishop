@@ -12,9 +12,7 @@ const rtrim = (str: string) => str.replace(/\s+$/, '');
 const schemeTrim = (str: string) => str.replace(schemeRegex, '');
 
 function importTemplate(templateId: string): DocumentFragment {
-  const template$ = document.querySelector(
-    templateId
-  ) as HTMLTemplateElement;
+  const template$ = document.querySelector(templateId) as HTMLTemplateElement;
   if (!template$) {
     throw new Error('sorry');
   }
@@ -39,16 +37,19 @@ function createDiffElement(
 }
 function addSuggestionElement(suggestion: messages.MakeSuggestionMessage) {
   const sug$ = importTemplate('#suggTemplate');
-  const diffs = sug$.querySelector('.diffc')!;
-  const flx = utilities.narrowSelectionContext(suggestion.context, suggestion.selectedText);
-  if (!!flx) {
-    const { line, index } = flx;
+  const diffs$ = sug$.querySelector('.diffc')!;
+  const position = utilities.narrowSelectionContext(
+    suggestion.context,
+    suggestion.selectedText
+  );
+  if (!!position) {
+    const { line, index } = position;
     const selectionLength = suggestion.selectedText.length;
     const start = line.slice(0, index);
     const strike = line.slice(index, index + selectionLength);
     const ins = suggestion.suggestedText!;
     const end = line.slice(index + selectionLength);
-    diffs.appendChild(createDiffElement(start, strike, ins, end));
+    diffs$.appendChild(createDiffElement(start, strike, ins, end));
   }
   suggestions$.appendChild(sug$);
 }
@@ -75,4 +76,3 @@ if (chrome.tabs) {
     'https://blog.jcoglan.com/2017/03/22/myers-diff-in-linear-space-theory/'
   );
 }
-
