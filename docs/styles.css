@@ -226,7 +226,7 @@ body .busy-b {
 .busy-b .shopping .mdl-card__media {
   background-image: url('images/shopping.jpg');
 }
-.busy-b .busy-b__posts > .demo-nav {
+.busy-b .busy-b__posts > .bb-nav {
   margin: 12px 15px;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -243,18 +243,18 @@ body .busy-b {
   color: white;
   font-weight: 500;
 }
-.busy-b .busy-b__posts > .demo-nav > .demo-nav__button {
+.busy-b .busy-b__posts > .bb-nav > .bb-nav__button {
   color: white;
   text-decoration: none;
 }
-.busy-b .busy-b__posts > .demo-nav .mdl-button {
+.busy-b .busy-b__posts > .bb-nav .mdl-button {
   color: rgba(0,0,0,0.54);
   background-color: white;
 }
-.busy-b .busy-b__posts > .demo-nav > .demo-nav__button:first-child .mdl-button {
+.busy-b .busy-b__posts > .bb-nav > .bb-nav__button:first-child .mdl-button {
   margin-right: 16px;
 }
-.busy-b .busy-b__posts > .demo-nav > .demo-nav__button:last-child .mdl-button {
+.busy-b .busy-b__posts > .bb-nav > .bb-nav__button:last-child .mdl-button {
   margin-left: 16px;
 }
 .busy-b .mdl-card > a {
@@ -425,7 +425,7 @@ body .busy-b {
   padding-left: 48px;
 }
 
-.busy-b--blogpost .demo-back {
+.busy-b--blogpost .bb-back {
   position: absolute;
   top: 16px;
   left: 16px;
