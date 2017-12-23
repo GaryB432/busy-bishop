@@ -3,14 +3,15 @@ import * as data from './lib/data';
 import * as messages from './lib/messages';
 import * as utilities from './lib/utilities';
 
-// const elem = document.querySelector('#suggestions');
+const suggestions$ = document.querySelector('#suggestions')!;
+const url$ = document.querySelector('#url')!;
 
 const schemeRegex: RegExp = new RegExp('https*://', 'ig');
 const ltrim = (str: string) => str.replace(/^\s+/, '');
 const rtrim = (str: string) => str.replace(/\s+$/, '');
 const schemeTrim = (str: string) => str.replace(schemeRegex, '');
 
-function asdf(templateId: string): DocumentFragment {
+function importTemplate(templateId: string): DocumentFragment {
   const template$ = document.querySelector(
     templateId
   ) as HTMLTemplateElement;
@@ -26,7 +27,7 @@ function createDiffElement(
   ins: string,
   end: string
 ): DocumentFragment {
-  const div$ = asdf('#diffTemplate');
+  const div$ = importTemplate('#diffTemplate');
   const spans: NodeListOf<HTMLSpanElement> = div$.querySelectorAll(
     'div.diff > span'
   );
@@ -36,7 +37,9 @@ function createDiffElement(
   spans[3].innerHTML = `${rtrim(end)}&hellip;`;
   return div$;
 }
-function addSuggestionElement(suggestion: messages.MakeSuggestionMessage, sugs$: HTMLDivElement) {
+function addSuggestionElement(suggestion: messages.MakeSuggestionMessage) {
+  const sug$ = importTemplate('#suggTemplate');
+  const diffs = sug$.querySelector('.diffc')!;
   const flx = utilities.narrowSelectionContext(suggestion.context, suggestion.selectedText);
   if (!!flx) {
     const { line, index } = flx;
@@ -45,19 +48,17 @@ function addSuggestionElement(suggestion: messages.MakeSuggestionMessage, sugs$:
     const strike = line.slice(index, index + selectionLength);
     const ins = suggestion.suggestedText!;
     const end = line.slice(index + selectionLength);
-    sugs$.appendChild(createDiffElement(start, strike, ins, end));
+    diffs.appendChild(createDiffElement(start, strike, ins, end));
   }
+  suggestions$.appendChild(sug$);
 }
 
 async function processUrl(url?: string): Promise<boolean> {
-  // const sugs$ = document.createElement('div');
-  const sugs$ = document.querySelector<HTMLDivElement>('#suggestions')!;
   if (!!url) {
-    const url$ = document.querySelector('#url');
-    url$!.textContent = schemeTrim(url);
+    url$.textContent = schemeTrim(url);
     const suggestions = await data.getSuggestionsForHref(url);
     for (const s of suggestions) {
-      addSuggestionElement(s, sugs$);
+      addSuggestionElement(s);
     }
   }
   // elem!.appendChild(sugs$);
