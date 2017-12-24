@@ -41,7 +41,11 @@ function startSuggestion(
       msm.context = subject.textNode.textContent!;
       msm.selectionStart = msm.context.indexOf(request.selectionText);
       console.log(`about to run ${request.selectionText}`);
-      msm.suggestedText = await dialog.doRun(request.selectionText);
+      msm.suggestedText = await dialog.doRun(
+        msm.context.slice(0, msm.selectionStart),
+        request.selectionText,
+        msm.context.slice(msm.selectionStart + request.selectionText.length)
+      );
       if (msm.suggestedText) {
         msm.status = 'OK';
         msm.textNodeIndex = subject.textNodeIndex;

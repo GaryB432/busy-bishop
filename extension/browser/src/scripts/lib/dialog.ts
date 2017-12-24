@@ -2,6 +2,7 @@ export class Dialog {
   private background: HTMLElement;
   private okButton: HTMLButtonElement;
   private inputElement: HTMLInputElement;
+  private diffSpans: NodeListOf<HTMLSpanElement>;
   private onOk: (value: string) => void;
 
   public start(parent: Element, placeHolder: string = ''): void {
@@ -13,17 +14,28 @@ export class Dialog {
     this.hide();
     parent.appendChild(bishop);
   }
-  public run(defValue: string, cb: (value: string) => void): void {
+  public run(
+    front: string,
+    selected: string,
+    back: string,
+    cb: (value: string) => void
+  ): void {
+    const parts = [front, selected, back];
+    parts.forEach((part, i) => (this.diffSpans.item(i).textContent = part));
     this.onOk = cb;
-    this.inputElement.value = defValue;
+    this.inputElement.value = selected;
     this.show();
     this.inputElement.focus();
-    this.inputElement.setSelectionRange(0, defValue.length);
+    this.inputElement.setSelectionRange(0, selected.length);
   }
 
-  public async doRun(defValue: string): Promise<string> {
+  public async doRun(
+    front: string,
+    selected: string,
+    back: string
+  ): Promise<string> {
     return new Promise<string>(resolve => {
-      this.run(defValue, s => resolve(s));
+      this.run(front, selected, back, s => resolve(s));
     });
   }
 
@@ -47,6 +59,7 @@ export class Dialog {
     this.inputElement = root.querySelector('#input') as HTMLInputElement;
     const cancel = root.querySelector('#cancel') as HTMLButtonElement;
     const close = root.querySelector('.close') as HTMLButtonElement;
+    this.diffSpans = root.querySelectorAll('.context > span');
 
     this.okButton.addEventListener('click', () => {
       this.onOk(this.inputElement.value);
@@ -170,10 +183,9 @@ export class Dialog {
       </div>
       <div class="bottom">
         <div class="context">
-          <span>...now is the time for all good </span>
-          <span class="strike">men</span>
-          <span> to come to the aid of their country Now is the time for all good men to come to the aid of their country. Now is the time for all good men to come to the aid
-              of their country. Now is the time for all good men to come to the aid of their country...</span>
+          <span></span>
+          <span class="strike"></span>
+          <span></span>
         </div>
         <input id="input" placeholder="Suggested Edit" size="15" value="${placeHolder}">
         <button id="ok">OK</button>
