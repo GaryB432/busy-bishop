@@ -44,6 +44,7 @@ function startSuggestion(
       msm.suggestedText = await dialog.doRun(request.selectionText);
       if (msm.suggestedText) {
         msm.status = 'OK';
+        msm.textNodeIndex = subject.textNodeIndex;
         console.log(`resolved ${request.selectionText}`);
       }
     } else {
