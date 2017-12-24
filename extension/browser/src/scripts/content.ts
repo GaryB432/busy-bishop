@@ -69,3 +69,27 @@ chrome.runtime.onMessage.addListener(
     return true;
   }
 );
+
+import {
+  FakePopup,
+  MessageBus,
+  Logic,
+  StartSuggestionCommand,
+} from './lib/logic';
+const logic = new Logic(new MessageBus());
+const popup = new FakePopup();
+function setup() {
+  chrome.runtime.onMessage.addListener(
+    async (m: StartSuggestionCommand, _sender, sendResponse) => {
+      sendResponse(undefined);
+      console.log(m);
+      try {
+        const suggestedText = await popup.doRun('a', 'b', 'c');
+        logic.createAndSendMakeCommand(document, 'context', suggestedText);
+      } finally {
+        return true;
+      }
+    }
+  );
+}
+setup();

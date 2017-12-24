@@ -58,4 +58,23 @@ chrome.contextMenus.create({
   title: 'Suggest Edit',
 });
 
+import { MessageBus, Logic, MakeSuggestionCommand } from './lib/logic';
+const logic = new Logic(new MessageBus());
+function setup() {
+  chrome.contextMenus.onClicked.addListener((info, _tab) => {
+    console.log(info, _tab);
+    if (info.selectionText) {
+      logic.handleStartClick('xy,element', info.selectionText);
+      // const r = this.logic.createMakeCommand('dom', info.selectionText)
+    }
+  });
+  chrome.runtime.onMessage.addListener(
+    (m: MakeSuggestionCommand, _sender, sendResponse) => {
+      // this.logic.handleStartClick(m);
+      console.log(m);
+      sendResponse(undefined);
+    }
+  );
+}
+
 console.log('Loaded.');
