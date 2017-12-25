@@ -1,4 +1,9 @@
-import { Logic, MakeSuggestionCommand, MessageBusChrome } from './lib/logic';
+import {
+  Logic,
+  MakeSuggestionCommand,
+  MessageBusChrome,
+  MakeSuggestionResponse,
+} from './lib/logic';
 const logic = new Logic(new MessageBusChrome());
 
 chrome.contextMenus.create({
@@ -16,7 +21,13 @@ function setup() {
   });
   chrome.runtime.onMessage.addListener(
     (command: MakeSuggestionCommand, _sender, sendResponse) => {
-      sendResponse(logic.handleMakeCommand(command));
+      logic.handleMakeCommand(command);
+      const response: MakeSuggestionResponse = {
+        type: 'MAKE_SUGGESTION_RESPONSE',
+        data: command.data,
+        status: 'OK',
+      };
+      sendResponse(response);
     }
   );
 }
