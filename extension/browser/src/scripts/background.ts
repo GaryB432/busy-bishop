@@ -17,7 +17,7 @@ function setup() {
   chrome.contextMenus.onClicked.addListener((info, _tab) => {
     console.log(info.menuItemId);
     if (info.selectionText) {
-      logic.handleStartClick(info.selectionText);
+      logic.onStartSuggestion(info.selectionText);
     }
   });
   chrome.runtime.onMessage.addListener(
@@ -27,7 +27,7 @@ function setup() {
         status: 'OK',
         type: 'MAKE_SUGGESTION_RESPONSE',
       };
-      logic.handleMakeCommand(command);
+      logic.omMakeSuggestion(command);
       sendResponse(response);
     }
   );

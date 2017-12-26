@@ -1,3 +1,4 @@
+/* tslint:disable-next-line:no-var-requires */
 const uuidv4 = require('uuid');
 import * as domutils from './domutils';
 import {
@@ -9,7 +10,7 @@ import { MessageSender } from './sender';
 
 export class Logic {
   constructor(private bus: MessageSender) {}
-  public handleStartClick(selectionText: string): void {
+  public onStartSuggestion(selectionText: string): void {
     const command: StartSuggestionCommand = {
       id: uuidv4(),
       selectionText,
@@ -18,16 +19,9 @@ export class Logic {
     this.bus.send(command);
   }
 
-  public sendMakeSuggestion(document: SuggestionDocument): void {
-    const command: MakeSuggestionCommand = {
-      data: document,
-      type: 'MAKE_SUGGESTION',
-    };
-    this.bus.send(command);
-  }
-
-  public handleMakeCommand(command: MakeSuggestionCommand): void {
-    console.log(JSON.stringify(command.data, null, 2));
+  public omMakeSuggestion(command: MakeSuggestionCommand): void {
+    // console.log(JSON.stringify(command.data, null, 2));
+    console.log(command.data);
   }
 
   public async getSuggestionFromUser(
@@ -71,5 +65,13 @@ export class Logic {
         reject('nope');
       }
     });
+  }
+
+  public sendMakeSuggestion(document: SuggestionDocument): void {
+    const command: MakeSuggestionCommand = {
+      data: document,
+      type: 'MAKE_SUGGESTION',
+    };
+    this.bus.send(command);
   }
 }
