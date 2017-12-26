@@ -1,7 +1,6 @@
 import '../styles/content.scss';
 import { Dialog } from './lib/dialog';
 import {
-  // FakePopup,
   Logic,
   MessageBusChrome,
   StartSuggestionCommand,
@@ -14,11 +13,12 @@ const dialog = new Dialog();
 const logic = new Logic(new MessageBusChrome());
 chrome.runtime.onMessage.addListener(
   async (command: StartSuggestionCommand, _sender, sendResponse) => {
-    sendResponse({
-      type: 'START_SUGGESTION_RESPONSE',
+    const earlyResponse: StartSuggestionResponse = {
       command,
       status: 'WAITING',
-    } as StartSuggestionResponse);
+      type: 'START_SUGGESTION_RESPONSE',
+    };
+    sendResponse(earlyResponse);
     const runDialog = async (doc: SuggestionDocument) => {
       const front = doc.context.slice(0, doc.selectionStart);
       const back = doc.context.slice(

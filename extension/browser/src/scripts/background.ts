@@ -1,8 +1,8 @@
 import {
   Logic,
   MakeSuggestionCommand,
-  MessageBusChrome,
   MakeSuggestionResponse,
+  MessageBusChrome,
 } from './lib/logic';
 const logic = new Logic(new MessageBusChrome());
 

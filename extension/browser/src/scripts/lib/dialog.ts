@@ -171,10 +171,7 @@ export class Dialog {
         <div class="instructions">
           <section>
             <h1>Enter your suggested change</h1>
-            <p>Now is the time for all good men to come to the aid of their country. Now is the time for all good men to come
-              to the aid of their country. Now is the time for all good men to come to the aid of their country</p>
-            <p>Now is the time for all good men to come to the aid of their country. Now is the time for all good men to come
-              to the aid of their country. Now is the time for all good men to come to the aid of their country</p>
+            <p>and click OK</p>
           </section>
         </div>
         <div>

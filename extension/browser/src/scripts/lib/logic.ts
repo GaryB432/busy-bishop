@@ -34,20 +34,6 @@ export interface MakeSuggestionResponse {
   status: 'OK' | 'ERROR';
 }
 
-export class FakePopup {
-  public async doRun(
-    front: string,
-    selected: string,
-    back: string
-  ): Promise<string> {
-    return new Promise<string>((resolve, _reject) => {
-      console.log(front, selected, back);
-      // reject('not yet');
-      window.setTimeout(() => resolve(`changed ${selected}`), 5000);
-    });
-  }
-}
-
 export abstract class MessageBus {
   public abstract send(
     command: StartSuggestionCommand | MakeSuggestionCommand
