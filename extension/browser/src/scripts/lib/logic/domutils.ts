@@ -1,4 +1,4 @@
-import { ParentAndIndex } from '../../../../../common';
+import { ParentAndIndex } from './models';
 
 function getChildIndex(subject: Element): number {
   if (subject.parentElement) {
@@ -10,22 +10,6 @@ function getChildIndex(subject: Element): number {
     return -1;
   }
 }
-
-// function getElementFromPath(path: ParentAndIndex[]): HTMLElement {
-//   let loopElement = document.body;
-//   path.forEach((p, i) => {
-//     const [parentTag, childIndex] = p;
-//     if (i > 0) {
-//       if (childIndex < loopElement.childElementCount) {
-//         const ce = loopElement.children[childIndex] as HTMLElement;
-//         console.assert(parentTag === ce.tagName);
-//         loopElement = ce;
-//       }
-//     }
-//   });
-//   return loopElement;
-// }
-
 function findTextContainers(elem: Node, txt: string): number[] {
   const numberedNodes = Array.from(elem.childNodes).map<{
     node: Node;
@@ -46,7 +30,6 @@ function findTextContainers(elem: Node, txt: string): number[] {
 }
 
 export interface SuggestionSubjectInfo {
-  // elementPath: messages.ParentAndIndex[];
   element: HTMLElement | null;
   textNodeIndex: number;
   textNode: Node | null;

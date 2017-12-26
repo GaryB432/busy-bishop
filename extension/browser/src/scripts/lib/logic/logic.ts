@@ -38,7 +38,7 @@ export class MessageBusChrome extends MessageBus {
 
 export class Logic {
   constructor(private bus: MessageBus) {}
-  public handleStartClick(_positionmaybe: any, selectionText: string): void {
+  public handleStartClick(selectionText: string): void {
     const command: StartSuggestionCommand = {
       id: uuidv4(),
       selectionText,

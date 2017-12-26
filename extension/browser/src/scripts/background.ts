@@ -1,5 +1,8 @@
-import { Logic, MessageBusChrome } from './lib/logic';
-import { MakeSuggestionCommand, MakeSuggestionResponse } from './lib/models';
+import { Logic, MessageBusChrome } from './lib/logic/logic';
+import {
+  MakeSuggestionCommand,
+  MakeSuggestionResponse,
+} from './lib/logic/models';
 const logic = new Logic(new MessageBusChrome());
 
 chrome.contextMenus.create({
@@ -12,7 +15,7 @@ function setup() {
   chrome.contextMenus.onClicked.addListener((info, _tab) => {
     console.log(info.menuItemId);
     if (info.selectionText) {
-      logic.handleStartClick('xy,element', info.selectionText);
+      logic.handleStartClick(info.selectionText);
     }
   });
   chrome.runtime.onMessage.addListener(
