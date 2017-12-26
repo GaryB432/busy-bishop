@@ -1,5 +1,5 @@
 const uuidv4 = require('uuid');
-// import * as domutils from './domutils';
+import * as domutils from './domutils';
 
 export type ParentAndIndex = [string, number];
 
@@ -35,13 +35,13 @@ export interface MakeSuggestionResponse {
 }
 
 export class FakePopup {
-  public async doRun(
-    _front: string,
-    selected: string,
-    _back: string
-  ): Promise<string> {
-    return new Promise<string>(resolve => {
-      window.setTimeout(() => resolve(`changed ${selected}!`), 5000);
+  public async doRun(command: MakeSuggestionCommand): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      reject('not yet');
+      window.setTimeout(
+        () => resolve(`changed ${command.data.selectedText}`),
+        5000
+      );
     });
   }
 }
@@ -62,7 +62,6 @@ export class MessageBusChrome extends MessageBus {
       case 'START_SUGGESTION':
         chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
           const tid = tabs[0].id!;
-          console.log(tid);
           chrome.tabs.sendMessage(tid, command, this.handleReponse);
         });
         break;
@@ -84,246 +83,58 @@ export class Logic {
     this.bus.send(command);
   }
 
-  public createAndSendMakeCommand(
-    element: Element,
-    command: StartSuggestionCommand,
-    context: any,
-    suggestedText: string
-  ): void {
-    this.bus.send(
-      this.createMakeCommand(element, command, context, suggestedText)
-    );
+  public sendMakeSuggestion(document: SuggestionDocument): void {
+    const command: MakeSuggestionCommand = {
+      data: document,
+      type: 'MAKE_SUGGESTION',
+    };
+    this.bus.send(command);
   }
+
   public handleMakeCommand(command: MakeSuggestionCommand): void {
-    console.log('got one!', command.data);
+    console.log(JSON.stringify(command.data, null, 2));
   }
 
   public async getSuggestionFromUser(
-    element: Element,
+    point: WebKitPoint,
     command: StartSuggestionCommand,
-    getSuggestedText: (selectedText: string) => Promise<string>
-  ): Promise<SuggestionDocument | any> {
-    // const f = domutils.getSubjectInfoOld();
-    // text or content??
-    const context = element.parentElement!.innerText;
-    const createdAt = new Date().getTime();
-    const selectedText = command.selectionText;
-    const selectionStart = context.indexOf(selectedText);
+    getSuggestedText: (document: SuggestionDocument) => Promise<string>
+  ): Promise<SuggestionDocument> {
+    const element = document.elementFromPoint(
+      point.x,
+      point.y
+    ) as HTMLElement | null;
+    if (!element) {
+      throw new Error('wtf with elementFromPoint()');
+    }
+    const elementPath = domutils.getElementPath(element);
     const href = window.location.href;
-    const textNodeIndex = -1;
-    const suggestedText = await getSuggestedText(command.selectionText);
-    const document: SuggestionDocument = {
-      context,
-      createdAt,
-      elementPath: [],
-      href,
-      id: command.id,
-      selectedText,
-      selectionStart,
-      suggestedText,
-      textNodeIndex,
-    };
-    return new Promise<SuggestionDocument>(resolve => resolve(document));
-  }
-
-  private createDocument(
-    ssc: StartSuggestionCommand,
-    suggestedText: string,
-    _shit: boolean
-  ): SuggestionDocument {
-    return {
-      context: 'context',
-      createdAt: new Date().getTime(),
-      elementPath: [],
-      href: 'href',
-      id: ssc.id,
-      selectedText: 'dunno',
-      selectionStart: -1,
-      suggestedText,
-      textNodeIndex: -1,
-    };
-  }
-  private createMakeCommand(
-    element: Element,
-    _command: StartSuggestionCommand,
-    _context: any,
-    suggestedText: string
-  ): MakeSuggestionCommand {
-    console.log(element);
-    const doc = this.createDocument(_command, suggestedText, true);
-    const cmd: MakeSuggestionCommand = {
-      data: doc,
-      type: 'MAKE_SUGGESTION',
-    };
-    return cmd;
+    return new Promise<SuggestionDocument>(async (resolve, reject) => {
+      const textInfo = domutils.getSubjectInfo(element, command.selectionText);
+      const textNodeIndex = textInfo.textNodeIndex;
+      if (textInfo.textNodeIndex > -1) {
+        const context = element.childNodes.item(textInfo.textNodeIndex)
+          .textContent!;
+        const selectionStart = context.indexOf(command.selectionText);
+        const createdAt = new Date().getTime();
+        const selectedText = command.selectionText;
+        const doc: SuggestionDocument = {
+          context,
+          createdAt,
+          elementPath,
+          href,
+          id: command.id,
+          selectedText,
+          selectionStart,
+          suggestedText: 'TBD',
+          textNodeIndex,
+        };
+        doc.suggestedText = await getSuggestedText(doc);
+        resolve(doc);
+      } else {
+        console.log(element, textInfo, command.selectionText);
+        reject('nope');
+      }
+    });
   }
 }
-
-// class Background {
-//   private logic = new Logic(new MessageBus());
-//   protected setup() {
-//     chrome.contextMenus.onClicked.addListener((info, _tab) => {
-//       if (info.selectionText) {
-//         const x = this.logic.handleStartClick('xy,element', info.selectionText);
-//         // const r = this.logic.createMakeCommand('dom', info.selectionText)
-//       }
-//     });
-//     chrome.runtime.onMessage.addListener(
-//       (m: MakeSuggestionCommand, _sender, sendResponse) => {
-//         // this.logic.handleStartClick(m);
-//         console.log(m);
-//         sendResponse(undefined);
-//       }
-//     );
-//   }
-// }
-
-// # Logic
-// 	handleStartClick(positionmaybe?, selectionText)
-// 		createStartCommand(position,selectionText):StartCommand
-// 		chrome.send(startCommand,sender,()=void);
-// 	createMakeCommand w/dom/dialog/async etc
-// 		createDocument(dom, dialog, suggestedText)
-// 	handleMakeCommand(makeCommand)
-// 		writeToDb(makeCommand.document)
-// 		doOtherLogging(makeCommand.etc)
-
-// # Background
-// 	gets startClick
-// 		logic.handleStartClick(positionmaybe?, selectionText)
-// 	gets makeCommand
-// 		logic.handleMakeCommand(makeCommand)
-
-// # Content
-// 	gets start_command
-// 	await suggestedTextAndContext(context and stuff)
-// 		logic.createMakeCommand(element, context, suggestedText)
-// 	chrome.send(makeCommand,sender,()=void);
-
-// # User
-// 	sends startClick
-// 	sends suggestedTextAndContext
-
-// ====old content===
-// import {
-//   MakeSuggestionMessage,
-//   Message,
-//   StartSuggestionMessage,
-// } from '../../../../common';
-// import { Dialog } from './lib/dialog';
-// import * as domutils from './lib/domutils';
-// import { lastPointer } from './lib/pointer';
-
-// const dialog: Dialog = new Dialog();
-
-// dialog.start(document.body, 'Suggested Edit');
-
-// function startSuggestion(
-//   request: StartSuggestionMessage
-// ): Promise<MakeSuggestionMessage> {
-//   const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
-
-//   return new Promise<MakeSuggestionMessage>(async resolve => {
-//     const msm: Partial<MakeSuggestionMessage> = {
-//       createdAt: new Date().getTime(),
-//       elementPath: domutils.getElementPath(elem),
-//       href: window.location.href,
-//       id: request.id,
-//       selectedText: request.selectionText,
-//       status: 'WAITING',
-//       textNodeIndex: -1,
-//       type: 'MAKE_SUGGESTION',
-//     };
-
-//     const subject = await domutils.getSubjectInfo(
-//       msm.elementPath!,
-//       request.selectionText
-//     );
-
-//     msm.status = 'ERROR';
-//     if (subject.textNode) {
-//       msm.context = subject.textNode.textContent!;
-//       msm.selectionStart = msm.context.indexOf(request.selectionText);
-//       console.log(`about to run ${request.selectionText}`);
-//       msm.suggestedText = await dialog.doRun(
-//         msm.context.slice(0, msm.selectionStart),
-//         request.selectionText,
-//         msm.context.slice(msm.selectionStart + request.selectionText.length)
-//       );
-//       if (msm.suggestedText) {
-//         msm.status = 'OK';
-//         msm.textNodeIndex = subject.textNodeIndex;
-//         console.log(`resolved ${request.selectionText}`);
-//       }
-//     } else {
-//       alert('Select just a small piece of text within a single element');
-//     }
-
-//     resolve(msm as MakeSuggestionMessage);
-//   });
-// }
-
-// chrome.runtime.onMessage.addListener(
-//   (request: Message, _sender, sendResponse) => {
-//     switch (request.type) {
-//       case 'START_SUGGESTION':
-//         startSuggestion(request).then(sendResponse);
-//         break;
-//     }
-//     return true;
-//   }
-// );
-
-// ============old bg==============
-// tslint:disable:no-console no-var-requires
-
-// import { MakeSuggestionMessage } from '../../../../common';
-// import * as xhr from './lib/xhr';
-
-// function handleSuggestionResponse(suggestion: MakeSuggestionMessage): void {
-//   console.log(JSON.stringify(suggestion, null, 2));
-//   switch (suggestion.status) {
-//     case 'OK':
-//       xhr.getJSON<any>('https://bortosky.com/theater.json').then(a => {
-//         console.log(a);
-//       });
-//       xhr
-//         .send<MakeSuggestionMessage, void>('http://example.com', suggestion)
-//         .then(
-//           data => {
-//             console.log('Yep: ' + data);
-//           },
-//           _status => {
-//             console.error('Something went wrong.');
-//           }
-//         );
-//       break;
-//     case 'ERROR':
-//       console.log('not doing much');
-//       break;
-//     default:
-//       throw new Error('zomg');
-//   }
-// }
-
-// chrome.contextMenus.onClicked.addListener(
-//   (info: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
-//     if (tab && tab.id && info.selectionText) {
-//       chrome.tabs.sendMessage(
-//         tab.id,
-//         {
-//           id: uuidv4(),
-//           selectionText: info.selectionText,
-//           type: 'START_SUGGESTION',
-//         },
-//         response => {
-//           if (response) {
-//             handleSuggestionResponse(response);
-//           } else {
-//             console.log(chrome.runtime.lastError, 'oops');
-//           }
-//         }
-//       );
-//     }
-//   }
-// );

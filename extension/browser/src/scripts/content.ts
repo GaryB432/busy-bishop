@@ -1,15 +1,17 @@
 import '../styles/content.scss';
 
 import {
-  FakePopup,
+  // FakePopup,
   Logic,
   MessageBusChrome,
   StartSuggestionCommand,
   StartSuggestionResponse,
+  SuggestionDocument,
 } from './lib/logic';
 import { lastPointer } from './lib/pointer';
 
-async function waityWait(): Promise<string> {
+async function waityWait(doc: SuggestionDocument): Promise<string> {
+  console.log(doc);
   return new Promise<string>(resolve => {
     window.setTimeout(() => resolve('yay'), 2000);
   });
@@ -17,7 +19,7 @@ async function waityWait(): Promise<string> {
 
 function setup() {
   const logic = new Logic(new MessageBusChrome());
-  const dialog = new FakePopup();
+  // const dialog = new FakePopup();
   chrome.runtime.onMessage.addListener(
     async (command: StartSuggestionCommand, _sender, sendResponse) => {
       sendResponse(<StartSuggestionResponse>{
@@ -25,19 +27,25 @@ function setup() {
         command,
         status: 'WAITING',
       });
-      const elem = document.elementFromPoint(lastPointer.x, lastPointer.y);
       try {
-        const hi = await logic.getSuggestionFromUser(elem, command, waityWait);
-
-        console.log(hi, 'hi');
-
-        // const parent = elem.parentElement;
-        const suggestedText = await dialog.doRun(
-          'a',
-          command.selectionText,
-          'c'
+        const suggestion = await logic.getSuggestionFromUser(
+          lastPointer,
+          command,
+          waityWait
         );
-        logic.createAndSendMakeCommand(elem, command, 'context', suggestedText);
+        if (suggestion.textNodeIndex > -1) {
+          logic.sendMakeSuggestion(suggestion);
+        }
+
+        // console.log(hi, 'hi');
+
+        // // const parent = elem.parentElement;
+        // const suggestedText = await dialog.doRun(
+        //   'a',
+        //   command.selectionText,
+        //   'c'
+        // );
+        // logic.createAndSendMakeCommand(elem, command, 'context', suggestedText);
       } finally {
       }
     }

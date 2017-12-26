@@ -11,20 +11,20 @@ function getChildIndex(subject: Element): number {
   }
 }
 
-function getElementFromPath(path: ParentAndIndex[]): HTMLElement {
-  let loopElement = document.body;
-  path.forEach((p, i) => {
-    const [parentTag, childIndex] = p;
-    if (i > 0) {
-      if (childIndex < loopElement.childElementCount) {
-        const ce = loopElement.children[childIndex] as HTMLElement;
-        console.assert(parentTag === ce.tagName);
-        loopElement = ce;
-      }
-    }
-  });
-  return loopElement;
-}
+// function getElementFromPath(path: ParentAndIndex[]): HTMLElement {
+//   let loopElement = document.body;
+//   path.forEach((p, i) => {
+//     const [parentTag, childIndex] = p;
+//     if (i > 0) {
+//       if (childIndex < loopElement.childElementCount) {
+//         const ce = loopElement.children[childIndex] as HTMLElement;
+//         console.assert(parentTag === ce.tagName);
+//         loopElement = ce;
+//       }
+//     }
+//   });
+//   return loopElement;
+// }
 
 function findTextContainers(elem: Node, txt: string): number[] {
   const numberedNodes = Array.from(elem.childNodes).map<{
@@ -68,6 +68,7 @@ export function getSubjectInfo(
   let textNode: Node | null = null;
   let textNodeIndex = -1;
   const tnc = findTextContainers(element, text);
+  console.log(element, text, tnc);
   if (tnc.length === 1) {
     textNodeIndex = tnc[0];
     textNode = element.childNodes[textNodeIndex];
@@ -77,12 +78,4 @@ export function getSubjectInfo(
     textNode,
     textNodeIndex,
   };
-}
-export async function getSubjectInfoOld(
-  path: ParentAndIndex[],
-  text: string
-): Promise<SuggestionSubjectInfo> {
-  return new Promise<SuggestionSubjectInfo>((resolve, _reject) => {
-    resolve(getSubjectInfo(getElementFromPath(path), text));
-  });
 }
