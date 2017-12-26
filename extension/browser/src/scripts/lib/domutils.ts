@@ -61,24 +61,28 @@ export function getElementPath(elem: Element): ParentAndIndex[] {
   }
   return res.reverse();
 }
-
-export async function getSubjectInfo(
+export function getSubjectInfo(
+  element: HTMLElement,
+  text: string
+): SuggestionSubjectInfo {
+  let textNode: Node | null = null;
+  let textNodeIndex = -1;
+  const tnc = findTextContainers(element, text);
+  if (tnc.length === 1) {
+    textNodeIndex = tnc[0];
+    textNode = element.childNodes[textNodeIndex];
+  }
+  return {
+    element,
+    textNode,
+    textNodeIndex,
+  };
+}
+export async function getSubjectInfoOld(
   path: ParentAndIndex[],
   text: string
 ): Promise<SuggestionSubjectInfo> {
   return new Promise<SuggestionSubjectInfo>((resolve, _reject) => {
-    const element = getElementFromPath(path);
-    let textNode: Node | null = null;
-    let textNodeIndex = -1;
-    const tnc = findTextContainers(element, text);
-    if (tnc.length === 1) {
-      textNodeIndex = tnc[0];
-      textNode = element.childNodes[textNodeIndex];
-    }
-    resolve({
-      element,
-      textNode,
-      textNodeIndex,
-    });
+    resolve(getSubjectInfo(getElementFromPath(path), text));
   });
 }

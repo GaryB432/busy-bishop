@@ -21,12 +21,12 @@ function setup() {
   });
   chrome.runtime.onMessage.addListener(
     (command: MakeSuggestionCommand, _sender, sendResponse) => {
-      logic.handleMakeCommand(command);
       const response: MakeSuggestionResponse = {
         type: 'MAKE_SUGGESTION_RESPONSE',
         data: command.data,
         status: 'OK',
       };
+      logic.handleMakeCommand(command);
       sendResponse(response);
     }
   );

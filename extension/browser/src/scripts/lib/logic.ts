@@ -1,4 +1,5 @@
 const uuidv4 = require('uuid');
+// import * as domutils from './domutils';
 
 export type ParentAndIndex = [string, number];
 
@@ -31,6 +32,18 @@ export interface MakeSuggestionResponse {
   type: 'MAKE_SUGGESTION_RESPONSE';
   data: SuggestionDocument;
   status: 'OK' | 'ERROR';
+}
+
+export class FakePopup {
+  public async doRun(
+    _front: string,
+    selected: string,
+    _back: string
+  ): Promise<string> {
+    return new Promise<string>(resolve => {
+      window.setTimeout(() => resolve(`changed ${selected}!`), 5000);
+    });
+  }
 }
 
 export abstract class MessageBus {
@@ -70,25 +83,57 @@ export class Logic {
     };
     this.bus.send(command);
   }
+
   public createAndSendMakeCommand(
-    dom: HTMLDocument,
+    element: Element,
     command: StartSuggestionCommand,
     context: any,
     suggestedText: string
   ): void {
-    this.bus.send(this.createMakeCommand(dom, command, context, suggestedText));
+    this.bus.send(
+      this.createMakeCommand(element, command, context, suggestedText)
+    );
   }
   public handleMakeCommand(command: MakeSuggestionCommand): void {
     console.log('got one!', command.data);
-    console.log('log one!', command.data);
   }
+
+  public async getSuggestionFromUser(
+    element: Element,
+    command: StartSuggestionCommand,
+    getSuggestedText: (selectedText: string) => Promise<string>
+  ): Promise<SuggestionDocument | any> {
+    // const f = domutils.getSubjectInfoOld();
+    // text or content??
+    const context = element.parentElement!.innerText;
+    const createdAt = new Date().getTime();
+    const selectedText = command.selectionText;
+    const selectionStart = context.indexOf(selectedText);
+    const href = window.location.href;
+    const textNodeIndex = -1;
+    const suggestedText = await getSuggestedText(command.selectionText);
+    const document: SuggestionDocument = {
+      context,
+      createdAt,
+      elementPath: [],
+      href,
+      id: command.id,
+      selectedText,
+      selectionStart,
+      suggestedText,
+      textNodeIndex,
+    };
+    return new Promise<SuggestionDocument>(resolve => resolve(document));
+  }
+
   private createDocument(
     ssc: StartSuggestionCommand,
-    suggestedText: string
+    suggestedText: string,
+    _shit: boolean
   ): SuggestionDocument {
     return {
       context: 'context',
-      createdAt: 0,
+      createdAt: new Date().getTime(),
       elementPath: [],
       href: 'href',
       id: ssc.id,
@@ -99,12 +144,13 @@ export class Logic {
     };
   }
   private createMakeCommand(
-    _dom: HTMLDocument,
+    element: Element,
     _command: StartSuggestionCommand,
     _context: any,
     suggestedText: string
   ): MakeSuggestionCommand {
-    const doc = this.createDocument(_command, suggestedText);
+    console.log(element);
+    const doc = this.createDocument(_command, suggestedText, true);
     const cmd: MakeSuggestionCommand = {
       data: doc,
       type: 'MAKE_SUGGESTION',
@@ -131,18 +177,6 @@ export class Logic {
 //     );
 //   }
 // }
-
-export class FakePopup {
-  public async doRun(
-    _front: string,
-    selected: string,
-    _back: string
-  ): Promise<string> {
-    return new Promise<string>(resolve => {
-      window.setTimeout(() => resolve(`changed ${selected}!`), 5000);
-    });
-  }
-}
 
 // # Logic
 // 	handleStartClick(positionmaybe?, selectionText)
