@@ -1,9 +1,5 @@
-import {
-  Logic,
-  MakeSuggestionCommand,
-  MakeSuggestionResponse,
-  MessageBusChrome,
-} from './lib/logic';
+import { Logic, MessageBusChrome } from './lib/logic';
+import { MakeSuggestionCommand, MakeSuggestionResponse } from './lib/models';
 const logic = new Logic(new MessageBusChrome());
 
 chrome.contextMenus.create({
