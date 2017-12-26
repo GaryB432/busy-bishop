@@ -3,13 +3,8 @@ import {
   MakeSuggestionResponse,
   StartSuggestionCommand,
   StartSuggestionResponse,
-} from './models';
-
-export abstract class MessageSender {
-  public abstract send(
-    command: StartSuggestionCommand | MakeSuggestionCommand
-  ): void;
-}
+} from '../models';
+import { MessageSender } from '../sender';
 
 export class MessageSenderChrome extends MessageSender {
   public send(command: StartSuggestionCommand | MakeSuggestionCommand): void {

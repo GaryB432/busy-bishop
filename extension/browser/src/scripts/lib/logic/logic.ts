@@ -1,11 +1,11 @@
 const uuidv4 = require('uuid');
 import * as domutils from './domutils';
-import { MessageSender } from './message-sender';
 import {
   MakeSuggestionCommand,
   StartSuggestionCommand,
   SuggestionDocument,
 } from './models';
+import { MessageSender } from './sender';
 
 export class Logic {
   constructor(private bus: MessageSender) {}

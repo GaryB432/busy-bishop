@@ -1,6 +1,10 @@
 import { Logic } from './lib/logic/logic';
-import { MessageSenderChrome } from './lib/logic/message-sender';
-import { MakeSuggestionCommand, MakeSuggestionResponse } from './lib/logic/models';
+import {
+  MakeSuggestionCommand,
+  MakeSuggestionResponse,
+} from './lib/logic/models';
+import { MessageSenderChrome } from './lib/logic/sender';
+
 const logic = new Logic(new MessageSenderChrome());
 
 chrome.contextMenus.create({

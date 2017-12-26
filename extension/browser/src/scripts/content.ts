@@ -1,12 +1,12 @@
 import '../styles/content.scss';
 import { Dialog } from './lib/dialog';
 import { Logic } from './lib/logic/logic';
-import { MessageSenderChrome } from './lib/logic/message-sender';
 import {
   StartSuggestionCommand,
   StartSuggestionResponse,
   SuggestionDocument,
 } from './lib/logic/models';
+import { MessageSenderChrome } from './lib/logic/sender';
 import { lastPointer } from './lib/pointer';
 
 const dialog = new Dialog();
