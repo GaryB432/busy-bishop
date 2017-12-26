@@ -35,13 +35,15 @@ export interface MakeSuggestionResponse {
 }
 
 export class FakePopup {
-  public async doRun(command: MakeSuggestionCommand): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      reject('not yet');
-      window.setTimeout(
-        () => resolve(`changed ${command.data.selectedText}`),
-        5000
-      );
+  public async doRun(
+    front: string,
+    selected: string,
+    back: string
+  ): Promise<string> {
+    return new Promise<string>((resolve, _reject) => {
+      console.log(front, selected, back);
+      // reject('not yet');
+      window.setTimeout(() => resolve(`changed ${selected}`), 5000);
     });
   }
 }

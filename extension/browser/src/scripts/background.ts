@@ -23,8 +23,8 @@ function setup() {
     (command: MakeSuggestionCommand, _sender, sendResponse) => {
       const response: MakeSuggestionResponse = {
         data: command.data,
-        type: 'MAKE_SUGGESTION_RESPONSE',
         status: 'OK',
+        type: 'MAKE_SUGGESTION_RESPONSE',
       };
       logic.handleMakeCommand(command);
       sendResponse(response);
