@@ -1,43 +1,14 @@
 const uuidv4 = require('uuid');
 import * as domutils from './domutils';
+import { MessageSender } from './message-sender';
 import {
   MakeSuggestionCommand,
-  MakeSuggestionResponse,
   StartSuggestionCommand,
-  StartSuggestionResponse,
   SuggestionDocument,
 } from './models';
 
-export abstract class MessageBus {
-  public abstract send(
-    command: StartSuggestionCommand | MakeSuggestionCommand
-  ): void;
-}
-
-export class MessageBusChrome extends MessageBus {
-  public send(command: StartSuggestionCommand | MakeSuggestionCommand): void {
-    console.log('sending', command);
-    switch (command.type) {
-      case 'MAKE_SUGGESTION':
-        chrome.runtime.sendMessage(command, this.handleReponse);
-        break;
-      case 'START_SUGGESTION':
-        chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-          const tid = tabs[0].id!;
-          chrome.tabs.sendMessage(tid, command, this.handleReponse);
-        });
-        break;
-    }
-  }
-  private handleReponse(
-    response: StartSuggestionResponse | MakeSuggestionResponse
-  ) {
-    console.log('ignoring ', response);
-  }
-}
-
 export class Logic {
-  constructor(private bus: MessageBus) {}
+  constructor(private bus: MessageSender) {}
   public handleStartClick(selectionText: string): void {
     const command: StartSuggestionCommand = {
       id: uuidv4(),

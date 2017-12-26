@@ -1,6 +1,7 @@
 import '../styles/content.scss';
 import { Dialog } from './lib/dialog';
-import { Logic, MessageBusChrome } from './lib/logic/logic';
+import { Logic } from './lib/logic/logic';
+import { MessageSenderChrome } from './lib/logic/message-sender';
 import {
   StartSuggestionCommand,
   StartSuggestionResponse,
@@ -9,7 +10,7 @@ import {
 import { lastPointer } from './lib/pointer';
 
 const dialog = new Dialog();
-const logic = new Logic(new MessageBusChrome());
+const logic = new Logic(new MessageSenderChrome());
 chrome.runtime.onMessage.addListener(
   async (command: StartSuggestionCommand, _sender, sendResponse) => {
     const earlyResponse: StartSuggestionResponse = {
