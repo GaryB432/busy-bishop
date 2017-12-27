@@ -20,11 +20,11 @@ chrome.runtime.onMessage.addListener(
     };
     sendResponse(earlyResponse);
     const runDialog = async (doc: SuggestionDocument) => {
-      const front = doc.context.slice(0, doc.selectionStart);
-      const back = doc.context.slice(
-        doc.selectedText.length + doc.selectionStart
+      return await dialog.doRun(
+        doc.context.slice(0, doc.selectionStart),
+        doc.selectedText,
+        doc.context.slice(doc.selectedText.length + doc.selectionStart)
       );
-      return await dialog.doRun(front, doc.selectedText, back);
     };
     const suggestion = await logic.getSuggestionFromUser(
       lastPointer,

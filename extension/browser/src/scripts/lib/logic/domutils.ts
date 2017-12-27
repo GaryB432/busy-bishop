@@ -51,10 +51,12 @@ export function getSubjectInfo(
   let textNode: Node | null = null;
   let textNodeIndex = -1;
   const tnc = findTextContainers(element, text);
-  console.log(element, text, tnc);
   if (tnc.length === 1) {
     textNodeIndex = tnc[0];
     textNode = element.childNodes[textNodeIndex];
+  } else {
+    console.log(element, text, tnc);
+    alert('Please select a small bit of text from a single element.');
   }
   return {
     element,

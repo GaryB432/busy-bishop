@@ -84,7 +84,6 @@ export class Dialog {
   private getHtml(placeHolder: string): string {
     return `<style>
     .bg {
-      font-family: verdana;
       background-color: rgba(0, 0, 0, 0.4);
       /* Black w/ opacity */
       position: fixed;
@@ -102,12 +101,14 @@ export class Dialog {
       display: none;
     }
     .dialog {
+      font-family: verdana;
       background-color: white;
+      line-height: 12px;
+      font-size: 12px;
       padding: 14px;
-      /* display: flex; */
       max-width: 30%;
       overflow: hidden;
-      box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+      box-shadow: 10px 10px 10px rgba(0, 0, 255, 0.2);
       /* box-shadow: 12px 12px 2px 1px rgba(0, 0, 255, 0.2); */
     }
     .top {
@@ -143,24 +144,12 @@ export class Dialog {
     }
     .context {
       font-size: 0.8rem;
+      margin-bottom: 1rem;
     }
     .context .strike {
       background-color: chartreuse;
       color: black;
     }
-
-    /*
-    .strike {
-      color: blue;
-      background-color: chartreuse;
-   }
-    .context {
-      background-color: #cccccc;
-      font-size: .8rem;
-      margin: 5px;
-      padding: 15px;
-    }
-   */
   </style>
   <div class="bg">
     <div class="dialog">

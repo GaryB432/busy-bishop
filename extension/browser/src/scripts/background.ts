@@ -12,26 +12,21 @@ chrome.contextMenus.create({
   id: 'start',
   title: 'Suggest Edit',
 });
+chrome.contextMenus.onClicked.addListener((info, _tab) => {
+  if (info.selectionText) {
+    logic.onStartSuggestion(info.selectionText);
+  }
+});
+chrome.runtime.onMessage.addListener(
+  (command: MakeSuggestionCommand, _sender, sendResponse) => {
+    const response: MakeSuggestionResponse = {
+      data: command.data,
+      status: 'OK',
+      type: 'MAKE_SUGGESTION_RESPONSE',
+    };
+    logic.omMakeSuggestion(command);
+    sendResponse(response);
+  }
+);
 
-function setup() {
-  chrome.contextMenus.onClicked.addListener((info, _tab) => {
-    console.log(info.menuItemId);
-    if (info.selectionText) {
-      logic.onStartSuggestion(info.selectionText);
-    }
-  });
-  chrome.runtime.onMessage.addListener(
-    (command: MakeSuggestionCommand, _sender, sendResponse) => {
-      const response: MakeSuggestionResponse = {
-        data: command.data,
-        status: 'OK',
-        type: 'MAKE_SUGGESTION_RESPONSE',
-      };
-      logic.omMakeSuggestion(command);
-      sendResponse(response);
-    }
-  );
-}
-
-setup();
 console.log('Loaded.');
