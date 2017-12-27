@@ -1,16 +1,5 @@
-export type ParentAndIndex = [string, number];
+import { SuggestionDocument } from '../../../../../../common';
 
-export interface SuggestionDocument {
-  id: string;
-  elementPath: ParentAndIndex[];
-  context: string;
-  textNodeIndex: number;
-  selectedText: string;
-  selectionStart: number;
-  suggestedText?: string;
-  href: string;
-  createdAt: number;
-}
 export interface StartSuggestionCommand {
   type: 'START_SUGGESTION';
   id: string;

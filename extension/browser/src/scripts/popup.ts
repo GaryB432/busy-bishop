@@ -1,6 +1,6 @@
 import '../styles/popup.scss';
 
-import { MakeSuggestionMessage, TempDataSource } from '../../../../common';
+import { SuggestionDocument, TempDataSource } from '../../../../common';
 import * as utilities from './lib/utilities';
 
 const suggestions$ = document.querySelector('#suggestions')!;
@@ -35,7 +35,7 @@ function createDiffElement(
   spans[3].innerHTML = `${rtrim(end)}&hellip;`;
   return div$;
 }
-function addSuggestionElement(suggestion: MakeSuggestionMessage) {
+function addSuggestionElement(suggestion: SuggestionDocument) {
   const sug$ = importTemplate('#suggTemplate');
   const diffs$ = sug$.querySelector('.diffc')!;
   const position = utilities.narrowSelectionContext(

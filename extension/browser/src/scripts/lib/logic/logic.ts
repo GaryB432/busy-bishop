@@ -1,11 +1,8 @@
 /* tslint:disable-next-line:no-var-requires */
 const uuidv4 = require('uuid');
+import { SuggestionDocument } from '../../../../../../common';
 import * as domutils from './domutils';
-import {
-  MakeSuggestionCommand,
-  StartSuggestionCommand,
-  SuggestionDocument,
-} from './models';
+import { MakeSuggestionCommand, StartSuggestionCommand } from './models';
 import { MessageSender } from './sender';
 
 export class Logic {

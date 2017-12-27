@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 // import * as data from '../../../../common/data';
 
 import { DataService } from '../data.service';
-import { MakeSuggestionMessage } from '../../../../common';
+import { SuggestionDocument } from '../../../../common';
 
 @Component({
   selector: 'bb-sug-list',
@@ -14,12 +14,12 @@ import { MakeSuggestionMessage } from '../../../../common';
   templateUrl: './sug-list.component.html',
 })
 export class SugListComponent implements OnInit {
-  public suggestions: Observable<MakeSuggestionMessage[]>;
+  public suggestions: Observable<SuggestionDocument[]>;
   constructor(private http: HttpClient, private data: DataService) {}
 
   public ngOnInit(): void {
     this.http
-      .get<MakeSuggestionMessage[]>('https://api.github.com/users/seeschweiler')
+      .get<SuggestionDocument[]>('https://api.github.com/users/seeschweiler')
       .subscribe(data => {
         console.log(data);
       });

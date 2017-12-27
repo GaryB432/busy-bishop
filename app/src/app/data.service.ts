@@ -4,22 +4,21 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 // import { map } from 'rxjs/operators';
 
-import { MakeSuggestionMessage } from '../../../common';
-import { TempDataSource } from '../../../common';
+import { SuggestionDocument, TempDataSource } from '../../../common';
 
 @Injectable()
 export class DataService {
-  public suggestions: Observable<MakeSuggestionMessage[]>;
-  private _sugs: BehaviorSubject<MakeSuggestionMessage[]>;
+  public suggestions: Observable<SuggestionDocument[]>;
+  private _sugs: BehaviorSubject<SuggestionDocument[]>;
   private baseUrl: string;
   private dataStore: {
-    suggestions: MakeSuggestionMessage[];
+    suggestions: SuggestionDocument[];
   };
 
   constructor(private http: HttpClient) {
     this.baseUrl = 'http://56e05c3213da80110013eba3.mockapi.io/api';
     this.dataStore = { suggestions: [] };
-    this._sugs = new BehaviorSubject([] as MakeSuggestionMessage[]);
+    this._sugs = new BehaviorSubject([] as SuggestionDocument[]);
     this.suggestions = this._sugs.asObservable();
   }
 
@@ -43,7 +42,7 @@ export class DataService {
 
   public load(id: number | string) {
     this.http
-      .get<MakeSuggestionMessage>(`${this.baseUrl}/todos/${id}`)
+      .get<SuggestionDocument>(`${this.baseUrl}/todos/${id}`)
       .subscribe(
         data => {
           let notFound = true;
@@ -66,9 +65,9 @@ export class DataService {
       );
   }
 
-  public create(todo: MakeSuggestionMessage) {
+  public create(todo: SuggestionDocument) {
     this.http
-      .post<MakeSuggestionMessage>(
+      .post<SuggestionDocument>(
         `${this.baseUrl}/todos`,
         JSON.stringify(todo)
       )
@@ -82,9 +81,9 @@ export class DataService {
       );
   }
 
-  public update(todo: MakeSuggestionMessage) {
+  public update(todo: SuggestionDocument) {
     this.http
-      .put<MakeSuggestionMessage>(
+      .put<SuggestionDocument>(
         `${this.baseUrl}/todos/${todo.id}`,
         JSON.stringify(todo)
       )

@@ -1,9 +1,9 @@
-import * as messages from './messages';
+import { SuggestionDocument } from './models';
 
 export class TempDataSource {
   public async getSuggestionsFor(href: string) {
     const createdAt = new Date().getTime();
-    const testers: messages.MakeSuggestionMessage[] = [
+    const testers: SuggestionDocument[] = [
       {
         context:
           'The interesting thing about diff algorithms is that they’re a mix of computer\nscience and human factors. There are many equally good diffs between two files,\njudging them by the length of the edit sequence, and choosing between them\nrequires an algorithm that can best match people’s intuition about how their\ncode has changed.',
@@ -23,10 +23,8 @@ export class TempDataSource {
         id: 'NA',
         selectedText: 'intuition',
         selectionStart: 284,
-        status: 'TEST',
         suggestedText: 'gut feel',
         textNodeIndex: 0,
-        type: 'MAKE_SUGGESTION',
       },
       {
         context:
@@ -47,10 +45,8 @@ export class TempDataSource {
         id: 'NA',
         selectedText: 'exactly',
         selectionStart: 106,
-        status: 'TEST',
         suggestedText: 'precisely',
         textNodeIndex: 0,
-        type: 'MAKE_SUGGESTION',
       },
       {
         context: 'poor quality',
@@ -71,10 +67,8 @@ export class TempDataSource {
         id: 'NA',
         selectedText: 'poor quality',
         selectionStart: 0,
-        status: 'TEST',
         suggestedText: 'shitty',
         textNodeIndex: 0,
-        type: 'MAKE_SUGGESTION',
       },
       {
         context: 'by James Coglan',
@@ -91,10 +85,8 @@ export class TempDataSource {
         id: 'NA',
         selectedText: 'Coglan',
         selectionStart: 9,
-        status: 'TEST',
         suggestedText: 'Cooglan',
         textNodeIndex: 0,
-        type: 'MAKE_SUGGESTION',
       },
       {
         context:
@@ -115,10 +107,8 @@ export class TempDataSource {
         id: 'NA',
         selectedText: 'compiles',
         selectionStart: 50,
-        status: 'TEST',
         suggestedText: 'changed compiles',
         textNodeIndex: 0,
-        type: 'MAKE_SUGGESTION',
       },
       {
         context: 'Areas of Interest',
@@ -137,10 +127,8 @@ export class TempDataSource {
         id: 'NA',
         selectedText: 'Interest',
         selectionStart: 9,
-        status: 'TEST',
         suggestedText: 'changed Interest',
         textNodeIndex: 0,
-        type: 'MAKE_SUGGESTION',
       },
       {
         context:
@@ -161,10 +149,8 @@ export class TempDataSource {
         id: 'NA',
         selectedText: 'used',
         selectionStart: 87,
-        status: 'TEST',
         suggestedText: 'changed used',
         textNodeIndex: 0,
-        type: 'MAKE_SUGGESTION',
       },
       {
         context:
@@ -185,10 +171,8 @@ export class TempDataSource {
         id: 'NA',
         selectedText: 'webapps',
         selectionStart: 38,
-        status: 'TEST',
         suggestedText: 'changed webapps',
         textNodeIndex: 0,
-        type: 'MAKE_SUGGESTION',
       },
       {
         context:
@@ -209,13 +193,10 @@ export class TempDataSource {
         id: 'NA',
         selectedText: 'scaffolding',
         selectionStart: 10,
-        status: 'TEST',
         suggestedText: 'changed scaffolding',
         textNodeIndex: 0,
-        type: 'MAKE_SUGGESTION',
       },
     ];
-    console.log(href);
     return testers.filter(t => t.href === href);
   }
 }

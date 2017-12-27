@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { MakeSuggestionMessage } from '../../../common';
+import { SuggestionDocument } from '../../../common';
 import { DataService } from './data.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { DataService } from './data.service';
 })
 export class AppComponent {
   public title = 'Busy Bishop';
-  public suggestions: MakeSuggestionMessage[];
+  public suggestions: SuggestionDocument[];
   constructor(private ds: DataService) {
     this.ds.suggestions.subscribe(sugs => {
       this.suggestions = sugs;
