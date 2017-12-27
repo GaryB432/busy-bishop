@@ -1,6 +1,7 @@
 /* tslint:disable-next-line:no-var-requires */
 const uuidv4 = require('uuid');
 import { SuggestionDocument } from '../../../../../../common';
+import * as utils from '../utilities';
 import * as domutils from './domutils';
 import { MakeSuggestionCommand, StartSuggestionCommand } from './models';
 import { MessageSender } from './sender';
@@ -17,8 +18,8 @@ export class Logic {
   }
 
   public omMakeSuggestion(command: MakeSuggestionCommand): void {
-    // console.log(JSON.stringify(command.data, null, 2));
-    console.log(command.data);
+    console.log(JSON.stringify(command.data, null, 2));
+    // console.log(command.data);
   }
 
   public async getSuggestionFromUser(
@@ -33,7 +34,7 @@ export class Logic {
     if (!element) {
       throw new Error('wtf with elementFromPoint()');
     }
-    const elementPath = domutils.getElementPath(element);
+    const elementPath = utils.serializePath(domutils.getElementPath(element));
     const href = window.location.href;
     return new Promise<SuggestionDocument>(async (resolve, reject) => {
       const textInfo = domutils.getSubjectInfo(element, command.selectionText);

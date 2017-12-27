@@ -2,7 +2,7 @@ export type ParentAndIndex = [string, number];
 
 export interface SuggestionDocument {
   id: string;
-  elementPath: ParentAndIndex[];
+  elementPath: string;
   context: string;
   textNodeIndex: number;
   selectedText: string;

@@ -1,5 +1,9 @@
 import { isArray } from 'util';
 
+type StringNumberTuple = [string, number];
+
+type ElementPath = StringNumberTuple[];
+
 interface StringPosition {
   line: string;
   index: number;
@@ -49,4 +53,12 @@ export function narrowSelectionContext(
 
 export function single<T>(sub: T[]): T | undefined {
   return sub.length === 1 ? sub[0] : undefined;
+}
+
+export function serializePath(elementPath: ElementPath): string {
+  return elementPath.map(ep => `${ep[0]} ${ep[1]}`).join(' ');
+}
+
+export function deserializePath(_str: string): ElementPath {
+  throw new Error('not yet implemented');
 }

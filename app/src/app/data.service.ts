@@ -41,36 +41,31 @@ export class DataService {
   }
 
   public load(id: number | string) {
-    this.http
-      .get<SuggestionDocument>(`${this.baseUrl}/todos/${id}`)
-      .subscribe(
-        data => {
-          let notFound = true;
+    this.http.get<SuggestionDocument>(`${this.baseUrl}/todos/${id}`).subscribe(
+      data => {
+        let notFound = true;
 
-          this.dataStore.suggestions.forEach((item, index) => {
-            if (item.id === data.id) {
-              this.dataStore.suggestions[index] = data;
-              notFound = false;
-            }
-          });
-
-          if (notFound) {
-            this.dataStore.suggestions.push(data);
+        this.dataStore.suggestions.forEach((item, index) => {
+          if (item.id === data.id) {
+            this.dataStore.suggestions[index] = data;
+            notFound = false;
           }
+        });
 
-          /* tslint:disable-next-line */
-          this._sugs.next(Object.assign({}, this.dataStore).suggestions);
-        },
-        error => console.log('Could not load todo.')
-      );
+        if (notFound) {
+          this.dataStore.suggestions.push(data);
+        }
+
+        /* tslint:disable-next-line */
+        this._sugs.next(Object.assign({}, this.dataStore).suggestions);
+      },
+      error => console.log('Could not load todo.')
+    );
   }
 
   public create(todo: SuggestionDocument) {
     this.http
-      .post<SuggestionDocument>(
-        `${this.baseUrl}/todos`,
-        JSON.stringify(todo)
-      )
+      .post<SuggestionDocument>(`${this.baseUrl}/todos`, JSON.stringify(todo))
       .subscribe(
         data => {
           this.dataStore.suggestions.push(data);

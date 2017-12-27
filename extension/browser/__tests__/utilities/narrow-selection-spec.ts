@@ -1,4 +1,4 @@
-import * as utilities from '../src/scripts/lib/utilities';
+import * as utilities from '../../src/scripts/lib/utilities';
 
 const someString = 'That is a string';
 const otherString = 'Those are strings';
