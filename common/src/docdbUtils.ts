@@ -1,10 +1,16 @@
-import { DatabaseMeta, DocumentClient, DocumentQuery } from 'documentdb';
+import {
+  CollectionMeta,
+  DatabaseMeta,
+  DocumentClient,
+  DocumentQuery,
+  QueryError,
+} from 'documentdb';
 
 export class DocdbUtils {
   public static getOrCreateDatabase(
     client: DocumentClient,
-    databaseId: any,
-    callback: any
+    databaseId: string,
+    callback: (err: QueryError | null, database?: DatabaseMeta) => void
   ) {
     const querySpec: DocumentQuery = {
       query: 'SELECT * FROM root r WHERE r.id= @id',
@@ -39,7 +45,7 @@ export class DocdbUtils {
     client: DocumentClient,
     databaseLink: string,
     collectionId: string,
-    callback: (a: any, b?: any) => void
+    callback: (err: QueryError | null, collection?: CollectionMeta) => void
   ) {
     const querySpec: DocumentQuery = {
       query: 'SELECT * FROM root r WHERE r.id=@id',

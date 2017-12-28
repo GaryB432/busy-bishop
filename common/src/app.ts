@@ -1,10 +1,16 @@
 /* tslint:disable:no-console */
 import { DatabaseMeta, DocumentClient, UniqueId } from 'documentdb';
-
 import { environment } from './environments/environment';
 
-const client = new DocumentClient(environment.dbhost, {
-  masterKey: environment.dbauthKey,
+interface Environment {
+  dbhost: string;
+  dbauthKey: string;
+}
+
+const config: Environment = environment;
+
+const client = new DocumentClient(config.dbhost, {
+  masterKey: config.dbauthKey,
 });
 
 const databaseDefinition: UniqueId = { id: 'sample database' };
