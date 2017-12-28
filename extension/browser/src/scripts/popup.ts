@@ -1,6 +1,7 @@
 import '../styles/popup.scss';
 
-import { SuggestionDocument, TempDataSource } from '../../../../common';
+import { SuggestionDocument } from '../../../../common';
+import { Logic } from './lib/logic/logic';
 import * as utilities from './lib/utilities';
 
 const suggestions$ = document.querySelector('#suggestions')!;
@@ -10,6 +11,8 @@ const schemeRegex: RegExp = new RegExp('https*://', 'ig');
 const ltrim = (str: string) => str.replace(/^\s+/, '');
 const rtrim = (str: string) => str.replace(/\s+$/, '');
 const schemeTrim = (str: string) => str.replace(schemeRegex, '');
+
+const logic = new Logic();
 
 function importTemplate(templateId: string): DocumentFragment {
   const template$ = document.querySelector(templateId) as HTMLTemplateElement;
@@ -54,17 +57,17 @@ function addSuggestionElement(suggestion: SuggestionDocument) {
   suggestions$.appendChild(sug$);
 }
 
-async function processUrl(url?: string): Promise<boolean> {
-  const ds = new TempDataSource();
+function processUrl(url?: string): void {
   if (!!url) {
     url$.textContent = schemeTrim(url);
-    const suggestions = await ds.getSuggestionsFor(url);
-    for (const s of suggestions) {
-      addSuggestionElement(s);
-    }
+    logic.suggestions.subscribe(suggestions => {
+      for (const s of suggestions) {
+        addSuggestionElement(s);
+      }
+    });
+    console.log(url);
+    logic.onLoad(url);
   }
-  // elem!.appendChild(sugs$);
-  return true;
 }
 
 if (chrome.tabs) {

@@ -1,13 +1,25 @@
 /* tslint:disable-next-line:no-var-requires */
 const uuidv4 = require('uuid');
+import { Observable } from 'rxjs/Observable';
 import { SuggestionDocument } from '../../../../../../common';
+import { DataService } from '../data';
 import * as utils from '../utilities';
 import * as domutils from './domutils';
 import { MakeSuggestionCommand, StartSuggestionCommand } from './models';
-import { MessageSender } from './sender';
+import { MessageSender, MessageSenderChrome } from './sender';
 
 export class Logic {
-  constructor(private bus: MessageSender) {}
+  constructor(
+    private bus: MessageSender = new MessageSenderChrome(),
+    private dataSvc: DataService = new DataService()
+  ) {}
+  public get suggestions(): Observable<SuggestionDocument[]> {
+    return this.dataSvc.suggestions;
+  }
+
+  public onLoad(href: string) {
+    this.dataSvc.loadForHref(href);
+  }
   public onStartSuggestion(selectionText: string): void {
     const command: StartSuggestionCommand = {
       id: uuidv4(),
@@ -18,7 +30,7 @@ export class Logic {
   }
 
   public omMakeSuggestion(command: MakeSuggestionCommand): void {
-    console.log(JSON.stringify(command.data, null, 2));
+    this.dataSvc.create(command.data);
     // console.log(command.data);
   }
 

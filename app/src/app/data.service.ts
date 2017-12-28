@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 // import { map } from 'rxjs/operators';
 
-import { SuggestionDocument, TempDataSource } from '../../../common';
+import { SuggestionDocument } from '../../../common';
 
 @Injectable()
 export class DataService {
@@ -27,12 +27,11 @@ export class DataService {
   }
 
   public loadForHref(href: string): void {
-    new TempDataSource().getSuggestionsFor(href).then(sugs => {
-      this.dataStore.suggestions = sugs;
-      const store = { ...this.dataStore };
-      this._sugs.next(store.suggestions);
-    });
-
+    // new TempDataSource().getSuggestionsFor(href).then(sugs => {
+    //   this.dataStore.suggestions = sugs;
+    //   const store = { ...this.dataStore };
+    //   this._sugs.next(store.suggestions);
+    // });
     // this.http.get<MakeSuggestionMessage[]>(`${this.baseUrl}/todos`).subscribe(data => {
     //   this.dataStore.suggestions = data;
     //   /* tslint:disable-next-line */

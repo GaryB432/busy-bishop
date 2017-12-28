@@ -5,13 +5,12 @@ import {
   StartSuggestionCommand,
   StartSuggestionResponse,
 } from './lib/logic/models';
-import { MessageSenderChrome } from './lib/logic/sender';
 import { lastPointer } from './lib/pointer';
 
 import '../styles/content.scss';
 
 const dialog = new Dialog();
-const logic = new Logic(new MessageSenderChrome());
+const logic = new Logic();
 chrome.runtime.onMessage.addListener(
   async (command: StartSuggestionCommand, _sender, sendResponse) => {
     const earlyResponse: StartSuggestionResponse = {

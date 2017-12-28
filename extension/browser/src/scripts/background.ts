@@ -3,9 +3,8 @@ import {
   MakeSuggestionCommand,
   MakeSuggestionResponse,
 } from './lib/logic/models';
-import { MessageSenderChrome } from './lib/logic/sender';
 
-const logic = new Logic(new MessageSenderChrome());
+const logic = new Logic();
 
 chrome.contextMenus.create({
   contexts: ['selection'],
