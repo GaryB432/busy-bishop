@@ -1,10 +1,10 @@
-import { ParentAndIndex } from '../../../../../common';
+import { ParentAndIndex } from '../../../../imported/common/models';
 
 function getChildIndex(subject: Element): number {
   if (subject.parentElement) {
     const children = Array.from(subject.parentElement.children);
     const index: number = children.findIndex(child => child === subject);
-    console.assert(children[index].tagName === subject.tagName, 'wtf');
+    console.assert(children[index].tagName === subject.tagName, 'no match');
     return index;
   } else {
     return -1;

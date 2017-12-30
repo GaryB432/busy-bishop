@@ -1,6 +1,6 @@
 import '../styles/popup.scss';
 
-import { SuggestionDocument } from '../../../common';
+import { SuggestionDocument } from '../../imported/common/models';
 import { Logic } from './lib/logic/logic';
 import * as utilities from './lib/utilities';
 

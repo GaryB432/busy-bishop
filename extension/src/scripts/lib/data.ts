@@ -1,19 +1,32 @@
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
-import { SuggestionDocument } from '../../../../common';
+import { environment as rootEnv } from '../../../imported/common/imported/environments/environment';
+import { SuggestionDocument } from '../../../imported/common/models';
 import { HttpClient } from './http';
+
+interface Environment {
+  functionKeys: {
+    writeSuggestion: string;
+  };
+  mainDb: {
+    connection: string;
+    host: string;
+    masterKey: string;
+  };
+}
+const environment = rootEnv as Environment;
 
 export class DataService {
   public suggestions: Observable<SuggestionDocument[]>;
   private _sugs: BehaviorSubject<SuggestionDocument[]>;
-  private baseUrl: string;
+  private azureApi = 'https://bb-hosted-functions.azurewebsites.net/api';
+  private demoUrl = 'http://5a441e2c342c490012f3fd0a.mockapi.io/api';
   private dataStore: {
     suggestions: SuggestionDocument[];
   };
 
   constructor(private http: HttpClient = new HttpClient()) {
-    this.baseUrl = 'http://5a441e2c342c490012f3fd0a.mockapi.io/api';
     this.dataStore = { suggestions: [] };
     this._sugs = new BehaviorSubject([] as SuggestionDocument[]);
     this.suggestions = this._sugs.asObservable();
@@ -21,7 +34,7 @@ export class DataService {
 
   public loadForHref(href: string): void {
     this.http
-      .get<SuggestionDocument[]>(`${this.baseUrl}/suggestions?href=${href}`)
+      .get<SuggestionDocument[]>(`${this.demoUrl}/suggestions?href=${href}`)
       .subscribe(
         data => {
           this.dataStore.suggestions = data;
@@ -34,7 +47,7 @@ export class DataService {
 
   public load(id: number | string) {
     this.http
-      .get<SuggestionDocument>(`${this.baseUrl}/suggestions/${id}`)
+      .get<SuggestionDocument>(`${this.demoUrl}/suggestions/${id}`)
       .subscribe(
         data => {
           let notFound = true;
@@ -58,9 +71,10 @@ export class DataService {
   }
 
   public create(suggestion: SuggestionDocument) {
+    const key = environment.functionKeys.writeSuggestion;
     this.http
       .post<SuggestionDocument>(
-        `${this.baseUrl}/suggestions`,
+        `${this.azureApi}/write-suggestion?code=${key}`,
         JSON.stringify(suggestion)
       )
       .subscribe(
@@ -77,7 +91,7 @@ export class DataService {
   public update(suggestion: SuggestionDocument) {
     this.http
       .put<SuggestionDocument>(
-        `${this.baseUrl}/suggestions/${suggestion.id}`,
+        `${this.demoUrl}/suggestions/${suggestion.id}`,
         JSON.stringify(suggestion)
       )
       .subscribe(
@@ -96,7 +110,7 @@ export class DataService {
   }
 
   public remove(suggestionId: string) {
-    this.http.delete(`${this.baseUrl}/suggestions/${suggestionId}`).subscribe(
+    this.http.delete(`${this.demoUrl}/suggestions/${suggestionId}`).subscribe(
       _response => {
         this.dataStore.suggestions.forEach((t, i) => {
           if (t.id === suggestionId) {
