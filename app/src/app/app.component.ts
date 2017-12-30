@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { SuggestionDocument } from '../../../common';
+import { SuggestionDocument } from '../imported/models';
 import { DataService } from './data.service';
 
 @Component({

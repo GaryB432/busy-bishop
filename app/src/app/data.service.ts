@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 // import { map } from 'rxjs/operators';
 
-import { SuggestionDocument } from '../../../common';
+import { SuggestionDocument } from '../imported/models';
 
 @Injectable()
 export class DataService {
