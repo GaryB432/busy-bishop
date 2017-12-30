@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
-import { SuggestionDocument } from '../../../../../common';
+import { SuggestionDocument } from '../../../../common';
 import { HttpClient } from './http';
 
 export class DataService {

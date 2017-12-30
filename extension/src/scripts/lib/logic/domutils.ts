@@ -1,4 +1,4 @@
-import { ParentAndIndex } from '../../../../../../common';
+import { ParentAndIndex } from '../../../../../common';
 
 function getChildIndex(subject: Element): number {
   if (subject.parentElement) {

@@ -1,7 +1,7 @@
 /* tslint:disable-next-line:no-var-requires */
 const uuidv4 = require('uuid');
 import { Observable } from 'rxjs/Observable';
-import { SuggestionDocument } from '../../../../../../common';
+import { SuggestionDocument } from '../../../../../common';
 import { DataService } from '../data';
 import * as utils from '../utilities';
 import * as domutils from './domutils';

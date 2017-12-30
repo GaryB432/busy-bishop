@@ -1,4 +1,4 @@
-import { SuggestionDocument } from '../../../../../../common';
+import { SuggestionDocument } from '../../../../../common';
 
 export interface StartSuggestionCommand {
   type: 'START_SUGGESTION';
