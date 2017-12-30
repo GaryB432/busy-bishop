@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "extension"
+		},
+		{
+			"path": "hosted-functions"
 		}
 	],
 	"settings": {
