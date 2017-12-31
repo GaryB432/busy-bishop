@@ -1,9 +1,9 @@
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
-import { environment as rootEnv } from '../../imported/environments/environment';
-import { SuggestionDocument } from '../../imported/models';
-import { HttpClient } from './http';
+import { environment as rootEnv } from '../../../imported/environments/environment';
+import { SuggestionDocument } from '../../../imported/models';
+import { HttpClient } from '../http';
 
 interface Environment {
   functionKeys: {
@@ -18,7 +18,16 @@ interface Environment {
 }
 const environment = rootEnv as Environment;
 
-export class DataService {
+export interface DataService {
+  suggestions: Observable<SuggestionDocument[]>;
+  loadForHref(href: string): void;
+  load(id: number | string): void;
+  create(suggestion: SuggestionDocument): void;
+  update(suggestion: SuggestionDocument): void;
+  remove(suggestionId: string): void;
+}
+
+export class AzureDataService implements DataService {
   public suggestions: Observable<SuggestionDocument[]>;
   private _sugs: BehaviorSubject<SuggestionDocument[]>;
   private azureApi = 'https://bb-hosted-functions.azurewebsites.net/api';
@@ -49,25 +58,9 @@ export class DataService {
         },
         _error => console.log('Could not load suggestions.')
       );
-
-    // https://bb-hosted-functions.azurewebsites.net/api/get-suggestions?code=ATVShewu8wEUrc/CuyfH4DFJaznSYhMlKN5tx3ZWphwDun5Ad63Tiw==
-
-    // this.http
-    //   .get<SuggestionDocument[]>(
-    //     `${this.azureApi}/get-suggestion?code=${key}&href=${encodeURIComponent(href)}`,
-    //   )
-    //   .subscribe(
-    //     data => {
-    //       console.log(JSON.stringify(data, null, 2));
-    //       this.dataStore.suggestions.push(data);
-    //       const store = { ...this.dataStore };
-    //       this._sugs.next(store.suggestions);
-    //     },
-    //     _error => console.log('Could not create suggestion.', _error)
-    //   );
   }
 
-  public load(id: number | string) {
+  public load(id: number | string): void {
     this.http
       .get<SuggestionDocument>(`${this.demoUrl}/suggestions/${id}`)
       .subscribe(
@@ -92,7 +85,7 @@ export class DataService {
       );
   }
 
-  public create(suggestion: SuggestionDocument) {
+  public create(suggestion: SuggestionDocument): void {
     const key = environment.functionKeys.writeSuggestion;
     this.http
       .post<SuggestionDocument>(
@@ -110,7 +103,7 @@ export class DataService {
       );
   }
 
-  public update(suggestion: SuggestionDocument) {
+  public update(suggestion: SuggestionDocument): void {
     this.http
       .put<SuggestionDocument>(
         `${this.demoUrl}/suggestions/${suggestion.id}`,
@@ -131,7 +124,7 @@ export class DataService {
       );
   }
 
-  public remove(suggestionId: string) {
+  public remove(suggestionId: string): void {
     this.http.delete(`${this.demoUrl}/suggestions/${suggestionId}`).subscribe(
       _response => {
         this.dataStore.suggestions.forEach((t, i) => {

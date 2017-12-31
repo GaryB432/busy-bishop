@@ -4,6 +4,10 @@ type StringNumberTuple = [string, number];
 
 type ElementPath = StringNumberTuple[];
 
+/**
+ * Represents a position in a string.
+ * { line:'abcde', index: 2 } indicates the 'c'
+ */
 interface StringPosition {
   line: string;
   index: number;

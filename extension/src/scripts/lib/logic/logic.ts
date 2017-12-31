@@ -2,7 +2,8 @@
 const uuidv4 = require('uuid');
 import { Observable } from 'rxjs/Observable';
 import { SuggestionDocument } from '../../../imported/models';
-import { DataService } from '../data';
+import { AzureDataService, DataService } from '../data/data';
+import { MockDataService } from '../data/mock-data';
 import * as utils from '../utilities';
 import * as domutils from './domutils';
 import { MakeSuggestionCommand, StartSuggestionCommand } from './models';
@@ -11,7 +12,9 @@ import { MessageSender, MessageSenderChrome } from './sender';
 export class Logic {
   constructor(
     private bus: MessageSender = new MessageSenderChrome(),
-    private dataSvc: DataService = new DataService()
+    private dataSvc: DataService = window.location.hostname === 'localhost'
+      ? new MockDataService()
+      : new AzureDataService()
   ) {}
   public get suggestions(): Observable<SuggestionDocument[]> {
     return this.dataSvc.suggestions;
