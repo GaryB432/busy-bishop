@@ -1,5 +1,5 @@
 ﻿
-Param([bool]$install = $False, [bool]$build = $False, [string]$bar = "bar")
+param([bool]$install = $false, [bool]$build = $false, [string]$bar = "bar")
 
 $projs = @("common", "hosted-functions", "app", "extension")
 

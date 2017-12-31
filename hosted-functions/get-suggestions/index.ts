@@ -64,6 +64,7 @@ export default function (context: Context, req: Request) {
           );
         } else {
           context.log(err!);
+          reject(err);
         }
       });
     });

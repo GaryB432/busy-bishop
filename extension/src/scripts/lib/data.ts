@@ -37,7 +37,7 @@ export class DataService {
     const key = environment.functionKeys.getSuggestions;
     this.http
       .get<SuggestionDocument[]>(
-        `${this.azureApi}/get-suggestion?code=${key}&href=${encodeURIComponent(
+        `${this.azureApi}/get-suggestions?code=${key}&href=${encodeURIComponent(
           href
         )}`
       )
