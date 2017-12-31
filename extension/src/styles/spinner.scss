@@ -1,15 +1,25 @@
-.spinner-box {
-  background-color: orange;
-
-  & .spinner {
-    margin: 50px;
-    height: 28px;
-    width: 28px;
-    animation: rotate 0.8s infinite linear;
-    border: 8px solid #3498db;
-    border-right-color: transparent;
-    border-radius: 50%;
+.container {
+  .content {
+    .spinner {
+      margin: 50px;
+      height: 28px;
+      width: 28px;
+      animation: rotate 0.8s infinite linear;
+      border: 8px solid #3498db;
+      border-right-color: transparent;
+      border-radius: 50%;
+        }
+    #suggestions {
+      background-color: transparent;
+    }
   }
+  & .ready > .spinner {
+    display: none;
+  }
+}
+
+.contentx.ready > .spinner {
+  display: none;
 }
 
 @keyframes rotate {

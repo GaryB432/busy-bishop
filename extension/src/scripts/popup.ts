@@ -13,6 +13,7 @@ const rtrim = (str: string) => str.replace(/\s+$/, '');
 const schemeTrim = (str: string) => str.replace(schemeRegex, '');
 
 const logic = new Logic();
+let contentReady = false;
 
 function importTemplate(templateId: string): DocumentFragment {
   const template$ = document.querySelector(templateId) as HTMLTemplateElement;
@@ -64,8 +65,12 @@ function processUrl(url?: string): void {
       for (const s of suggestions) {
         addSuggestionElement(s);
       }
+      if (contentReady || suggestions.length) {
+        document.querySelector('.content')!.classList.add('ready');
+        console.log(url);
+      }
+      contentReady = true;
     });
-    console.log(url);
     logic.onPopupLoaded(url);
   }
 }
