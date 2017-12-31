@@ -5,22 +5,35 @@ body {
   width: 400px;
 }
 
-#suggestions {
-  article {
-    border-bottom: 2px solid lighten($textColor, 70%);
-    margin: 2px;
-    padding: 2px;
+.container {
+  .content {
+    .spinner-box {
+      display: flex;
+      justify-content: center;
+    }
+    #suggestions {
+      article {
+        border-bottom: 2px solid lighten($textColor, 70%);
+        margin: 2px;
+        padding: 2px;
+      }
+    }
+  }
+  & .ready .spinner {
+    display: none;
   }
 }
 
-div {
-  border: thin solid red;
+div.note {
+  border: thin solid $textColor;
+  padding: 0.5rem 1rem;
+  margin: 1rem 0.2rem;
 }
 
 .diff {
-  border: thin solid silver;
+  border: 1px solid silver;
   padding: 4px;
-  background-color: lighten($textColor, 70%);
+  background-color: lighten($textColor, 80%);
   color: $textColor;
   .start,
   .end {
