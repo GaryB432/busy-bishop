@@ -1,4 +1,4 @@
-import { ParentAndIndex } from '../../../../imported/common/models';
+import { ParentAndIndex } from '../../../imported/models';
 
 function getChildIndex(subject: Element): number {
   if (subject.parentElement) {

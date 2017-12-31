@@ -1,13 +1,14 @@
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
-import { environment as rootEnv } from '../../../imported/common/imported/environments/environment';
-import { SuggestionDocument } from '../../../imported/common/models';
+import { environment as rootEnv } from '../../imported/environments/environment';
+import { SuggestionDocument } from '../../imported/models';
 import { HttpClient } from './http';
 
 interface Environment {
   functionKeys: {
     writeSuggestion: string;
+    getSuggestions: string;
   };
   mainDb: {
     connection: string;
@@ -21,7 +22,7 @@ export class DataService {
   public suggestions: Observable<SuggestionDocument[]>;
   private _sugs: BehaviorSubject<SuggestionDocument[]>;
   private azureApi = 'https://bb-hosted-functions.azurewebsites.net/api';
-  private demoUrl = 'http://5a441e2c342c490012f3fd0a.mockapi.io/api';
+  private demoUrl = 'http://000000000000000000000000.mockapi.io/api';
   private dataStore: {
     suggestions: SuggestionDocument[];
   };
@@ -33,8 +34,13 @@ export class DataService {
   }
 
   public loadForHref(href: string): void {
+    const key = environment.functionKeys.getSuggestions;
     this.http
-      .get<SuggestionDocument[]>(`${this.demoUrl}/suggestions?href=${href}`)
+      .get<SuggestionDocument[]>(
+        `${this.azureApi}/get-suggestion?code=${key}&href=${encodeURIComponent(
+          href
+        )}`
+      )
       .subscribe(
         data => {
           this.dataStore.suggestions = data;
@@ -43,6 +49,22 @@ export class DataService {
         },
         _error => console.log('Could not load suggestions.')
       );
+
+    // https://bb-hosted-functions.azurewebsites.net/api/get-suggestions?code=ATVShewu8wEUrc/CuyfH4DFJaznSYhMlKN5tx3ZWphwDun5Ad63Tiw==
+
+    // this.http
+    //   .get<SuggestionDocument[]>(
+    //     `${this.azureApi}/get-suggestion?code=${key}&href=${encodeURIComponent(href)}`,
+    //   )
+    //   .subscribe(
+    //     data => {
+    //       console.log(JSON.stringify(data, null, 2));
+    //       this.dataStore.suggestions.push(data);
+    //       const store = { ...this.dataStore };
+    //       this._sugs.next(store.suggestions);
+    //     },
+    //     _error => console.log('Could not create suggestion.', _error)
+    //   );
   }
 
   public load(id: number | string) {

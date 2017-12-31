@@ -1,4 +1,4 @@
-import { SuggestionDocument } from '../../imported/common/models';
+import { SuggestionDocument } from '../imported/models';
 import { Dialog } from './lib/dialog';
 import { Logic } from './lib/logic/logic';
 import {

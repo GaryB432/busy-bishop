@@ -1,6 +1,6 @@
 import '../styles/popup.scss';
 
-import { SuggestionDocument } from '../../imported/common/models';
+import { SuggestionDocument } from '../imported/models';
 import { Logic } from './lib/logic/logic';
 import * as utilities from './lib/utilities';
 
@@ -66,7 +66,7 @@ function processUrl(url?: string): void {
       }
     });
     console.log(url);
-    logic.onLoad(url);
+    logic.onPopupLoaded(url);
   }
 }
 

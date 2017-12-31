@@ -1,7 +1,7 @@
 /* tslint:disable-next-line:no-var-requires */
 const uuidv4 = require('uuid');
 import { Observable } from 'rxjs/Observable';
-import { SuggestionDocument } from '../../../../imported/common/models';
+import { SuggestionDocument } from '../../../imported/models';
 import { DataService } from '../data';
 import * as utils from '../utilities';
 import * as domutils from './domutils';
@@ -17,7 +17,7 @@ export class Logic {
     return this.dataSvc.suggestions;
   }
 
-  public onLoad(href: string) {
+  public onPopupLoaded(href: string): void {
     this.dataSvc.loadForHref(href);
   }
   public onStartSuggestion(selectionText: string): void {
