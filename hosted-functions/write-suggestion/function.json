@@ -19,7 +19,8 @@
       "collectionName": "Suggestions",
       "createIfNotExists": true,
       "connection": "BishopConnection",
-      "direction": "out"
+      "direction": "out",
+      "partitionKey": "href"
     }
   ]
 }
