@@ -11,6 +11,7 @@ var isProd = ENV === 'build';
 
 module.exports = {
   entry: {
+    'dialog-dev': ['scripts/dialog-dev.ts'],
     background: ['scripts/background.ts'],
     content: ['scripts/content.ts'],
     popup: ['scripts/popup.ts'],
@@ -50,6 +51,12 @@ module.exports = {
       chunks: ['popup', 'commons'],
       chunksSortMode: 'dependency',
       filename: 'popup.html'
+    }),
+    new HtmlWebpackPlugin({
+      template: 'assets/dialog-dev.html',
+      chunks: ['dialog-dev', 'commons'],
+      chunksSortMode: 'dependency',
+      filename: 'dialog-dev.html'
     }),
 
     new ExtractTextPlugin({
