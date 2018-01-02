@@ -59,6 +59,13 @@ module.exports = {
       filename: 'dialog-dev.html'
     }),
 
+    new HtmlWebpackPlugin({
+      template: 'assets/dialog-dev.html',
+      chunks: ['dialog-dev', 'commons'],
+      chunksSortMode: 'dependency',
+      filename: 'dialog-dev.html'
+    }),
+
     new ExtractTextPlugin({
       filename: 'css/[name].css',
       disable: !isProd,

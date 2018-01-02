@@ -1,16 +1,99 @@
-import { fromEvent } from 'rxjs/Observable/fromEvent';
+import '../styles/dialog-dev.scss';
 
-import { Dialog } from './lib/dialog';
+const zoomOne = document.querySelector('.zoomPic')! as HTMLElement;
 
-const dialog = new Dialog();
-dialog.start(document.body, 'hi');
+document.querySelector('.zoom')!.addEventListener('click', _ => {
+  if (!zoomOne.classList.contains('zoom')) {
+    zoomOne.classList.add('zoom');
+  }
+});
+
+document.querySelector('.zoomout')!.addEventListener('click', _ => {
+  zoomOne.classList.remove('zoom');
+});
+
+export class NewDialog {
+  private bg$: HTMLDivElement;
+  private input$: HTMLInputElement;
+  private submit$: HTMLButtonElement;
+  private diffSpans$: NodeListOf<HTMLSpanElement>;
+  private elementHost: ShadowRoot | Document;
+  private gotText: (newText: string) => void;
+
+  constructor() {
+    this.elementHost = document;
+    this.addListeners();
+  }
+
+  public async doRun(
+    front: string,
+    selected: string,
+    back: string
+  ): Promise<string> {
+    return new Promise<string>(resolve => {
+      const parts = [front, selected, back];
+      parts.forEach((part, i) => (this.diffSpans$.item(i).textContent = part));
+      this.gotText = resolve;
+      this.setCurrentDialog(0);
+      this.bg$.classList.remove('hidden');
+      this.input$.value = selected;
+      this.input$.focus();
+      this.input$.setSelectionRange(0, selected.length);
+    });
+  }
+
+  private setCurrentDialog(index: number) {
+    const dialogs = this.elementHost.querySelectorAll('.track li')!;
+    Array.from(dialogs).forEach(c => c.classList.remove('current'));
+    dialogs.item(index).classList.add('current');
+  }
+
+  private addListeners(): void {
+    this.bg$ = this.elementHost.querySelector('#bg')! as HTMLDivElement;
+    this.input$ = this.elementHost.querySelector('#input')! as HTMLInputElement;
+    this.submit$ = this.elementHost.querySelector(
+      '#submit'
+    )! as HTMLButtonElement;
+
+    this.input$.addEventListener('keyup', e => {
+      this.submit$.disabled = this.input$.value.length === 0;
+      if (e.keyCode === 13 && this.input$.value.length > 0) {
+        this.submitClicked();
+      }
+    });
+
+    Array.from(this.elementHost.querySelectorAll('.track')).forEach(e =>
+      e.addEventListener('click', dlg => (dlg.cancelBubble = true))
+    );
+
+    this.submit$.addEventListener('click', () => this.submitClicked());
+
+    const closeBgs = this.elementHost.querySelectorAll('.close-bg');
+    console.log(closeBgs);
+    Array.from(closeBgs).forEach(e =>
+      e.addEventListener('click', () => this.closeClicked())
+    );
+    this.diffSpans$ = this.elementHost.querySelectorAll('.context > span');
+  }
+
+  private closeClicked() {
+    this.bg$.classList.add('hidden');
+  }
+
+  private submitClicked() {
+    this.gotText(this.input$.value);
+    this.setCurrentDialog(1);
+  }
+}
+
+const nd = new NewDialog();
 const btn = document.querySelector('#go')! as HTMLButtonElement;
-fromEvent(btn, 'click').subscribe(() =>
-  dialog
+btn.addEventListener('click', () => {
+  nd
     .doRun(
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum',
-      'cause it is pleasure',
-      'sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia '
+      'inventore veritatis et quasi architecto beatae',
+      'dolorem ipsum',
+      'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis'
     )
-    .then(t => console.log(t))
-);
+    .then(newInput => console.log(newInput));
+});
