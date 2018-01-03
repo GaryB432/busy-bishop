@@ -52,12 +52,6 @@ module.exports = {
       chunksSortMode: 'dependency',
       filename: 'popup.html'
     }),
-    new HtmlWebpackPlugin({
-      template: 'assets/dialog-dev.html',
-      chunks: ['dialog-dev', 'commons'],
-      chunksSortMode: 'dependency',
-      filename: 'dialog-dev.html'
-    }),
 
     new HtmlWebpackPlugin({
       template: 'assets/dialog-dev.html',
@@ -96,5 +90,5 @@ module.exports = {
     },
   },
 
-  devtool: 'source-map',
+  // devtool: 'source-map',
 };

@@ -7,7 +7,7 @@
     "start": "webpack-dev-server",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.scss\" \"__tests__/**/*.ts\" --single-quote --trailing-comma es5",
     "prebuild": "npm run format",
-    "build": "npm run clean && webpack",
+    "build": "npm run clean && webpack --hide-modules",
     "test": "jest",
     "test-watch": "jest --watch"
   },
