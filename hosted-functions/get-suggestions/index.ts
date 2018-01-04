@@ -3,19 +3,7 @@ import { SuggestionDao } from './imported/common/lib/data/suggestion-dao';
 import { SuggestionDocument } from './imported/common/lib/models';
 import { environment } from './imported/common/lib/imported/environments/environment';
 
-interface Environment {
-  functionKeys: {
-    writeSuggestion: string;
-  };
-  mainDb: {
-    connection: string;
-    host: string;
-    masterKey: string;
-  };
-}
-
-const config: Environment = environment;
-const { host, masterKey } = config.mainDb;
+const { host, masterKey } = environment.mainDb;
 const client = new DocumentClient(host, { masterKey: masterKey });
 
 export type Doc = SuggestionDocument;

@@ -1,22 +1,9 @@
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 
-import { environment as rootEnv } from '../../../imported/environments/environment';
+import { environment } from '../../../imported/environments/environment';
 import { SuggestionDocument } from '../../../imported/models';
 import { HttpClient } from '../http';
-
-interface Environment {
-  functionKeys: {
-    writeSuggestion: string;
-    getSuggestions: string;
-  };
-  mainDb: {
-    connection: string;
-    host: string;
-    masterKey: string;
-  };
-}
-const environment = rootEnv as Environment;
 
 export interface DataService {
   suggestions: Observable<SuggestionDocument[]>;

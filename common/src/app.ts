@@ -5,20 +5,8 @@ import { SuggestionDao } from './data/suggestion-dao';
 import { environment } from './imported/environments/environment';
 import { SuggestionDocument } from './models';
 
-interface Environment {
-  functionKeys: {
-    writeSuggestion: string;
-  };
-  mainDb: {
-    connection: string;
-    host: string;
-    masterKey: string;
-  };
-}
-
-const config: Environment = environment;
-const client = new DocumentClient(config.mainDb.host, {
-  masterKey: config.mainDb.masterKey,
+const client = new DocumentClient(environment.mainDb.host, {
+  masterKey: environment.mainDb.masterKey,
 });
 
 const databaseName = 'SuggDemo';
