@@ -20,7 +20,7 @@
       "createIfNotExists": true,
       "connection": "BishopConnection",
       "direction": "out",
-      "partitionKey": "href"
+      "partitionKey": "/href"
     }
   ]
 }

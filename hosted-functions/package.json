@@ -4,9 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc"
+    "format": "prettier --write \"**/*.ts\" --single-quote --trailing-comma es5",
+    "prebuild": "npm run format",
+    "build": "tsc -v && tsc"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "^1.9.2",
+    "typescript": "^2.6.2"
+  }
 }

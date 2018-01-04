@@ -11,6 +11,10 @@ Copy-Item .\_for-import -Destination .\app\src\imported -Recurse
 Remove-Item .\extension\src\imported -Recurse -Force -ErrorAction SilentlyContinue
 Copy-Item .\_for-import -Destination .\extension\src\imported -Recurse 
 
+Remove-Item .\hosted-functions\write-suggestion\imported -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory .\hosted-functions\write-suggestion\imported -ErrorAction SilentlyContinue | Out-Null
+Copy-Item .\_for-import\models.ts -Destination .\hosted-functions\write-suggestion\imported\models.ts 
+
 Remove-Item .\_for-import -Recurse -ErrorAction SilentlyContinue
 
 Push-Location common

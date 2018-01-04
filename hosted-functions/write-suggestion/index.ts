@@ -1,19 +1,12 @@
-// https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-node
+import { SuggestionDocument } from './imported/models';
 
-
-interface SuggestionDocumentV1 {
-  id: string;
-  elementPath: string;
-  context: string;
-  textNodeIndex: number;
-  selectedText: string;
-  selectionStart: number;
-  suggestedText?: string;
-  href: string;
-  createdAt: number;
+interface Doc extends SuggestionDocument {
+  clientIP: string;
 }
 
-export type Doc = SuggestionDocumentV1;
+interface Headers {
+  [name: string]: string;
+}
 
 export interface Bindings {
   suggestionDocument: Doc;
@@ -27,27 +20,27 @@ export interface Context {
 }
 
 export interface Request {
-  method: "GET" | "POST";
-  body: Doc;
+  method: 'GET' | 'POST';
+  headers: Headers;
+  body: string;
   query: any;
 }
 
-type ResponseBody = Doc;
-
 export interface Response {
   status: number;
-  body: ResponseBody | string;
+  body: string;
 }
 
 export default (context: Context, req: Request) => {
   const res: Response = {
     status: 400,
-    body: 'Invalid Request'
-  }
-  if (req.method === "POST") {
+    body: 'Invalid Request',
+  };
+  if (req.method === 'POST') {
     if (req.body) {
       res.status = 201;
-      const suggestion: Doc = req.body;
+      const suggestion: Doc = JSON.parse(req.body);
+      suggestion.clientIP = req.headers['x-forwarded-for'].split(':')[0];
       context.bindings.suggestionDocument = suggestion;
       res.body = JSON.stringify(suggestion);
     }

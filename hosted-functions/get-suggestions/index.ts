@@ -5,12 +5,12 @@ import { environment } from './imported/common/lib/imported/environments/environ
 
 interface Environment {
   functionKeys: {
-    writeSuggestion: string
+    writeSuggestion: string;
   };
   mainDb: {
     connection: string;
     host: string;
-    masterKey: string
+    masterKey: string;
   };
 }
 
@@ -41,7 +41,7 @@ export interface Response {
 
 const dao = new SuggestionDao(client, 'Main', 'Suggestions');
 
-export default function (context: Context, req: Request) {
+export default function(context: Context, req: Request) {
   const response: Response = {
     status: 400,
     body: 'Invalid Request',
@@ -51,17 +51,14 @@ export default function (context: Context, req: Request) {
     return new Promise<SuggestionDocument[]>((resolve, reject) => {
       dao.init((err, coll) => {
         if (coll) {
-          dao.getByHref(
-            href,
-            (err2, suggestions) => {
-              if (err2) {
-                context.log(err2);
-                reject(err2);
-              } else if (suggestions) {
-                resolve(suggestions);
-              }
+          dao.getByHref(href, (err2, suggestions) => {
+            if (err2) {
+              context.log(err2);
+              reject(err2);
+            } else if (suggestions) {
+              resolve(suggestions);
             }
-          );
+          });
         } else {
           context.log(err!);
           reject(err);
