@@ -1,0 +1,1 @@
+Compress-Archive -DestinationPath .\extension\busy-bishop -Path .\extension\dist\*
