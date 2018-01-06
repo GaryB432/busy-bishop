@@ -35,3 +35,8 @@ xtest('Should deserialize path', () => {
     ['P', 1],
   ]);
 });
+
+test('Should stringify date', () => {
+  const m = new Date(2002, 3, 4, 5, 6, 7, 8);
+  expect(utilities.dateString(m.getTime())).toEqual('4/4/2002');
+});

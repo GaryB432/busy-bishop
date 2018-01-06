@@ -66,3 +66,11 @@ export function serializePath(elementPath: ElementPath): string {
 export function deserializePath(_str: string): ElementPath {
   throw new Error('not yet implemented');
 }
+
+export function dateString(ticks: number): string {
+  const date = new Date(ticks);
+  const y = date.getUTCFullYear();
+  const m = date.getUTCMonth();
+  const d = date.getUTCDate();
+  return `${m + 1}/${d}/${y}`;
+}

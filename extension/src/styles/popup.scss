@@ -1,5 +1,5 @@
 @import 'spinner';
-$textColor: #24292e;
+@import 'colors';
 
 body {
   width: 400px;
@@ -16,7 +16,34 @@ body {
         border-bottom: 2px solid lighten($textColor, 70%);
         margin: 2px;
         padding: 2px;
+        h1 {
+          margin: 2px 0;
+          padding: 0.2rem;
+          border-left: 20px solid $blue2;
+        }
+        section {
+          display: flex;
+          .info {
+            font-size: 0.7rem;
+            width: 10rem;
+            background-color: $blue2;
+            color: white;
+            padding: 0.2rem;
+            p {
+              padding: 0;
+              margin: 0;
+            }
+          }
+        }
       }
+    }
+    #none {
+      display: none;
+    }
+    &.none #none {
+      display: block;
+      background: lighten(silver, 20%);
+      padding: 1rem 0.5rem;
     }
   }
   & .ready .spinner {

@@ -55,6 +55,9 @@ function addSuggestionElement(suggestion: SuggestionDocument) {
     const end = line.slice(index + selectionLength);
     diffs$.appendChild(createDiffElement(start, strike, ins, end));
   }
+  const info$ = sug$.querySelector('.info > p')!;
+  info$.innerHTML = utilities.dateString(suggestion.createdAt);
+
   suggestions$.appendChild(sug$);
 }
 
@@ -66,7 +69,11 @@ function processUrl(url?: string): void {
         addSuggestionElement(s);
       }
       if (contentReady || suggestions.length) {
-        document.querySelector('.content')!.classList.add('ready');
+        const cs = ['ready'];
+        if (suggestions.length === 0) {
+          cs.push('none');
+        }
+        document.querySelector('.content')!.classList.add(...cs);
         console.log(url);
       }
       contentReady = true;
