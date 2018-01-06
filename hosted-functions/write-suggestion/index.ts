@@ -8,25 +8,24 @@ interface Headers {
   [name: string]: string;
 }
 
-export interface Bindings {
+interface Bindings {
   suggestionDocument: Doc;
 }
 
-export interface Context {
+interface Context {
   log(...message: any[]): void;
   done(): void;
   bindings: Bindings;
   res: Response;
 }
-
-export interface Request {
+interface Request {
   method: 'GET' | 'POST';
   headers: Headers;
   body: string;
   query: any;
 }
 
-export interface Response {
+interface Response {
   status: number;
   body: string;
 }

@@ -6,23 +6,23 @@ import { environment } from './imported/common/lib/imported/environments/environ
 const { host, masterKey } = environment.mainDb;
 const client = new DocumentClient(host, { masterKey: masterKey });
 
-export type Doc = SuggestionDocument;
+type Doc = SuggestionDocument;
 
-export interface Context {
+interface Context {
   log(...message: any[]): void;
   done(): void;
   bindings: never;
   res: Response;
 }
 
-export interface Request {
+interface Request {
   method: 'GET' | 'POST';
   query: { href?: string };
 }
 
 type ResponseBody = Doc[];
 
-export interface Response {
+interface Response {
   status: number;
   body: ResponseBody | string;
 }
