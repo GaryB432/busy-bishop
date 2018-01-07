@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 
-import { SuggestionDocument } from '../imported/models';
+import { SuggestionDocument } from '../imported/common/models';
 import { DataService } from './data.service';
 
 @Component({
   selector: 'bb-root',
-  styleUrls: ['./app.component.css'],
+  styleUrls: ['./app.component.scss'],
   templateUrl: './app.component.html',
 })
 export class AppComponent {

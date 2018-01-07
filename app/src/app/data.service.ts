@@ -4,10 +4,12 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 // import { map } from 'rxjs/operators';
 
-import { SuggestionDocument } from '../imported/models';
+import { SuggestionDocument } from '../imported/common/models';
+// import {SuggestionDao} from '../imported/common/lib/data/suggestion-dao';
 
 @Injectable()
 export class DataService {
+  // const f = new SuggestionDao();
   public suggestions: Observable<SuggestionDocument[]>;
   private _sugs: BehaviorSubject<SuggestionDocument[]>;
   private baseUrl: string;
