@@ -10,5 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "documentdb": "^1.14.2"
+  },
+  "devDependencies": {
+    "@types/documentdb": "^1.10.4"
   }
 }
