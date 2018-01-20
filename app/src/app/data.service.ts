@@ -4,24 +4,21 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 // import { map } from 'rxjs/operators';
 
+import { environment } from '../environments/environment';
 import { SuggestionDocument } from '../imported/common/models';
-// import {SuggestionDao} from '../imported/common/lib/data/suggestion-dao';
 
 @Injectable()
 export class DataService {
-  // const f = new SuggestionDao();
   public suggestions: Observable<SuggestionDocument[]>;
-  private _sugs: BehaviorSubject<SuggestionDocument[]>;
-  private baseUrl: string;
-  private dataStore: {
-    suggestions: SuggestionDocument[];
+  private azureApi = 'https://bb-hosted-functions.azurewebsites.net/api';
+  private subject: BehaviorSubject<SuggestionDocument[]>;
+  private dataStore: { suggestions: SuggestionDocument[] } = {
+    suggestions: [],
   };
 
   constructor(private http: HttpClient) {
-    this.baseUrl = 'http://56e05c3213da80110013eba3.mockapi.io/api';
-    this.dataStore = { suggestions: [] };
-    this._sugs = new BehaviorSubject([] as SuggestionDocument[]);
-    this.suggestions = this._sugs.asObservable();
+    this.subject = new BehaviorSubject<SuggestionDocument[]>([]);
+    this.suggestions = this.subject.asObservable();
   }
 
   public ngOnInit(): void {
@@ -29,20 +26,23 @@ export class DataService {
   }
 
   public loadForHref(href: string): void {
-    // new TempDataSource().getSuggestionsFor(href).then(sugs => {
-    //   this.dataStore.suggestions = sugs;
-    //   const store = { ...this.dataStore };
-    //   this._sugs.next(store.suggestions);
-    // });
-    // this.http.get<MakeSuggestionMessage[]>(`${this.baseUrl}/todos`).subscribe(data => {
-    //   this.dataStore.suggestions = data;
-    //   /* tslint:disable-next-line */
-    //   this._sugs.next(Object.assign({}, this.dataStore).suggestions);
-    // }, error => console.log('Could not load todos.'));
+    const key = environment.functionKeys.getSuggestions;
+    this.http
+      .get<SuggestionDocument[]>(
+        `${this.azureApi}/get-suggestions?code=${key}&href=${encodeURIComponent(
+          href
+        )}`
+      )
+      .subscribe(
+        data => {
+          this.subject.next((this.dataStore.suggestions = data));
+        },
+        _error => console.log('Could not load suggestions.')
+      );
   }
 
   public load(id: number | string) {
-    this.http.get<SuggestionDocument>(`${this.baseUrl}/todos/${id}`).subscribe(
+    this.http.get<SuggestionDocument>(`${this.azureApi}/todos/${id}`).subscribe(
       data => {
         let notFound = true;
 
@@ -58,7 +58,7 @@ export class DataService {
         }
 
         /* tslint:disable-next-line */
-        this._sugs.next(Object.assign({}, this.dataStore).suggestions);
+        this.subject.next(Object.assign({}, this.dataStore).suggestions);
       },
       error => console.log('Could not load todo.')
     );
@@ -66,12 +66,12 @@ export class DataService {
 
   public create(todo: SuggestionDocument) {
     this.http
-      .post<SuggestionDocument>(`${this.baseUrl}/todos`, JSON.stringify(todo))
+      .post<SuggestionDocument>(`${this.azureApi}/todos`, JSON.stringify(todo))
       .subscribe(
         data => {
           this.dataStore.suggestions.push(data);
           /* tslint:disable-next-line */
-          this._sugs.next(Object.assign({}, this.dataStore).suggestions);
+          this.subject.next(Object.assign({}, this.dataStore).suggestions);
         },
         error => console.log('Could not create todo.')
       );
@@ -80,7 +80,7 @@ export class DataService {
   public update(todo: SuggestionDocument) {
     this.http
       .put<SuggestionDocument>(
-        `${this.baseUrl}/todos/${todo.id}`,
+        `${this.azureApi}/todos/${todo.id}`,
         JSON.stringify(todo)
       )
       .subscribe(
@@ -92,14 +92,14 @@ export class DataService {
           });
 
           /* tslint:disable-next-line */
-          this._sugs.next(Object.assign({}, this.dataStore).suggestions);
+          this.subject.next(Object.assign({}, this.dataStore).suggestions);
         },
         error => console.log('Could not update todo.')
       );
   }
 
   public remove(todoId: string) {
-    this.http.delete(`${this.baseUrl}/todos/${todoId}`).subscribe(
+    this.http.delete(`${this.azureApi}/todos/${todoId}`).subscribe(
       response => {
         this.dataStore.suggestions.forEach((t, i) => {
           if (t.id === todoId) {
@@ -108,7 +108,7 @@ export class DataService {
         });
 
         /* tslint:disable-next-line */
-        this._sugs.next(Object.assign({}, this.dataStore).suggestions);
+        this.subject.next(Object.assign({}, this.dataStore).suggestions);
       },
       error => console.log('Could not delete todo.')
     );
