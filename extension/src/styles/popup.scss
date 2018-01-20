@@ -13,22 +13,21 @@ body {
     }
     #suggestions {
       article {
-        border-bottom: 2px solid lighten($textColor, 70%);
-        margin: 2px;
-        padding: 2px;
+        margin: 0.5rem 0;
+        padding: 0.5rem;
+        box-shadow: 0.5rem 0.5rem 0.5rem rgba(0, 0, 255, 0.2);
         h1 {
           margin: 2px 0;
           padding: 0.2rem;
-          border-left: 20px solid $blue2;
+          border-left: 20px solid lighten($blue2, 30%);
         }
         section {
           display: flex;
           .info {
             font-size: 0.7rem;
             width: 10rem;
-            background-color: $blue2;
-            color: white;
-            padding: 0.2rem;
+            background-color: white;
+            padding: 0.5rem;
             p {
               padding: 0;
               margin: 0;
@@ -84,5 +83,8 @@ footer {
   align-items: center;
   a {
     display: inline-block;
+  }
+  p {
+    margin: 0 0.5rem;
   }
 }

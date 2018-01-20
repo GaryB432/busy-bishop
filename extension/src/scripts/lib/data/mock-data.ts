@@ -64,7 +64,7 @@ export class MockDataService implements DataService {
       });
       const store = { ...this.dataStore };
       this._sugs.next(store.suggestions);
-    }, 5000);
+    }, 500);
   }
   public load(_id: string | number): void {
     throw new Error('Method not implemented.');
