@@ -21,10 +21,6 @@ export class DataService {
     this.suggestions = this.subject.asObservable();
   }
 
-  public ngOnInit(): void {
-    console.log('data going');
-  }
-
   public loadForHref(href: string): void {
     const key = environment.functionKeys.getSuggestions;
     this.http

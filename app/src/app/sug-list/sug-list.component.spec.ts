@@ -11,8 +11,8 @@ describe('SugListComponent', () => {
   beforeEach(
     async(() => {
       TestBed.configureTestingModule({
-        imports: [HttpClientTestingModule],
         declarations: [SugListComponent],
+        imports: [HttpClientTestingModule],
         providers: [DataService],
       }).compileComponents();
     })

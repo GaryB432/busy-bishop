@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-import { DataService } from '../data.service';
 import { SuggestionDocument } from '../../imported/common/models';
+import { DataService } from '../data.service';
 
 @Component({
   selector: 'bb-sug-list',
