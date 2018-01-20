@@ -1,78 +1,7 @@
-body {
+html {
   // for the document host only
   background-color: cyan;
-}
-
-#bg {
-  background-color: rgba(0, 0, 0, 0.4);
-  position: fixed;
-  display: flex;
-  flex-direction: column;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  overflow: scroll;
-  &.hidden {
-    display: none;
-  }
-}
-.top {
-  border-bottom: thin solid silver;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.bottom {
-  h3 {
-    font-size: 1rem;
-  }
-}
-.instructions {
-  display: flex;
-  align-content: flex-start;
-  flex-direction: row;
-  img {
-    height: 38px;
-    width: 38px;
-    flex-shrink: 0;
-  }
-  h1,
-  h2 {
-    padding: 0;
-    margin: 0;
-  }
-  h1 {
-    font-size: 1.5rem;
-  }
-  h2 {
-    font-size: 1.3rem;
-  }
-  section {
-    margin: 0 10px;
-  }
-}
-button.close-bg {
-  padding: 5px;
-  cursor: pointer;
-  font-size: 2rem;
-  border: 0;
-  background: none;
-  box-shadow: none;
-  border-radius: 0px;
-  &:hover {
-    background-color: silver;
-  }
-}
-.context {
-  font-size: 0.8rem;
-  margin-bottom: 1rem;
-  & .strike {
-    background-color: chartreuse;
-    color: black;
-  }
+  font: 18px arial, sans-serif;
 }
 
 .zoomPic {
@@ -92,11 +21,88 @@ button.close-bg {
   }
 }
 
+/*
+Above is for the document host only.  Below is for the dialog element
+*/
+
+#bg {
+  background-color: rgba(0, 0, 0, 0.4);
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  overflow: scroll;
+  &.hidden {
+    display: none;
+  }
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: thin solid silver;
+  padding-bottom: 0.5em;
+  // margin-bottom: 1em;
+  .left {
+    img {
+      height: 38px;
+      width: 38px;
+    }
+    display: inline-flex;
+  }
+  .instructions {
+    margin: 0 0.5em;
+    h1,
+    h2 {
+      padding: 0;
+      margin: 0;
+    }
+    h1 {
+      font-size: 1.5em;
+    }
+    h2 {
+      font-size: 1.3em;
+    }
+  }
+}
+.bottom {
+  h3 {
+    font-size: 1.1em;
+  }
+}
+
+button.close-bg {
+  padding: 5px;
+  cursor: pointer;
+  font-size: 2em;
+  border: thin solid silver;
+  background: none;
+  box-shadow: none;
+  border-radius: 0px;
+  &:hover {
+    background-color: silver;
+  }
+}
+.context {
+  background-color: antiquewhite;
+  padding: 0.3em;
+  margin: 0.3em;
+  & .strike {
+    background-color: chartreuse;
+    color: black;
+  }
+}
+
 .track {
   width: 450px;
   position: relative;
-  font-family: verdana;
-  font-size: 12px;
+  font: 13px Arial, Helvetica, sans-serif;
   overflow: hidden;
 }
 .content {
@@ -109,9 +115,9 @@ button.close-bg {
   width: 100%;
   background-color: white;
   list-style: none;
-  padding: 12px;
+  padding: 1em;
   max-width: 400px;
-  box-shadow: 10px 10px 10px rgba(0, 0, 255, 0.2);
+  box-shadow: 1em 1em 1em rgba(0, 0, 255, 0.2);
 }
 .active {
   height: 300px;
