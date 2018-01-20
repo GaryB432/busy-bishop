@@ -7,6 +7,7 @@ export interface SuggestionDocument {
   textNodeIndex: number;
   selectedText: string;
   selectionStart: number;
+  submitter : string;
   suggestedText?: string;
   href: string;
   createdAt: number;

@@ -5,7 +5,7 @@ Copy-Item .\common\src\models.ts .\_for-import\models.ts
 Remove-Item .\common\src\imported -Recurse -Force -ErrorAction SilentlyContinue
 Copy-Item .\_for-import -Destination .\common\src\imported -Recurse
 
-# Remove-Item .\app\src\imported -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item .\app\src\environments -Recurse -Force -ErrorAction SilentlyContinue
 Copy-Item .\_for-import\environments -Destination .\app\src\environments -Recurse 
 
 Remove-Item .\extension\src\imported -Recurse -Force -ErrorAction SilentlyContinue

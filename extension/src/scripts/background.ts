@@ -4,6 +4,11 @@ import {
   MakeSuggestionResponse,
 } from './lib/logic/models';
 
+interface StorageData {
+  id?: string;
+}
+
+let userData: StorageData = {};
 const logic = new Logic();
 
 chrome.contextMenus.create({
@@ -12,8 +17,8 @@ chrome.contextMenus.create({
   title: 'Suggest Edit',
 });
 chrome.contextMenus.onClicked.addListener((info, _tab) => {
-  if (info.selectionText) {
-    logic.onStartSuggestion(info.selectionText);
+  if (info.selectionText && userData.id) {
+    logic.onStartSuggestion(info.selectionText, userData.id);
   }
 });
 chrome.runtime.onMessage.addListener(
@@ -27,5 +32,11 @@ chrome.runtime.onMessage.addListener(
     sendResponse(response);
   }
 );
-
-console.log('Loaded.');
+chrome.storage.sync.get('id', (ud: StorageData) => {
+  userData = ud;
+  if (!userData.id) {
+    userData.id = logic.newId();
+    chrome.storage.sync.set(userData);
+  }
+  console.log(userData);
+});

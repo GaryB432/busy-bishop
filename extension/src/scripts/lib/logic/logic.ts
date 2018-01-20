@@ -23,10 +23,11 @@ export class Logic {
   public onPopupLoaded(href: string): void {
     this.dataSvc.loadForHref(href);
   }
-  public onStartSuggestion(selectionText: string): void {
+  public onStartSuggestion(selectionText: string, submitter: string): void {
     const command: StartSuggestionCommand = {
       id: uuidv4(),
       selectionText,
+      submitter,
       type: 'START_SUGGESTION',
     };
     this.bus.send(command);
@@ -60,6 +61,7 @@ export class Logic {
         const selectionStart = context.indexOf(command.selectionText);
         const createdAt = new Date().getTime();
         const selectedText = command.selectionText;
+        const submitter = command.submitter;
         const doc: SuggestionDocument = {
           context,
           createdAt,
@@ -68,6 +70,7 @@ export class Logic {
           id: command.id,
           selectedText,
           selectionStart,
+          submitter,
           suggestedText: 'TBD',
           textNodeIndex,
         };
@@ -86,5 +89,9 @@ export class Logic {
       type: 'MAKE_SUGGESTION',
     };
     this.bus.send(command);
+  }
+
+  public newId(): string {
+    return uuidv4();
   }
 }

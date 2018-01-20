@@ -4,6 +4,7 @@ export interface StartSuggestionCommand {
   type: 'START_SUGGESTION';
   id: string;
   selectionText: string;
+  submitter: string;
 }
 export interface StartSuggestionResponse {
   type: 'START_SUGGESTION_RESPONSE';
