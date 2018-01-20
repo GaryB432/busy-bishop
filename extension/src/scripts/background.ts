@@ -23,7 +23,7 @@ chrome.runtime.onMessage.addListener(
       status: 'OK',
       type: 'MAKE_SUGGESTION_RESPONSE',
     };
-    logic.omMakeSuggestion(command);
+    logic.onMakeSuggestion(command);
     sendResponse(response);
   }
 );

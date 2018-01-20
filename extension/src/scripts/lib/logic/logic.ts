@@ -32,7 +32,7 @@ export class Logic {
     this.bus.send(command);
   }
 
-  public omMakeSuggestion(command: MakeSuggestionCommand): void {
+  public onMakeSuggestion(command: MakeSuggestionCommand): void {
     this.dataSvc.create(command.data);
     // console.log(command.data);
   }
