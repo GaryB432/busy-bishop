@@ -74,7 +74,6 @@ function processUrl(url?: string): void {
           cs.push('none');
         }
         document.querySelector('.content')!.classList.add(...cs);
-        console.log(url);
       }
       contentReady = true;
     });
