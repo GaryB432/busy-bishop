@@ -101,7 +101,7 @@ function getHtml(placeHolder: string): string {
     justify-content: space-between;
     align-items: flex-start;
     border-bottom: thin solid silver;
-    padding-bottom: 0.5em; }
+    padding: 0.5em 0; }
     .top .left {
       display: inline-flex; }
       .top .left img {

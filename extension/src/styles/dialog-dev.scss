@@ -47,8 +47,7 @@ Above is for the document host only.  Below is for the dialog element
   justify-content: space-between;
   align-items: flex-start;
   border-bottom: thin solid silver;
-  padding-bottom: 0.5em;
-  // margin-bottom: 1em;
+  padding: 0.5em 0;
   .left {
     img {
       height: 38px;
