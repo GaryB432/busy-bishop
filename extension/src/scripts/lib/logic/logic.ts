@@ -78,7 +78,11 @@ export class Logic {
         resolve(doc);
       } else {
         console.log(element, textInfo, command.selectionText);
-        reject('nope');
+        reject(
+          `The selected text needs to exist one time in one text node. "${
+            command.selectionText
+          }" does not.`
+        );
       }
     });
   }
