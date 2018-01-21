@@ -74,3 +74,24 @@ export function dateString(ticks: number): string {
   const d = date.getUTCDate();
   return `${m + 1}/${d}/${y}`;
 }
+
+export function occurrences(
+  str: string,
+  substr: string,
+  allowOverlapping: boolean
+): number {
+  let n = 0;
+  let pos = 0;
+  const step = allowOverlapping ? 1 : substr.length;
+
+  while (true) {
+    pos = str.indexOf(substr, pos);
+    if (pos >= 0) {
+      ++n;
+      pos += step;
+    } else {
+      break;
+    }
+  }
+  return n;
+}

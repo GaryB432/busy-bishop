@@ -1,4 +1,5 @@
 import { ParentAndIndex } from '../../../imported/models';
+import { occurrences } from '../utilities';
 
 function getChildIndex(subject: Element): number {
   if (subject.parentElement) {
@@ -9,26 +10,6 @@ function getChildIndex(subject: Element): number {
   } else {
     return -1;
   }
-}
-function occurrences(
-  str: string,
-  substr: string,
-  allowOverlapping: boolean
-): number {
-  let n = 0;
-  let pos = 0;
-  const step = allowOverlapping ? 1 : substr.length;
-
-  while (true) {
-    pos = str.indexOf(substr, pos);
-    if (pos >= 0) {
-      ++n;
-      pos += step;
-    } else {
-      break;
-    }
-  }
-  return n;
 }
 function findTextContainers(elem: Node, txt: string): number[] {
   const numberedNodes = Array.from(elem.childNodes).map<{
