@@ -54,9 +54,15 @@ function addSuggestionElement(suggestion: SuggestionDocument) {
     const ins = suggestion.suggestedText!;
     const end = line.slice(index + selectionLength);
     diffs$.appendChild(createDiffElement(start, strike, ins, end));
+  } else {
+    const d = document.createElement('span');
+    d.innerText = suggestion.id;
+    diffs$.appendChild(d);
   }
-  const info$ = sug$.querySelector('.info > p')!;
-  info$.innerHTML = utilities.dateString(suggestion.createdAt);
+  const info$ = sug$.querySelector('.info')!;
+  const ds = utilities.dateString(suggestion.createdAt);
+  const html = `<p>${ds}</p>`;
+  info$.innerHTML = html;
 
   suggestions$.appendChild(sug$);
 }

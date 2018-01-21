@@ -23,9 +23,11 @@ body {
         }
         section {
           display: flex;
+          .diffc {
+            width: 80%;
+          }
           .info {
-            font-size: 0.7rem;
-            width: 10rem;
+            font-size: 0.8rem;
             background-color: white;
             padding: 0.5rem;
             p {
@@ -53,7 +55,7 @@ body {
 div.note {
   border: thin solid $textColor;
   padding: 0.5rem 1rem;
-  margin: 1rem 0.2rem;
+  margin: 1rem 0;
 }
 
 .diff {
