@@ -70,13 +70,27 @@ test('Should get multi-line', () => {
   });
 });
 
-const sut =
-  'The interesting thing about diff algorithms is that they’re a mix of computer\nscience and human factors. There are many equally good diffs between two files,\njudging them by the length of the edit sequence, and choosing between them\nrequires an algorithm that can best match people’s intuition about how their\ncode has changed.';
+const sixLines = `The interesting thing about diff algorithms is that they’re a mix of computer
+science and human factors. There are many equally good diffs between two files,
+judging them by the length of the edit sequence, and choosing between them
+requires an algorithm that can best match people’s intuition about how their
+code has changed.`;
 
 test('Should get legit multi-line', () => {
-  expect(utilities.narrowSelectionContext(sut, 'human factors')).toEqual({
+  expect(utilities.narrowSelectionContext(sixLines, 'human factors')).toEqual({
     index: 12,
     line:
       'science and human factors. There are many equally good diffs between two files,',
+  });
+});
+
+const longLine = `The interesting thing about diff algorithms is that they’re a mix of computer science and human factors. There are many equally good diffs between two files, judging them by the length of the edit sequence, and choosing between them requires an algorithm that can best match people’s intuition about how their code has changed.`;
+
+test('Should get long line', () => {
+  expect(
+    utilities.narrowSelectionContext(longLine, 'human factors', 50)
+  ).toEqual({
+    index: 50,
+    line: `hms is that they’re a mix of computer science and human factors. There are many equally good diffs between two fi`,
   });
 });

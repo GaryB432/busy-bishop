@@ -56,9 +56,12 @@ export class Logic {
       const textInfo = domutils.getSubjectInfo(element, command.selectionText);
       const textNodeIndex = textInfo.textNodeIndex;
       if (textInfo.textNodeIndex > -1) {
-        const context = element.childNodes.item(textInfo.textNodeIndex)
-          .textContent!;
-        const selectionStart = context.indexOf(command.selectionText);
+        const nsc = utils.narrowSelectionContext(
+          element.childNodes.item(textInfo.textNodeIndex).textContent!,
+          command.selectionText
+        )!;
+        const context = nsc.line;
+        const selectionStart = nsc.index;
         const createdAt = new Date().getTime();
         const selectedText = command.selectionText;
         const submitter = command.submitter;

@@ -19,7 +19,8 @@ function separateLines(lines: string): string[] {
 
 export function narrowSelectionContext(
   lines: string | string[],
-  selectedText: string
+  selectedText: string,
+  MAX: number = 100
 ): StringPosition | null {
   const re = new RegExp(selectedText, 'g');
 
@@ -46,11 +47,21 @@ export function narrowSelectionContext(
     if (lineWith1) {
       const singleIndex = single(lineWith1.indices);
       if (singleIndex) {
-        return { line: lineWith1.line, index: singleIndex.index };
+        let { line, index } = singleIndex;
+        if (singleIndex.index > MAX) {
+          line = singleIndex.line.substr(
+            singleIndex.index % MAX,
+            MAX * 2 + selectedText.length
+          );
+          index = MAX;
+        }
+        return { line, index };
+      } else {
+        throw new Error('sorry3');
       }
     }
   } else {
-    return narrowSelectionContext(separateLines(lines), selectedText);
+    return narrowSelectionContext(separateLines(lines), selectedText, MAX);
   }
   return null;
 }
