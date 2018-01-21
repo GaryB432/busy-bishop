@@ -102,6 +102,7 @@ function getHtml(placeHolder: string): string {
     width: 100%;
     justify-content: center;
     align-items: center;
+    z-index: 1;
     overflow: scroll; }
     #bg.hidden {
       display: none; }

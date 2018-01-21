@@ -36,6 +36,7 @@ Above is for the document host only.  Below is for the dialog element
   width: 100%;
   justify-content: center;
   align-items: center;
+  z-index: 1;
   overflow: scroll;
   &.hidden {
     display: none;
