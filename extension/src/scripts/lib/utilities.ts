@@ -8,13 +8,33 @@ type ElementPath = StringNumberTuple[];
  * Represents a position in a string.
  * { line:'abcde', index: 2 } indicates the 'c'
  */
-interface StringPosition {
+export interface StringPosition {
   line: string;
   index: number;
 }
 
 function separateLines(lines: string): string[] {
   return lines.split('\n');
+}
+
+export function wordBreakExpand(
+  subject: StringPosition,
+  start: number,
+  len: number
+): StringPosition {
+  while (start > 0 && subject.line.charAt(start - 1) !== ' ') {
+    start--;
+    len++;
+  }
+  while (
+    len + start < subject.line.length &&
+    subject.line.charAt(len + start) !== ' '
+  ) {
+    len++;
+  }
+  const line = subject.line.substr(start, len);
+  const index = subject.index - start;
+  return { line, index };
 }
 
 export function narrowSelectionContext(
@@ -47,17 +67,14 @@ export function narrowSelectionContext(
     if (lineWith1) {
       const singleIndex = single(lineWith1.indices);
       if (singleIndex) {
-        let { line, index } = singleIndex;
         if (singleIndex.index > MAX) {
-          line = singleIndex.line.substr(
+          return wordBreakExpand(
+            singleIndex,
             singleIndex.index % MAX,
             MAX * 2 + selectedText.length
           );
-          index = MAX;
         }
-        return { line, index };
-      } else {
-        throw new Error('sorry3');
+        return singleIndex;
       }
     }
   } else {
