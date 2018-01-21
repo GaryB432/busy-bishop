@@ -5,6 +5,7 @@ export class Dialog {
   private diffSpans$: NodeListOf<HTMLSpanElement>;
   private elementHost: ShadowRoot | Document;
   private gotText: (newText: string) => void;
+  private dialogs: HTMLLIElement[];
 
   constructor(elementHost?: ShadowRoot | Document) {
     if (!elementHost) {
@@ -37,9 +38,8 @@ export class Dialog {
   }
 
   private setCurrentDialog(index: number) {
-    const dialogs = this.elementHost.querySelectorAll('.track li')!;
-    Array.from(dialogs).forEach(c => c.classList.remove('current'));
-    dialogs.item(index).classList.add('current');
+    this.dialogs.forEach(c => c.classList.remove('current'));
+    this.dialogs[index].classList.add('current');
   }
 
   private addListeners(): void {
@@ -67,6 +67,16 @@ export class Dialog {
       e.addEventListener('click', () => this.closeClicked())
     );
     this.diffSpans$ = this.elementHost.querySelectorAll('.context > span');
+
+    this.dialogs = Array.from(this.elementHost.querySelectorAll('.track li')!);
+    this.dialogs.forEach((dlg, i) =>
+      dlg.addEventListener('transitionend', e => {
+        const te = e as TransitionEvent;
+        if (te.propertyName === 'transform' && i === 1) {
+          dlg.querySelector('button')!.focus();
+        }
+      })
+    );
   }
 
   private closeClicked() {
