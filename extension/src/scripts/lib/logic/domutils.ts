@@ -1,5 +1,5 @@
 import { ParentAndIndex } from '../../../imported/models';
-import { occurrences } from '../utilities';
+import { indicesOf } from '../utilities';
 
 function getChildIndex(subject: Element): number {
   if (subject.parentElement) {
@@ -11,34 +11,8 @@ function getChildIndex(subject: Element): number {
     return -1;
   }
 }
-function findTextContainers(elem: Node, txt: string): number[] {
-  const numberedNodes = Array.from(elem.childNodes).map<{
-    node: Node;
-    index: number;
-  }>((node, index) => {
-    return { node, index };
-  });
-  return numberedNodes
-    .filter(nn => {
-      const node = nn.node;
-      return (
-        node.nodeName === '#text' &&
-        node.textContent &&
-        occurrences(node.textContent, txt, true) === 1
-      );
-    })
-    .map(nn => nn.index);
-}
 
-export interface SuggestionSubjectInfo {
-  element: HTMLElement | null;
-  textNodeIndex: number;
-  textNode: Node | null;
-}
-
-export function elementFromPoint(x: number, y: number): Element {
-  // return document.elementFromPoint(x, y);
-  console.log('new efp ftw');
+function getElementsFromPoint(x: number, y: number): Element[] {
   type Visibility = string | null;
   let element: HTMLElement;
   const elements: HTMLElement[] = [];
@@ -56,9 +30,50 @@ export function elementFromPoint(x: number, y: number): Element {
     elem.style.visibility = vizs[k];
   });
 
-  // elements.reverse();
-  console.log(elements);
-  return elements[0];
+  return elements;
+}
+
+function findTextContainers(element: Node, txt: string): number[] {
+  const numberedNodes = Array.from(element.childNodes).map<{
+    node: Node;
+    index: number;
+  }>((node, index) => {
+    return { node, index };
+  });
+  return numberedNodes
+    .filter(nn => {
+      const node = nn.node;
+      const indices =
+        node.nodeName === '#text' && node.textContent
+          ? indicesOf(node.textContent, txt, true)
+          : [];
+      if (indices.length > 1) {
+        console.warn(node.textContent, indices);
+      }
+      return indices.length === 1;
+    })
+    .map(nn => nn.index);
+}
+
+function findElementContainers(
+  x: number,
+  y: number,
+  txt: string
+): { element: Element | null; indices: number[] } {
+  for (const element of getElementsFromPoint(x, y)) {
+    const indices = findTextContainers(element, txt);
+    if (indices.length === 1) {
+      return { element, indices };
+    }
+    // for (const node of Array.from(element.childNodes))
+  }
+  return { element: null, indices: [] };
+}
+
+export interface SuggestionSubjectInfo {
+  element: HTMLElement | null;
+  textNodeIndex: number;
+  textNode: Node | null;
 }
 
 export function getElementPath(elem: Element): ParentAndIndex[] {
@@ -70,18 +85,21 @@ export function getElementPath(elem: Element): ParentAndIndex[] {
   }
   return res.reverse();
 }
+
 export function getSubjectInfo(
-  element: HTMLElement,
+  x: number,
+  y: number,
   text: string
 ): SuggestionSubjectInfo {
+  let element: HTMLElement | null = null;
   let textNode: Node | null = null;
   let textNodeIndex = -1;
-  const tnc = findTextContainers(element, text);
-  if (tnc.length === 1) {
-    textNodeIndex = tnc[0];
+  const { element: el, indices } = findElementContainers(x, y, text);
+  if (!!el && indices.length === 1) {
+    element = el as HTMLElement;
+    textNodeIndex = indices[0];
     textNode = element.childNodes[textNodeIndex];
   } else {
-    console.log(element, text, tnc);
     alert('Please select a small bit of text from a single element.');
   }
   return {

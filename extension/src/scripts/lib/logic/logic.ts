@@ -43,25 +43,25 @@ export class Logic {
     command: StartSuggestionCommand,
     getSuggestedText: (document: SuggestionDocument) => Promise<string>
   ): Promise<SuggestionDocument> {
-    const element = domutils.elementFromPoint(
-      point.x,
-      point.y
-    ) as HTMLElement | null;
-    if (!element) {
-      throw new Error('wtf with elementFromPoint()');
-    }
-    const elementPath = utils.serializePath(domutils.getElementPath(element));
     const href = window.location.href;
+    const subject = domutils.getSubjectInfo(
+      point.x,
+      point.y,
+      command.selectionText
+    );
     return new Promise<SuggestionDocument>(async (resolve, reject) => {
-      const textInfo = domutils.getSubjectInfo(element, command.selectionText);
-      const textNodeIndex = textInfo.textNodeIndex;
-      if (textInfo.textNodeIndex > -1) {
-        const nsc = utils.narrowSelectionContext(
-          element.childNodes.item(textInfo.textNodeIndex).textContent!,
+      if (!!subject.element && subject.textNodeIndex > -1) {
+        const elementPath = utils.serializePath(
+          domutils.getElementPath(subject.element)
+        );
+        const textNodeIndex = subject.textNodeIndex;
+        const {
+          line: context,
+          index: selectionStart,
+        } = utils.narrowSelectionContext(
+          subject.element.childNodes.item(subject.textNodeIndex).textContent!,
           command.selectionText
         )!;
-        const context = nsc.line;
-        const selectionStart = nsc.index;
         const createdAt = new Date().getTime();
         const selectedText = command.selectionText;
         const submitter = command.submitter;
@@ -80,7 +80,7 @@ export class Logic {
         doc.suggestedText = await getSuggestedText(doc);
         resolve(doc);
       } else {
-        console.log(element, textInfo, command.selectionText);
+        console.log(subject.element, subject, command.selectionText);
         reject(
           `The selected text needs to exist one time in one text node. "${
             command.selectionText

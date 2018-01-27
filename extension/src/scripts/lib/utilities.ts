@@ -103,23 +103,23 @@ export function dateString(ticks: number): string {
   return `${m + 1}/${d}/${y}`;
 }
 
-export function occurrences(
+export function indicesOf(
   str: string,
   substr: string,
   allowOverlapping: boolean
-): number {
-  let n = 0;
+): number[] {
+  const starts: number[] = [];
   let pos = 0;
   const step = allowOverlapping ? 1 : substr.length;
 
   while (true) {
     pos = str.indexOf(substr, pos);
     if (pos >= 0) {
-      ++n;
+      starts.push(pos);
       pos += step;
     } else {
       break;
     }
   }
-  return n;
+  return starts;
 }
