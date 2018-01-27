@@ -36,6 +36,31 @@ export interface SuggestionSubjectInfo {
   textNode: Node | null;
 }
 
+export function elementFromPoint(x: number, y: number): Element {
+  // return document.elementFromPoint(x, y);
+  console.log('new efp ftw');
+  type Visibility = string | null;
+  let element: HTMLElement;
+  const elements: HTMLElement[] = [];
+  const vizs: Visibility[] = [];
+  while (
+    (element = document.elementFromPoint(x, y) as HTMLElement) &&
+    element !== document.documentElement
+  ) {
+    elements.push(element);
+    vizs.push(element.style.visibility);
+    element.style.visibility = 'hidden';
+  }
+
+  elements.forEach((elem, k) => {
+    elem.style.visibility = vizs[k];
+  });
+
+  // elements.reverse();
+  console.log(elements);
+  return elements[0];
+}
+
 export function getElementPath(elem: Element): ParentAndIndex[] {
   const res: ParentAndIndex[] = [];
   let w = elem;

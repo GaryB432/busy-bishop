@@ -5,6 +5,9 @@
     "tslint-config-gb"
   ],
   "rules": {
+    "no-conditional-assignment": [
+      false
+    ],
     "no-console": [
       false
     ],

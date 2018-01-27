@@ -43,7 +43,7 @@ export class Logic {
     command: StartSuggestionCommand,
     getSuggestedText: (document: SuggestionDocument) => Promise<string>
   ): Promise<SuggestionDocument> {
-    const element = document.elementFromPoint(
+    const element = domutils.elementFromPoint(
       point.x,
       point.y
     ) as HTMLElement | null;
