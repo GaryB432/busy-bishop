@@ -70,19 +70,26 @@ function addSuggestionElement(suggestion: SuggestionDocument) {
 function processUrl(url?: string): void {
   if (!!url) {
     url$.textContent = schemeTrim(url);
-    logic.suggestions.subscribe(suggestions => {
-      for (const s of suggestions) {
-        addSuggestionElement(s);
-      }
-      if (contentReady || suggestions.length) {
-        const cs = ['ready'];
-        if (suggestions.length === 0) {
-          cs.push('none');
+    const content$ = document.querySelector('.content')!;
+    logic.suggestions.subscribe(
+      suggestions => {
+        for (const s of suggestions) {
+          addSuggestionElement(s);
         }
-        document.querySelector('.content')!.classList.add(...cs);
+        if (contentReady || suggestions.length) {
+          const cs = ['ready'];
+          if (suggestions.length === 0) {
+            cs.push('none');
+          }
+          content$.classList.add(...cs);
+        }
+        contentReady = true;
+      },
+      err => {
+        alert(err);
+        content$.classList.add('ready', 'none');
       }
-      contentReady = true;
-    });
+    );
     logic.onPopupLoaded(url);
   }
 }

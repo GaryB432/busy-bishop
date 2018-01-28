@@ -43,7 +43,9 @@ export class AzureDataService implements DataService {
           const store = { ...this.dataStore };
           this._sugs.next(store.suggestions);
         },
-        _error => console.log('Could not load suggestions.')
+        () => {
+          this._sugs.error('Could not load suggestions.');
+        }
       );
   }
 
