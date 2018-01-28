@@ -11,7 +11,9 @@ const searchParams = [
   'utm_campaign=nope',
 ];
 
-const href = `https://banana.com:81/path/stuff?${searchParams.join('&')}#other-junk`;
+const href = `https://banana.com:81/path/stuff?${searchParams.join(
+  '&'
+)}#other-junk`;
 
 test('Should stringify date', () => {
   const m = new Date(2002, 3, 4, 5, 6, 7, 8);
