@@ -81,7 +81,7 @@ export class AzureDataService implements DataService {
       )
       .subscribe(
         data => {
-          console.log(JSON.stringify(data, null, 2));
+          console.log(data);
           this.dataStore.suggestions.push(data);
           const store = { ...this.dataStore };
           this._sugs.next(store.suggestions);

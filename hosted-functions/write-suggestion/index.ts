@@ -27,7 +27,7 @@ interface Request {
 
 interface Response {
   status: number;
-  body: string;
+  body: Doc | string;
 }
 
 export default (context: Context, req: Request) => {
@@ -40,8 +40,7 @@ export default (context: Context, req: Request) => {
       res.status = 201;
       const suggestion: Doc = JSON.parse(req.body);
       suggestion.clientIP = req.headers['x-forwarded-for'].split(':')[0];
-      context.bindings.suggestionDocument = suggestion;
-      res.body = JSON.stringify(suggestion);
+      res.body = context.bindings.suggestionDocument = suggestion;
     }
   }
   context.res = res;
