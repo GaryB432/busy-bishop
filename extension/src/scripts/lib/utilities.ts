@@ -134,7 +134,7 @@ export function indicesOf(
   return starts;
 }
 
-export function simplifyLocation(location: {
+export function cleanLocation(location: {
   hostname: string;
   pathname: string;
   search: string;
@@ -148,5 +148,7 @@ export function simplifyLocation(location: {
   // port: omitting by using hostname
   // protocol: omitted;
   // search: check;
-  return location.hostname.concat(location.pathname).concat(location.search);
+  return location.hostname
+    .concat(location.pathname)
+    .concat(location.search.replace(/[?&]utm_[^?&]+/g, '').replace(/^&/, '?'));
 }
