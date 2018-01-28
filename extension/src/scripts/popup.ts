@@ -7,10 +7,8 @@ import * as utilities from './lib/utilities';
 const suggestions$ = document.querySelector('#suggestions')!;
 const url$ = document.querySelector('#url')!;
 
-const schemeRegex: RegExp = new RegExp('https*://', 'ig');
 const ltrim = (str: string) => str.replace(/^\s+/, '');
 const rtrim = (str: string) => str.replace(/\s+$/, '');
-const schemeTrim = (str: string) => str.replace(schemeRegex, '');
 
 const logic = new Logic();
 let contentReady = false;
@@ -69,7 +67,7 @@ function addSuggestionElement(suggestion: SuggestionDocument) {
 
 function processUrl(url?: string): void {
   if (!!url) {
-    url$.textContent = schemeTrim(url);
+    url$.textContent = utilities.cleanLocation(url);
     const content$ = document.querySelector('.content')!;
     logic.suggestions.subscribe(
       suggestions => {

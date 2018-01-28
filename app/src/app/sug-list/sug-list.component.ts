@@ -15,7 +15,7 @@ export class SugListComponent implements OnInit {
 
   public ngOnInit(): void {
     this.suggestions = this.data.suggestions;
-    this.data.loadForHref(
+    this.data.loadForLocation(
       'https://blog.jcoglan.com/2017/03/22/myers-diff-in-linear-space-theory/'
     );
   }

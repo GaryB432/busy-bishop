@@ -20,8 +20,8 @@ export class Logic {
     return this.dataSvc.suggestions;
   }
 
-  public onPopupLoaded(href: string): void {
-    this.dataSvc.loadForHref(href);
+  public onPopupLoaded(url: string): void {
+    this.dataSvc.loadForLocation(utils.cleanLocation(url));
   }
   public onStartSuggestion(selectionText: string, submitter: string): void {
     const command: StartSuggestionCommand = {
@@ -43,7 +43,8 @@ export class Logic {
     command: StartSuggestionCommand,
     getSuggestedText: (document: SuggestionDocument) => Promise<string>
   ): Promise<SuggestionDocument> {
-    const href = window.location.href;
+    const { hash, host, pathname, protocol, search } = window.location;
+    const location = utils.cleanLocation(window.location);
     const subject = domutils.getSubjectInfo(
       point.x,
       point.y,
@@ -68,13 +69,19 @@ export class Logic {
             context,
             createdAt,
             elementPath,
-            href,
             id: command.id,
+            location,
             selectedText,
             selectionStart,
             submitter,
-            suggestedText: 'TBD',
             textNodeIndex,
+            url: {
+              hash,
+              host,
+              pathname,
+              protocol,
+              search,
+            },
           };
           doc.suggestedText = await getSuggestedText(doc);
           resolve(doc);

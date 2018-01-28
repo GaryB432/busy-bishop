@@ -21,19 +21,19 @@ export class DataService {
     this.suggestions = this.subject.asObservable();
   }
 
-  public loadForHref(href: string): void {
+  public loadForLocation(location: string): void {
     const key = environment.functionKeys.getSuggestions;
     this.http
       .get<SuggestionDocument[]>(
-        `${this.azureApi}/get-suggestions?code=${key}&href=${encodeURIComponent(
-          href
-        )}`
+        `${
+          this.azureApi
+        }/get-suggestions?code=${key}&location=${encodeURIComponent(location)}`
       )
       .subscribe(
         data => {
           this.subject.next((this.dataStore.suggestions = data));
         },
-        _error => console.log('Could not load suggestions.')
+        () => this.subject.error('Could not load suggestions.')
       );
   }
 

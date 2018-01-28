@@ -7,7 +7,7 @@ import { HttpClient } from '../http';
 
 export interface DataService {
   suggestions: Observable<SuggestionDocument[]>;
-  loadForHref(href: string): void;
+  loadForLocation(location: string): void;
   load(id: number | string): void;
   create(suggestion: SuggestionDocument): void;
   update(suggestion: SuggestionDocument): void;
@@ -29,13 +29,13 @@ export class AzureDataService implements DataService {
     this.suggestions = this._sugs.asObservable();
   }
 
-  public loadForHref(href: string): void {
+  public loadForLocation(location: string): void {
     const key = environment.functionKeys.getSuggestions;
     this.http
       .get<SuggestionDocument[]>(
-        `${this.azureApi}/get-suggestions?code=${key}&href=${encodeURIComponent(
-          href
-        )}`
+        `${
+          this.azureApi
+        }/get-suggestions?code=${key}&location=${encodeURIComponent(location)}`
       )
       .subscribe(
         data => {

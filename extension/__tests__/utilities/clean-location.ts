@@ -1,4 +1,4 @@
-import { URL } from 'url';
+import { parse } from 'url';
 
 import * as utilities from '../../src/scripts/lib/utilities';
 
@@ -21,12 +21,11 @@ test('Should stringify date', () => {
 });
 
 test('Should verify url parsing', () => {
-  const u = new URL(href);
+  const u = parse(href);
   expect(u.hash).toEqual('#other-junk');
   expect(u.host).toEqual('banana.com:81');
   expect(u.hostname).toEqual('banana.com');
   expect(u.href).toEqual(href);
-  expect(u.origin).toEqual('https://banana.com:81');
   expect(u.pathname).toEqual('/path/stuff');
   expect(u.port).toEqual('81');
   expect(u.protocol).toEqual('https:');
@@ -60,7 +59,13 @@ test('Should simplify invalid url', () => {
 });
 
 test('Should simplify url', () => {
-  expect(utilities.cleanLocation(new URL(href))).toBe(
+  expect(utilities.cleanLocation(parse(href))).toBe(
+    'banana.com/path/stuff?ok=you-bet'
+  );
+});
+
+test('Should simplify stringy url', () => {
+  expect(utilities.cleanLocation(href)).toBe(
     'banana.com/path/stuff?ok=you-bet'
   );
 });

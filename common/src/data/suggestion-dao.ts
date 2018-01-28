@@ -11,8 +11,8 @@ export class SuggestionDao extends AbstractDao<SuggestionDocument> {
   ) {
     super(client, databaseId, collectionId);
   }
-  public getByHref(
-    href: string,
+  public getByLocation(
+    location: string,
     callback: (
       err: QueryError | null,
       obj?: SuggestionDocument[],
@@ -21,11 +21,11 @@ export class SuggestionDao extends AbstractDao<SuggestionDocument> {
   ): void {
     this.getMany(
       {
-        query: 'SELECT * FROM root r WHERE r.href = @href',
+        query: 'SELECT * FROM root r WHERE r.location = @location',
         parameters: [
           {
-            name: '@href',
-            value: href,
+            name: '@location',
+            value: location,
           },
         ],
       },

@@ -17,7 +17,7 @@ interface Context {
 
 interface Request {
   method: 'GET' | 'POST';
-  query: { href?: string };
+  query: { location?: string };
 }
 
 type ResponseBody = Doc[];
@@ -34,12 +34,12 @@ export default function(context: Context, req: Request) {
     status: 400,
     body: 'Invalid Request',
   };
-  function getDocuments(href: string): Promise<SuggestionDocument[]> {
-    context.log(href);
+  function getDocuments(location: string): Promise<SuggestionDocument[]> {
+    context.log(location);
     return new Promise<SuggestionDocument[]>((resolve, reject) => {
       dao.init((err, coll) => {
         if (coll) {
-          dao.getByHref(href, (err2, suggestions) => {
+          dao.getByLocation(location, (err2, suggestions) => {
             if (err2) {
               context.log(err2);
               reject(err2);
@@ -61,12 +61,14 @@ export default function(context: Context, req: Request) {
   }
 
   if (req.method === 'GET') {
-    if (req.query.href) {
+    if (req.query.location) {
       response.status = 200;
-      getDocuments(req.query.href).then((documents: SuggestionDocument[]) => {
-        response.body = documents;
-        finishUp();
-      });
+      getDocuments(req.query.location).then(
+        (documents: SuggestionDocument[]) => {
+          response.body = documents;
+          finishUp();
+        }
+      );
     } else {
       finishUp();
     }

@@ -1,40 +1,40 @@
 import 'jest';
 
-import * as index from '../src/logic';
+import * as logic from '../src/logic';
 import { SuggestionDocument } from '../src/models';
 
 test('Should reduce', () => {
   const suggs = [
     {
-      href: 'href0',
+      location: 'href0',
       id: 'id0',
     },
     {
-      href: 'href1',
+      location: 'href1',
       id: 'id1',
     },
     {
-      href: 'href1',
+      location: 'href1',
       id: 'id2',
     },
     {
-      href: 'href3',
+      location: 'href3',
       id: 'id3',
     },
     {
-      href: 'href4',
+      location: 'href4',
       id: 'id4',
     },
   ];
 
-  const mapp = index.reduceByHref(suggs);
+  const mapp = logic.reduceByLocation(suggs);
   expect(mapp.get('href1')).toEqual([
     {
-      href: 'href1',
+      location: 'href1',
       id: 'id1',
     },
     {
-      href: 'href1',
+      location: 'href1',
       id: 'id2',
     },
   ]);

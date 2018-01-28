@@ -2,17 +2,17 @@ import { SuggestionDocument } from './models';
 
 export type Href = string;
 
-export function reduceByHref(
+export function reduceByLocation(
   suggestions: Array<Partial<SuggestionDocument>>
 ): Map<Href, Array<Partial<SuggestionDocument>>> {
   const result = suggestions.reduce<
     Map<Href, Array<Partial<SuggestionDocument>>>
   >((mapp, sugg) => {
-    if (!!sugg.href) {
-      if (!mapp.has(sugg.href)) {
-        mapp.set(sugg.href, []);
+    if (!!sugg.location) {
+      if (!mapp.has(sugg.location)) {
+        mapp.set(sugg.location, []);
       }
-      const hsuggs = mapp.get(sugg.href)!;
+      const hsuggs = mapp.get(sugg.location)!;
       hsuggs.push(sugg);
     }
     return mapp;

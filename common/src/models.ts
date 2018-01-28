@@ -1,14 +1,21 @@
 export type ParentAndIndex = [string, number];
 
 export interface SuggestionDocument {
-  id: string;
-  elementPath: string;
   context: string;
-  textNodeIndex: number;
+  createdAt: number;
+  elementPath: string;
+  id: string;
+  location: string;
   selectedText: string;
   selectionStart: number;
   submitter: string;
   suggestedText?: string;
-  href: string;
-  createdAt: number;
+  textNodeIndex: number;
+  url: {
+    hash: string;
+    host: string;
+    pathname: string;
+    protocol: string;
+    search: string;
+  };
 }

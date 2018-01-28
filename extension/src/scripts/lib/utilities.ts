@@ -1,3 +1,4 @@
+import { parse, Url } from 'url';
 import { isArray } from 'util';
 
 type StringNumberTuple = [string, number];
@@ -134,11 +135,7 @@ export function indicesOf(
   return starts;
 }
 
-export function cleanLocation(location: {
-  hostname: string;
-  pathname: string;
-  search: string;
-}): string {
+export function cleanLocation(location: Url | string): string {
   // hash: omitted
   // host: using hostname which exludes port
   // hostname: check
@@ -148,7 +145,14 @@ export function cleanLocation(location: {
   // port: omitting by using hostname
   // protocol: omitted;
   // search: check;
-  return location.hostname
-    .concat(location.pathname)
-    .concat(location.search.replace(/[?&]utm_[^?&]+/g, '').replace(/^&/, '?'));
+
+  function main(loc: Url) {
+    const search = loc.search
+      ? loc.search.replace(/[?&]utm_[^?&]+/g, '').replace(/^&/, '?')
+      : '';
+    const hostname = loc.hostname || '';
+    const pathname = loc.pathname || '';
+    return hostname.concat(pathname).concat(search);
+  }
+  return typeof location === 'string' ? main(parse(location)) : main(location);
 }
