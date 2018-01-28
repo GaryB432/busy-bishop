@@ -55,30 +55,33 @@ export class Logic {
           domutils.getElementPath(subject.element)
         );
         const textNodeIndex = subject.textNodeIndex;
-        const {
-          line: context,
-          index: selectionStart,
-        } = utils.narrowSelectionContext(
-          subject.element.childNodes.item(subject.textNodeIndex).textContent!,
-          command.selectionText
-        )!;
-        const createdAt = new Date().getTime();
-        const selectedText = command.selectionText;
-        const submitter = command.submitter;
-        const doc: SuggestionDocument = {
-          context,
-          createdAt,
-          elementPath,
-          href,
-          id: command.id,
-          selectedText,
-          selectionStart,
-          submitter,
-          suggestedText: 'TBD',
-          textNodeIndex,
-        };
-        doc.suggestedText = await getSuggestedText(doc);
-        resolve(doc);
+        const context = subject.element.childNodes.item(subject.textNodeIndex)
+          .textContent!;
+        const positions = utils.getStartIndices(context, command.selectionText);
+        const sp = utils.single(positions);
+        if (!!sp) {
+          const selectionStart = sp.index;
+          const createdAt = new Date().getTime();
+          const selectedText = command.selectionText;
+          const submitter = command.submitter;
+          const doc: SuggestionDocument = {
+            context,
+            createdAt,
+            elementPath,
+            href,
+            id: command.id,
+            selectedText,
+            selectionStart,
+            submitter,
+            suggestedText: 'TBD',
+            textNodeIndex,
+          };
+          doc.suggestedText = await getSuggestedText(doc);
+          resolve(doc);
+        } else {
+          console.log(subject.element, subject, command.selectionText);
+          reject(`The selected text "${command.selectionText}" was not found.`);
+        }
       } else {
         console.log(subject.element, subject, command.selectionText);
         reject(

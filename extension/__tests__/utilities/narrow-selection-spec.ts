@@ -71,12 +71,24 @@ test('Should get multi-line', () => {
 });
 
 const humanFactors = 'human factors';
+const intuition = 'intuition';
 
 const sixLines = `The interesting thing about diff algorithms is that they’re a mix of computer
 science and human factors. There are many equally good diffs between two files,
 judging them by the length of the edit sequence, and choosing between them
 requires an algorithm that can best match people’s intuition about how their
 code has changed.`;
+
+test('should expand word wrap', () => {
+  const res = utilities.wordBreakExpand(
+    { line: 'the best ever found text is here dont you think?', index: 20 },
+    6,
+    24
+  );
+  expect(res.line).toBe('best ever found text is here');
+  expect(res.index).toBe(16);
+  expect(res.line.substr(res.index, 4)).toBe('text');
+});
 
 test('Should get legit multi-line', () => {
   const res = utilities.narrowSelectionContext(sixLines, humanFactors)!;
@@ -90,21 +102,10 @@ test('Should get legit multi-line', () => {
 const longLine = `The interesting thing about diff algorithms is that they’re a mix of computer science and human factors. There are many equally good diffs between two files, judging them by the length of the edit sequence, and choosing between them requires an algorithm that can best match people’s intuition about how their code has changed.`;
 
 test('Should get long line', () => {
-  const res = utilities.narrowSelectionContext(longLine, humanFactors, 50)!;
+  const res = utilities.narrowSelectionContext(longLine, intuition, 50)!;
   expect(res).not.toBeNull();
   expect(res.line).toEqual(
-    'algorithms is that they’re a mix of computer science and human factors. There are many equally good diffs between two files,'
+    'requires an algorithm that can best match people’s intuition about how their code has changed.'
   );
-  expect(res.line.substr(res.index, humanFactors.length)).toBe(humanFactors);
-});
-
-test('should expand word wrap', () => {
-  const res = utilities.wordBreakExpand(
-    { line: 'the best ever found text is here dont you think?', index: 20 },
-    6,
-    24
-  );
-  expect(res.line).toBe('best ever found text is here');
-  expect(res.index).toBe(16);
-  expect(res.line.substr(res.index, 4)).toBe('text');
+  expect(res.line.substr(res.index, intuition.length)).toBe(intuition);
 });

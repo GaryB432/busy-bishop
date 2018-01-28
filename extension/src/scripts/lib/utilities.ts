@@ -17,6 +17,19 @@ function separateLines(lines: string): string[] {
   return lines.split('\n');
 }
 
+export function getStartIndices(
+  line: string,
+  substr: string
+): StringPosition[] {
+  const re = new RegExp(substr, 'g');
+  const starts: StringPosition[] = [];
+  let arr: RegExpExecArray | null;
+  while ((arr = re.exec(line)) !== null) {
+    starts.push({ index: arr.index, line });
+  }
+  return starts;
+}
+
 export function wordBreakExpand(
   subject: StringPosition,
   start: number,
@@ -42,23 +55,11 @@ export function narrowSelectionContext(
   selectedText: string,
   MAX: number = 100
 ): StringPosition | null {
-  const re = new RegExp(selectedText, 'g');
-
-  function getStartIndices(line: string): StringPosition[] {
-    const starts: StringPosition[] = [];
-    let arr: RegExpExecArray | null;
-    // tslint:disable-next-line
-    while ((arr = re.exec(line)) !== null) {
-      starts.push({ index: arr.index, line });
-    }
-    return starts;
-  }
-
   if (isArray(lines)) {
     const linesWith1 = lines
       .map(line => {
         return {
-          indices: getStartIndices(line),
+          indices: getStartIndices(line, selectedText),
           line,
         };
       })
@@ -67,10 +68,19 @@ export function narrowSelectionContext(
     if (lineWith1) {
       const singleIndex = single(lineWith1.indices);
       if (singleIndex) {
+        // console.log(singleIndex.index);
+        // if (singleIndex.index > MAX) {
+        //   const ll = singleIndex.line.substr(singleIndex.index - MAX, selectedText.length + (MAX * 2));
+        //   const nd = MAX;
+        //   // return wordBreakExpand({ index: nd, line: ll }, selectedText.length)
+        //   const sp: StringPosition = { index: nd, line: ll };
+        //   console.log(sp);
+        //   return sp;
+        // }
         if (singleIndex.index > MAX) {
           return wordBreakExpand(
             singleIndex,
-            singleIndex.index % MAX,
+            singleIndex.index - MAX,
             MAX * 2 + selectedText.length
           );
         }
