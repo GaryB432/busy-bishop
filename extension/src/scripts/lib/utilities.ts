@@ -133,3 +133,20 @@ export function indicesOf(
   }
   return starts;
 }
+
+export function simplifyLocation(location: {
+  hostname: string;
+  pathname: string;
+  search: string;
+}): string {
+  // hash: omitted
+  // host: using hostname which exludes port
+  // hostname: check
+  // href: skipping for constituents
+  // origin: skipping for constituents
+  // pathname: check
+  // port: omitting by using hostname
+  // protocol: omitted;
+  // search: check;
+  return location.hostname.concat(location.pathname).concat(location.search);
+}
