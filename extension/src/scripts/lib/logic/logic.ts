@@ -6,10 +6,16 @@ import { AzureDataService, DataService } from '../data/data';
 import { MockDataService } from '../data/mock-data';
 import * as utils from '../utilities';
 import * as domutils from './domutils';
+import { AppInsightsProperties, Logger, LoggerProperties } from './logger';
 import { MakeSuggestionCommand, StartSuggestionCommand } from './models';
 import { MessageSender, MessageSenderChrome } from './sender';
 
 export class Logic {
+  public trackEvent: (
+    name: string,
+    properties?: AppInsightsProperties,
+    measurements?: { [name: string]: number }
+  ) => void = Logger.trackEvent;
   constructor(
     private bus: MessageSender = new MessageSenderChrome(),
     private dataSvc: DataService = window.location.hostname === 'localhost'
@@ -90,6 +96,7 @@ export class Logic {
           reject(`The selected text "${command.selectionText}" was not found.`);
         }
       } else {
+        alert('Please select one or a few words from a single element.');
         console.log(subject.element, subject, command.selectionText);
         reject(
           `The selected text needs to exist one time in one text node. "${
@@ -105,6 +112,15 @@ export class Logic {
       data: document,
       type: 'MAKE_SUGGESTION',
     };
+    const props: LoggerProperties = {
+      location: document.location,
+      pathname: document.url.pathname,
+      selectedText: document.selectedText,
+      submitter: document.submitter,
+      suggestedText: document.suggestedText!,
+    };
+    Logger.trackEvent(command.type, props);
+    this.trackEvent(command.type, props);
     this.bus.send(command);
   }
 

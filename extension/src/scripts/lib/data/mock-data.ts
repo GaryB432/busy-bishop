@@ -7,8 +7,8 @@ import { DataService } from './data';
 
 const fakeUrlInfo = {
   hash: '',
-  host: '',
-  pathname: '',
+  host: 'garyb432.github.io',
+  pathname: '/busy-bishop',
   protocol: '',
   search: '',
 };

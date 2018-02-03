@@ -99,8 +99,6 @@ export function getSubjectInfo(
     element = el as HTMLElement;
     textNodeIndex = indices[0];
     textNode = element.childNodes[textNodeIndex];
-  } else {
-    alert('Please select a small bit of text from a single element.');
   }
   return {
     element,

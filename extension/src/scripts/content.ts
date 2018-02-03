@@ -1,3 +1,4 @@
+import { AppInsights } from 'applicationinsights-js';
 import { SuggestionDocument } from '../imported/models';
 import { Dialog } from './lib/dialog';
 import { Logic } from './lib/logic/logic';
@@ -9,6 +10,14 @@ import { lastPointer } from './lib/pointer';
 
 const dialog = new Dialog();
 const logic = new Logic();
+
+if (!!AppInsights.downloadAndSetup) {
+  AppInsights.downloadAndSetup({
+    instrumentationKey: '3f0e2dcb-ab20-4af4-8b4b-60ff9bbad653',
+  });
+  logic.trackEvent = AppInsights.trackEvent;
+}
+
 function setupChrome() {
   chrome.runtime.onMessage.addListener(
     async (command: StartSuggestionCommand, _sender, sendResponse) => {
