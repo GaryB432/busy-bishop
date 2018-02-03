@@ -1,21 +1,21 @@
 export class Dialog {
-  private bg$: HTMLDivElement;
-  private input$: HTMLInputElement;
-  private submit$: HTMLButtonElement;
-  private diffSpans$: NodeListOf<HTMLSpanElement>;
+  private bg$?: HTMLDivElement;
+  private input$?: HTMLInputElement;
+  private submit$?: HTMLButtonElement;
+  private diffSpans$?: NodeListOf<HTMLSpanElement>;
   private elementHost: ShadowRoot | Document;
-  private gotText: (newText: string) => void;
-  private dialogs: HTMLLIElement[];
+  private gotText?: (newText: string) => void;
+  private dialogs?: HTMLLIElement[];
 
   constructor(elementHost?: ShadowRoot | Document) {
     if (!elementHost) {
       const bishop = document.createElement('div');
       const root = bishop.attachShadow({ mode: 'closed' });
-      root.innerHTML = getHtml('');
+      root.innerHTML = this.getHtml('');
       this.elementHost = root;
       document.documentElement.appendChild(bishop);
     } else {
-      this.elementHost = document;
+      this.elementHost = elementHost;
     }
     this.addListeners();
   }
@@ -26,71 +26,25 @@ export class Dialog {
     back: string
   ): Promise<string> {
     return new Promise<string>(resolve => {
-      const parts = [front, selected, back];
-      parts.forEach((part, i) => (this.diffSpans$.item(i).textContent = part));
-      this.gotText = resolve;
-      this.setCurrentDialog(0);
-      this.bg$.classList.remove('hidden');
-      this.input$.value = selected;
-      this.input$.focus();
-      this.input$.setSelectionRange(0, selected.length);
-    });
-  }
-
-  private setCurrentDialog(index: number) {
-    this.dialogs.forEach(c => c.classList.remove('current'));
-    this.dialogs[index].classList.add('current');
-  }
-
-  private addListeners(): void {
-    this.bg$ = this.elementHost.querySelector('#bg')! as HTMLDivElement;
-    this.input$ = this.elementHost.querySelector('#input')! as HTMLInputElement;
-    this.submit$ = this.elementHost.querySelector(
-      '#submit'
-    )! as HTMLButtonElement;
-
-    this.input$.addEventListener('keyup', e => {
-      this.submit$.disabled = this.input$.value.length === 0;
-      if (e.keyCode === 13 && this.input$.value.length > 0) {
-        this.submitClicked();
+      if (this.diffSpans$ && this.bg$ && this.input$) {
+        const parts = [front, selected, back];
+        parts.forEach((part, i) => {
+          if (this.diffSpans$) {
+            this.diffSpans$.item(i).textContent = part;
+          }
+        });
+        this.gotText = resolve;
+        this.setCurrentDialog(0);
+        this.bg$.classList.remove('hidden');
+        this.input$.value = selected;
+        this.input$.focus();
+        this.input$.setSelectionRange(0, selected.length);
       }
     });
-
-    Array.from(this.elementHost.querySelectorAll('.track')).forEach(e =>
-      e.addEventListener('click', dlg => (dlg.cancelBubble = true))
-    );
-
-    this.submit$.addEventListener('click', () => this.submitClicked());
-
-    const closeBgs = this.elementHost.querySelectorAll('.close-bg');
-    Array.from(closeBgs).forEach(e =>
-      e.addEventListener('click', () => this.closeClicked())
-    );
-    this.diffSpans$ = this.elementHost.querySelectorAll('.context > span');
-
-    this.dialogs = Array.from(this.elementHost.querySelectorAll('.track li')!);
-    this.dialogs.forEach((dlg, i) =>
-      dlg.addEventListener('transitionend', e => {
-        const te = e as TransitionEvent;
-        if (te.propertyName === 'transform' && i === 1) {
-          dlg.querySelector('button')!.focus();
-        }
-      })
-    );
   }
 
-  private closeClicked() {
-    this.bg$.classList.add('hidden');
-  }
-
-  private submitClicked() {
-    this.gotText(this.input$.value);
-    this.setCurrentDialog(1);
-  }
-}
-
-function getHtml(placeHolder: string): string {
-  return `<style>
+  protected getHtml(placeHolder: string): string {
+    return `<style>
   #bg {
     background-color: rgba(0, 0, 0, 0.4);
     position: fixed;
@@ -235,4 +189,66 @@ function getHtml(placeHolder: string): string {
   </div>
 </div>
 `;
+  }
+
+  private setCurrentDialog(index: number): void {
+    if (this.dialogs) {
+      this.dialogs.forEach(c => c.classList.remove('current'));
+      this.dialogs[index].classList.add('current');
+    }
+  }
+
+  private addListeners(): void {
+    this.bg$ = this.elementHost.querySelector('#bg') as HTMLDivElement;
+    this.input$ = this.elementHost.querySelector('#input') as HTMLInputElement;
+    this.submit$ = this.elementHost.querySelector(
+      '#submit'
+    )! as HTMLButtonElement;
+
+    this.input$.addEventListener('keyup', e => {
+      if (!!this.submit$ && !!this.input$) {
+        this.submit$.disabled = this.input$.value.length === 0;
+        if (e.keyCode === 13 && this.input$.value.length > 0) {
+          this.submitClicked();
+        }
+      }
+    });
+
+    Array.from(this.elementHost.querySelectorAll('.track')).forEach(e =>
+      e.addEventListener('click', dlg => (dlg.cancelBubble = true))
+    );
+
+    this.submit$.addEventListener('click', () => this.submitClicked());
+
+    const closeBgs = this.elementHost.querySelectorAll('.close-bg');
+    Array.from(closeBgs).forEach(e =>
+      e.addEventListener('click', () => this.closeClicked())
+    );
+    this.diffSpans$ = this.elementHost.querySelectorAll('.context > span');
+
+    this.dialogs = Array.from(this.elementHost.querySelectorAll('.track li'));
+    if (this.dialogs) {
+      this.dialogs.forEach((dlg, i) =>
+        dlg.addEventListener('transitionend', e => {
+          const te = e as TransitionEvent;
+          if (te.propertyName === 'transform' && i === 1) {
+            dlg.querySelector('button')!.focus();
+          }
+        })
+      );
+    }
+  }
+
+  private closeClicked() {
+    if (this.bg$) {
+      this.bg$.classList.add('hidden');
+    }
+  }
+
+  private submitClicked() {
+    if (this.gotText && this.input$) {
+      this.gotText(this.input$.value);
+      this.setCurrentDialog(1);
+    }
+  }
 }
