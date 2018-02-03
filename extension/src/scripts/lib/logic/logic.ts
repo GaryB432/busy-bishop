@@ -6,22 +6,28 @@ import { AzureDataService, DataService } from '../data/data';
 import { MockDataService } from '../data/mock-data';
 import * as utils from '../utilities';
 import * as domutils from './domutils';
-import { AppInsightsProperties, Logger, LoggerProperties } from './logger';
+import {
+  AppInsightsMeasurements,
+  AppInsightsProperties,
+  ConsoleLogger,
+  MakeSuggestionLogProps,
+  SubjectNotFoundLogProps,
+} from './logger';
 import { MakeSuggestionCommand, StartSuggestionCommand } from './models';
 import { MessageSender, MessageSenderChrome } from './sender';
 
 export class Logic {
-  public trackEvent: (
+  public trackEvent?: (
     name: string,
     properties?: AppInsightsProperties,
     measurements?: { [name: string]: number }
-  ) => void = Logger.trackEvent;
+  ) => void = ConsoleLogger.trackEvent;
   constructor(
     private bus: MessageSender = new MessageSenderChrome(),
     private dataSvc: DataService = window.location.hostname === 'localhost'
       ? new MockDataService()
       : new AzureDataService()
-  ) {}
+  ) { }
   public get suggestions(): Observable<SuggestionDocument[]> {
     return this.dataSvc.suggestions;
   }
@@ -65,42 +71,37 @@ export class Logic {
         const context = subject.element.childNodes.item(subject.textNodeIndex)
           .textContent!;
         const positions = utils.getStartIndices(context, command.selectionText);
-        const sp = utils.single(positions);
-        if (!!sp) {
-          const selectionStart = sp.index;
-          const createdAt = new Date().getTime();
-          const selectedText = command.selectionText;
-          const submitter = command.submitter;
-          const doc: SuggestionDocument = {
-            context,
-            createdAt,
-            elementPath,
-            id: command.id,
-            location,
-            selectedText,
-            selectionStart,
-            submitter,
-            textNodeIndex,
-            url: {
-              hash,
-              host,
-              pathname,
-              protocol,
-              search,
-            },
-          };
-          doc.suggestedText = await getSuggestedText(doc);
-          resolve(doc);
-        } else {
-          console.log(subject.element, subject, command.selectionText);
-          reject(`The selected text "${command.selectionText}" was not found.`);
-        }
+        const sp = utils.single(positions)!;
+        const selectionStart = sp.index;
+        const createdAt = new Date().getTime();
+        const selectedText = command.selectionText;
+        const submitter = command.submitter;
+        const doc: SuggestionDocument = {
+          context,
+          createdAt,
+          elementPath,
+          id: command.id,
+          location,
+          selectedText,
+          selectionStart,
+          submitter,
+          textNodeIndex,
+          url: {
+            hash,
+            host,
+            pathname,
+            protocol,
+            search,
+          },
+        };
+        doc.suggestedText = await getSuggestedText(doc);
+        resolve(doc);
       } else {
         alert('Please select one or a few words from a single element.');
-        console.log(subject.element, subject, command.selectionText);
+        this.logElementNotFound(location, point, command);
         reject(
           `The selected text needs to exist one time in one text node. "${
-            command.selectionText
+          command.selectionText
           }" does not.`
         );
       }
@@ -112,19 +113,48 @@ export class Logic {
       data: document,
       type: 'MAKE_SUGGESTION',
     };
-    const props: LoggerProperties = {
-      location: document.location,
-      pathname: document.url.pathname,
-      selectedText: document.selectedText,
-      submitter: document.submitter,
-      suggestedText: document.suggestedText!,
-    };
-    Logger.trackEvent(command.type, props);
-    this.trackEvent(command.type, props);
+    this.logMakeSuggestion(command);
     this.bus.send(command);
   }
 
   public newId(): string {
     return uuidv4();
+  }
+
+  private logElementNotFound(
+    location: string,
+    point: WebKitPoint,
+    command: StartSuggestionCommand
+  ): void {
+    const props: SubjectNotFoundLogProps = {
+      location,
+      selectedText: command.selectionText,
+    };
+    const { x, y } = point;
+    const measurements: AppInsightsMeasurements = { x, y };
+    this.doTrackEvent('ELEMENT_NOT_FOUND', props, measurements);
+  }
+
+  private logMakeSuggestion(command: MakeSuggestionCommand): void {
+    const doc = command.data;
+    const props: MakeSuggestionLogProps = {
+      location: doc.location,
+      pathname: doc.url.pathname,
+      selectedText: doc.selectedText,
+      submitter: doc.submitter,
+      suggestedText: doc.suggestedText!,
+    };
+    this.doTrackEvent(command.type, props);
+  }
+
+  private doTrackEvent(
+    name: string,
+    props?: AppInsightsProperties,
+    measurements?: { [name: string]: number }
+  ): void {
+    ConsoleLogger.trackEvent(name, props, measurements);
+    if (this.trackEvent) {
+      this.trackEvent(name, props, measurements);
+    }
   }
 }

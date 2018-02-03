@@ -28,7 +28,7 @@ function setupChrome() {
       };
       sendResponse(earlyResponse);
       const runDialog = async (doc: SuggestionDocument) => {
-        return await dialog.doRun(
+        return dialog.doRun(
           doc.context.slice(0, doc.selectionStart),
           doc.selectedText,
           doc.context.slice(doc.selectedText.length + doc.selectionStart)
