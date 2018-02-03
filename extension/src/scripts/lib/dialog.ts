@@ -13,7 +13,7 @@ export class Dialog {
       const root = bishop.attachShadow({ mode: 'closed' });
       root.innerHTML = getHtml('');
       this.elementHost = root;
-      document.body.appendChild(bishop);
+      document.documentElement.appendChild(bishop);
     } else {
       this.elementHost = document;
     }
@@ -146,10 +146,10 @@ function getHtml(placeHolder: string): string {
   .context {
     background-color: antiquewhite;
     padding: 0.3em;
-    margin: 0.3em; }
+    margin: 0.3em;
+    color: black; }
     .context .strike {
-      background-color: chartreuse;
-      color: black; }
+      background-color: chartreuse; }
   
   .track {
     width: 450px;
@@ -166,6 +166,7 @@ function getHtml(placeHolder: string): string {
     padding: 0;
     width: 100%;
     background-color: white;
+    color: black;
     list-style: none;
     padding: 1em;
     max-width: 400px;

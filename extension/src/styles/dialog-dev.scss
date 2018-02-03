@@ -93,9 +93,9 @@ button.close-bg {
   background-color: antiquewhite;
   padding: 0.3em;
   margin: 0.3em;
+  color: black;
   & .strike {
     background-color: chartreuse;
-    color: black;
   }
 }
 
@@ -114,6 +114,7 @@ button.close-bg {
   padding: 0;
   width: 100%;
   background-color: white;
+  color: black;
   list-style: none;
   padding: 1em;
   max-width: 400px;
