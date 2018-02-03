@@ -16,6 +16,7 @@ if (!!AppInsights.downloadAndSetup) {
     instrumentationKey: '3f0e2dcb-ab20-4af4-8b4b-60ff9bbad653',
   });
   logic.on('MAKE_SUGGESTION', (p, m) => {
+    console.log('MAKE_SUGGESTION');
     AppInsights.trackEvent('MAKE_SUGGESTION', p, m);
   });
   logic.on('ELEMENT_NOT_FOUND', (p, m) => {
@@ -47,6 +48,8 @@ function setupChrome() {
       if (suggestion.textNodeIndex > -1) {
         logic.sendMakeSuggestion(suggestion);
       }
+      AppInsights.flush();
+      console.log('flushed');
     }
   );
 }
