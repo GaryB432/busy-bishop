@@ -127,7 +127,13 @@ export class Logic {
         doc.suggestedText = await getSuggestedText(doc);
         resolve(doc);
       } else {
-        alert('Please select one or a few words from a single element.');
+        if (document.querySelectorAll('iframe').length > 0) {
+          alert(
+            "This extension doesn't work well on pages with iframes. Please try it on a different web page."
+          );
+        } else {
+          alert('Please select one or a few words from a single element.');
+        }
         this.logElementNotFound(location, point, command);
         reject(
           `The selected text needs to exist one time in one text node. "${
@@ -161,7 +167,8 @@ export class Logic {
       selectedText: command.selectionText,
     };
     const { x, y } = point;
-    const measurements: AppInsightsMeasurements = { x, y };
+    const iframes = document.querySelectorAll('iframe').length;
+    const measurements: AppInsightsMeasurements = { x, y, iframes };
     this.events.emit('ELEMENT_NOT_FOUND', props, measurements);
   }
 
