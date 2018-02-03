@@ -1,5 +1,6 @@
 /* tslint:disable-next-line:no-var-requires */
 const uuidv4 = require('uuid');
+import { EventEmitter } from 'events';
 import { Observable } from 'rxjs/Observable';
 import { SuggestionDocument } from '../../../imported/models';
 import { AzureDataService, DataService } from '../data/data';
@@ -16,20 +17,48 @@ import {
 import { MakeSuggestionCommand, StartSuggestionCommand } from './models';
 import { MessageSender, MessageSenderChrome } from './sender';
 
+type LogEventName = 'MAKE_SUGGESTION' | 'ELEMENT_NOT_FOUND';
+
 export class Logic {
-  public trackEvent?: (
-    name: string,
-    properties?: AppInsightsProperties,
-    measurements?: { [name: string]: number }
-  ) => void = ConsoleLogger.trackEvent;
+  private readonly events = new EventEmitter();
+  // public trackEvent?: (
+  //   name: string,
+  //   properties?: AppInsightsProperties,
+  //   measurements?: AppInsightsMeasurements
+  // ) => void = ConsoleLogger.trackEvent;
   constructor(
     private bus: MessageSender = new MessageSenderChrome(),
     private dataSvc: DataService = window.location.hostname === 'localhost'
       ? new MockDataService()
       : new AzureDataService()
-  ) { }
+  ) {
+    this.on('ELEMENT_NOT_FOUND', (p, m) =>
+      ConsoleLogger.trackEvent('ELEMENT_NOT_FOUND', p, m)
+    );
+  }
+
   public get suggestions(): Observable<SuggestionDocument[]> {
     return this.dataSvc.suggestions;
+  }
+
+  public addListener(
+    event: LogEventName,
+    listener: (
+      properties?: AppInsightsProperties,
+      measurements?: AppInsightsMeasurements
+    ) => void
+  ): EventEmitter {
+    return this.events.addListener(event, listener);
+  }
+
+  public on(
+    event: LogEventName,
+    listener: (
+      properties?: AppInsightsProperties,
+      measurements?: AppInsightsMeasurements
+    ) => void
+  ): EventEmitter {
+    return this.events.on(event, listener);
   }
 
   public onPopupLoaded(url: string): void {
@@ -70,8 +99,9 @@ export class Logic {
         const textNodeIndex = subject.textNodeIndex;
         const context = subject.element.childNodes.item(subject.textNodeIndex)
           .textContent!;
-        const positions = utils.getStartIndices(context, command.selectionText);
-        const sp = utils.single(positions)!;
+        const sp = utils.single(
+          utils.getStartIndices(context, command.selectionText)
+        )!;
         const selectionStart = sp.index;
         const createdAt = new Date().getTime();
         const selectedText = command.selectionText;
@@ -101,7 +131,7 @@ export class Logic {
         this.logElementNotFound(location, point, command);
         reject(
           `The selected text needs to exist one time in one text node. "${
-          command.selectionText
+            command.selectionText
           }" does not.`
         );
       }
@@ -132,7 +162,7 @@ export class Logic {
     };
     const { x, y } = point;
     const measurements: AppInsightsMeasurements = { x, y };
-    this.doTrackEvent('ELEMENT_NOT_FOUND', props, measurements);
+    this.events.emit('ELEMENT_NOT_FOUND', props, measurements);
   }
 
   private logMakeSuggestion(command: MakeSuggestionCommand): void {
@@ -144,17 +174,6 @@ export class Logic {
       submitter: doc.submitter,
       suggestedText: doc.suggestedText!,
     };
-    this.doTrackEvent(command.type, props);
-  }
-
-  private doTrackEvent(
-    name: string,
-    props?: AppInsightsProperties,
-    measurements?: { [name: string]: number }
-  ): void {
-    ConsoleLogger.trackEvent(name, props, measurements);
-    if (this.trackEvent) {
-      this.trackEvent(name, props, measurements);
-    }
+    this.events.emit(command.type, props);
   }
 }

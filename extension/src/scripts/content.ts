@@ -15,7 +15,12 @@ if (!!AppInsights.downloadAndSetup) {
   AppInsights.downloadAndSetup({
     instrumentationKey: '3f0e2dcb-ab20-4af4-8b4b-60ff9bbad653',
   });
-  logic.trackEvent = AppInsights.trackEvent;
+  logic.on('MAKE_SUGGESTION', (p, m) => {
+    AppInsights.trackEvent('MAKE_SUGGESTION', p, m);
+  });
+  logic.on('ELEMENT_NOT_FOUND', (p, m) => {
+    AppInsights.trackEvent('ELEMENT_NOT_FOUND', p, m);
+  });
 }
 
 function setupChrome() {
