@@ -54,7 +54,6 @@
     "testEnvironment": "node"
   },
   "dependencies": {
-    "applicationinsights-js": "^1.0.15",
     "rxjs": "^5.5.6",
     "uuid": "^3.2.1"
   }
