@@ -91,6 +91,7 @@ export class Logic {
       point.y,
       command.selectionText
     );
+    console.log(subject);
     return new Promise<SuggestionDocument>(async (resolve, reject) => {
       if (!!subject.element && subject.textNodeIndex > -1) {
         const elementPath = utils.serializePath(

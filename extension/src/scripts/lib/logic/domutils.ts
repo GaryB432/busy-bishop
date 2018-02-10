@@ -13,23 +13,21 @@ function getChildIndex(subject: Element): number {
 }
 
 function getElementsFromPoint(x: number, y: number): Element[] {
-  type Visibility = string | null;
-  let element: HTMLElement;
-  const elements: HTMLElement[] = [];
-  const vizs: Visibility[] = [];
-  while (
-    (element = document.elementFromPoint(x, y) as HTMLElement) &&
-    element !== document.documentElement
-  ) {
-    elements.push(element);
-    vizs.push(element.style.visibility);
-    element.style.visibility = 'hidden';
-  }
-
-  elements.forEach((elem, k) => {
-    elem.style.visibility = vizs[k];
+  const colors = [
+    'red',
+    'green',
+    'blue',
+    'purple',
+    'brown',
+    'orange',
+    'yellow',
+    'black',
+  ];
+  const elements: Element[] = document.elementsFromPoint(x, y);
+  elements.forEach((el, i) => {
+    const h = el as HTMLElement;
+    h.style.border = `5px solid ${colors[i % colors.length]}`;
   });
-
   return elements;
 }
 
