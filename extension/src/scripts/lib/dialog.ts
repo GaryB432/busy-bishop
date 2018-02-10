@@ -25,7 +25,10 @@ export class Dialog {
     selected: string,
     back: string
   ): Promise<string> {
-    return new Promise<string>(resolve => {
+    return new Promise<string>((resolve, reject) => {
+      const timo = setTimeout(() => {
+        reject('dialog timeout');
+      }, 30000);
       if (this.diffSpans$ && this.bg$ && this.input$) {
         const parts = [front, selected, back];
         parts.forEach((part, i) => {
@@ -33,7 +36,10 @@ export class Dialog {
             this.diffSpans$.item(i).textContent = part;
           }
         });
-        this.gotText = resolve;
+        this.gotText = suggText => {
+          resolve(suggText);
+          clearTimeout(timo);
+        };
         this.setCurrentDialog(0);
         this.bg$.classList.remove('hidden');
         this.input$.value = selected;

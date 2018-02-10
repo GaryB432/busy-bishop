@@ -17,7 +17,7 @@ import {
 import { MakeSuggestionCommand, StartSuggestionCommand } from './models';
 import { MessageSender, MessageSenderChrome } from './sender';
 
-type LogEventName = 'MAKE_SUGGESTION' | 'ELEMENT_NOT_FOUND';
+type LogEventName = 'MAKE_SUGGESTION' | 'ELEMENT_NOT_FOUND' | 'DIALOG_REJECT';
 
 export class Logic {
   private readonly events = new EventEmitter();
@@ -32,9 +32,12 @@ export class Logic {
       ? new MockDataService()
       : new AzureDataService()
   ) {
-    this.on('ELEMENT_NOT_FOUND', (p, m) =>
-      ConsoleLogger.trackEvent('ELEMENT_NOT_FOUND', p, m)
-    );
+    const events: LogEventName[] = ['ELEMENT_NOT_FOUND', 'DIALOG_REJECT'];
+    events.forEach(d => {
+      this.on(d, (p, m) => {
+        ConsoleLogger.trackEvent(d, p, m);
+      });
+    });
   }
 
   public get suggestions(): Observable<SuggestionDocument[]> {
@@ -125,7 +128,12 @@ export class Logic {
             search,
           },
         };
-        doc.suggestedText = await getSuggestedText(doc);
+        try {
+          doc.suggestedText = await getSuggestedText(doc);
+        } catch (msg) {
+          this.emitEvent('DIALOG_REJECT', { message: msg });
+          reject(msg);
+        }
         resolve(doc);
       } else {
         if (document.querySelectorAll('iframe').length > 0) {
@@ -170,7 +178,7 @@ export class Logic {
     const { x, y } = point;
     const iframes = document.querySelectorAll('iframe').length;
     const measurements: AppInsightsMeasurements = { x, y, iframes };
-    this.events.emit('ELEMENT_NOT_FOUND', props, measurements);
+    this.emitEvent('ELEMENT_NOT_FOUND', props, measurements);
   }
 
   private logMakeSuggestion(command: MakeSuggestionCommand): void {
@@ -182,6 +190,14 @@ export class Logic {
       submitter: doc.submitter,
       suggestedText: doc.suggestedText!,
     };
-    this.events.emit(command.type, props);
+    this.emitEvent(command.type, props);
+  }
+
+  private emitEvent(
+    name: LogEventName,
+    properties?: AppInsightsProperties,
+    measurements?: AppInsightsMeasurements
+  ) {
+    this.events.emit(name, properties, measurements);
   }
 }
