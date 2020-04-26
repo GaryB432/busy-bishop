@@ -1,19 +1,19 @@
 # busy-bishop
 
-## Fetch dependencies
-```
-npm install
-```
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
+[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-## Run webpack
-```
-npm run build
-```
+This monorepo contains my registry packages using 
 
-## Start http-server
-```
-npm start
-```
-You can work on popup.html but you'll need to do a proper build and reload the extension
+* Lerna
+* Jest
+* eslint
+* Typescript
 
-https://getmdl.io/templates/index.html
+You can make one yourself using the [`Yeoman`](https://yeoman.io/) [`generator`](https://github.com/GaryB432/generator-lerna-typescript). 
+
+## Packages (this may contain one day)
+
+| Project | Package | Version | Links |
+|---|---|---|---|
+**Greeter** | [`Greeter`](https://npmjs.com/package/greeter) | [![latest](https://img.shields.io/npm/v/greeter/latest.svg)](https://npmjs.com/package/greeter) | [![README](https://img.shields.io/badge/README--green.svg)](/packages/greeter/README.md) 
